@@ -33,21 +33,23 @@ h2,
 h3,
 h4 {
   font-family: var(--font-display);
-  line-height: 1.15;
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 1.12;
   margin: 0 0 var(--space-s);
   text-wrap: balance;
 }
 
 h1 {
-  font-size: var(--step-4);
+  font-size: calc(var(--step-4) * var(--display-scale));
 }
 
 h2 {
-  font-size: var(--step-3);
+  font-size: calc(var(--step-3) * var(--display-scale));
 }
 
 h3 {
-  font-size: var(--step-1);
+  font-size: calc(var(--step-1) * var(--display-scale));
 }
 
 p {
@@ -117,4 +119,15 @@ html:not(.js) .js-only {
     transition-duration: 0s !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Поверхні браузера — теж у палітрі (SPEC-010). */
+::selection {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+html {
+  accent-color: var(--color-ink);
+  caret-color: var(--color-ink);
+  scrollbar-color: var(--color-ink-muted) var(--color-bg);
 }
