@@ -184,3 +184,8 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-008/AC-05 FAQPage = FAQ в HTML | build | `build/seo.test.ts` | ✅ |
 | SPEC-008/AC-06 robots, sitemap, hreflang, Open Graph | build | `build/seo.test.ts` | ✅ |
 | SPEC-008/AC-07 Lighthouse SEO = 100 | вручную | `qa/README.md` | ✅ |
+| SPEC-010/AC-04 имена токенов, контраст А и Б | unit | `unit/contrast.test.ts` (SPEC-001/AC-11) | ✅ |
+| SPEC-010/AC-05 шрифты: 2 файла, swap, ґ є і ї ʼ без подмены | build, functional | `build/budget.test.ts`, `functional/design.spec.ts` | ✅ |
+| SPEC-010/AC-06 запрещённые шрифты и цвет | build | `build/css.test.ts` (SPEC-001/AC-12) | ✅ |
+| SPEC-010/AC-07 иконки: один набор, обводка, доступность | build | `build/icons.test.ts` | ✅ |
+| SPEC-010/AC-08 фото в CREDITS.md, AVIF/WebP, места на страницах | build | `build/images.test.ts` | ✅ |
