@@ -76,6 +76,8 @@ const paletteBFonts = PALETTE_B_FONTS;
     <link rel="preload" href="/fonts/wix-madefor-text.woff2" as="font" type="font/woff2" crossorigin />
     <script is:inline define:vars={{ paletteKey, paletteBFonts }}>
       document.documentElement.classList.add('js');
+      // Рух дозволено — CSS заздалегідь приглушує H1 героя, щоб не було спалаху до splitText (SPEC-006 §4.8).
+      if (matchMedia('(prefers-reduced-motion: no-preference)').matches) document.documentElement.dataset.motion = 'on';
       try {
         var saved = JSON.parse(localStorage.getItem(paletteKey));
         if (saved === 'a' || saved === 'b') document.documentElement.dataset.palette = saved;

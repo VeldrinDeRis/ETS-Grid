@@ -117,6 +117,17 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     margin-bottom: var(--space-s);
     max-width: 16ch;
   }
+  /* SPEC-006 §4.8: до splitText H1 приглушений (не 0 — лишається кандидатом LCP);
+     якщо home.ts не завантажився, через 1,2 с H1 сам повертається до opacity 1. */
+  :global(html[data-motion='on']) .hero__title:not([data-lit]) {
+    opacity: 0.25;
+    animation: hero-title-fallback 0s linear 1.2s forwards;
+  }
+  @keyframes hero-title-fallback {
+    to {
+      opacity: 1;
+    }
+  }
   .hero__subtitle {
     font-size: var(--step-1);
     color: var(--color-ink-muted);

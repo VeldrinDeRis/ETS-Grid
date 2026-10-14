@@ -155,3 +155,56 @@ test.describe('SPEC-006/AC-17 один акцентний елемент у пе
     expect(accented).toEqual(['primary']);
   });
 });
+
+/** Текст H1 без «сирих» пробілів між span слів. */
+const h1Text = (page: import('@playwright/test').Page) => page.locator('h1').evaluate((el) => (el.textContent ?? '').replace(/\s+/g, ' ').trim());
+
+test.describe('SPEC-006/AC-24 H1: слова загоряються (splitText, рев. 4)', () => {
+  for (const id of ['b', 'a', 'c']) {
+    test(`варіант ${id}: слова H1 — span.hero__word, потім H1 знову простим текстом з opacity 1`, async ({ page }) => {
+      const words = variant(id).h1.split(' ');
+      await page.goto(id === 'b' ? '/' : `/?hero=${id}`);
+      const h1 = page.locator('h1');
+      // Під час анімації: стільки span, скільки слів; доступне ім'я — текст варіанта.
+      await expect(h1.locator('.hero__word')).toHaveCount(words.length);
+      expect(await h1.locator('.hero__word').allTextContents()).toEqual(words);
+      await expect(h1).toHaveAccessibleName(variant(id).h1);
+      // Після анімації: span прибрано, текст той самий, H1 і слова на opacity 1.
+      await expect(h1.locator('.hero__word')).toHaveCount(0, { timeout: 2500 });
+      expect(await h1Text(page)).toBe(variant(id).h1);
+      await expect(h1).toHaveCSS('opacity', '1');
+      await expect(h1).not.toHaveAttribute('aria-label');
+    });
+  }
+});
+
+test.describe('SPEC-006/AC-25 H1 без анімації', () => {
+  test.describe('reduced-motion', () => {
+    test.use({ reducedMotion: 'reduce' });
+    test('немає span.hero__word, H1 з opacity 1 одразу', async ({ page }) => {
+      await page.goto('/');
+      await expect(page.locator('html')).not.toHaveAttribute('data-motion', 'on');
+      await expect(page.locator('h1')).toHaveCSS('opacity', '1');
+      await page.waitForTimeout(800);
+      await expect(page.locator('h1 .hero__word')).toHaveCount(0);
+    });
+  });
+
+  test.describe('без JS', () => {
+    test.use({ javaScriptEnabled: false });
+    test('H1 простим текстом з opacity 1', async ({ page }) => {
+      await page.goto('/');
+      await expect(page.locator('h1')).toHaveCSS('opacity', '1');
+      await expect(page.locator('h1 .hero__word')).toHaveCount(0);
+      expect(await h1Text(page)).toBe(variant('b').h1);
+    });
+  });
+
+  test('скрипти модулів не завантажились — страховка повертає H1 до opacity 1 за ≤ 1,5 с', async ({ page }) => {
+    await page.route('**/_astro/*.js', (route) => route.abort());
+    await page.goto('/');
+    await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
+    await expect(page.locator('h1')).toHaveCSS('opacity', '1', { timeout: 1500 });
+    await expect(page.locator('h1 .hero__word')).toHaveCount(0);
+  });
+});

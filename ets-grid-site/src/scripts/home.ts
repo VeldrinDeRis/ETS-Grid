@@ -1,5 +1,6 @@
 // Поведінка головної (SPEC-006 §4.7): вкладки, фільтри хітів, варіант героя, аналітика, лінії енергії.
-import { animate, inView } from 'motion';
+import { splitText } from '@motionplus/core';
+import { animate, inView, stagger } from 'motion';
 import { track } from '../lib/track';
 
 /* ---------- вкладки блоку 2: WAI-ARIA Tabs ---------- */
@@ -91,4 +92,26 @@ if (flow && !reduce) {
     },
     { amount: 0.4 },
   );
+}
+
+/* ---------- H1 першого екрана: слова загоряються (SPEC-006 §4.8, D-045) ----------
+   Ділимо лише на слова (preserveHyphens — без span на кожну літеру) і лише після шрифтів, бо splitText
+   фіксує рядки за розміром на момент поділу. Після проходу повертаємо H1 простим текстом: рядки знову
+   переносяться самі, доступне ім'я — звичайний текст. Якщо страховка CSS уже засвітила H1 — не анімуємо. */
+const heroTitle = document.querySelector<HTMLElement>('.hero__title');
+if (heroTitle && document.documentElement.dataset.motion === 'on' && !reduce) {
+  document.fonts.ready.then(() => {
+    if (getComputedStyle(heroTitle).opacity === '1') {
+      heroTitle.dataset.lit = '';
+      return;
+    }
+    const text = heroTitle.textContent ?? '';
+    const { words } = splitText(heroTitle, { preserveHyphens: true, wordClass: 'hero__word' });
+    for (const word of words) word.style.opacity = '0.25';
+    heroTitle.dataset.lit = '';
+    animate(words, { opacity: [0.25, 1] }, { duration: 0.45, delay: stagger(0.08, { startDelay: 0.15 }), ease: [0.16, 1, 0.3, 1] }).finished.then(() => {
+      heroTitle.textContent = text;
+      heroTitle.removeAttribute('aria-label');
+    });
+  });
 }
