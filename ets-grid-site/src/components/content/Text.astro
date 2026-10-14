@@ -1,0 +1,11 @@
+---
+// Текст із даних: плейсхолдери «[…]» стають видимими мітками (D-005, D-031).
+import { chunks } from '../../lib/content';
+import Placeholder from '../ui/Placeholder.astro';
+
+interface Props {
+  value: string;
+}
+const parts = chunks(Astro.props.value);
+---
+{parts.map((p) => (p.placeholder ? <Placeholder label={p.text} /> : p.text))}

@@ -1,0 +1,30 @@
+---
+// Розділи контентної сторінки: h2 + текст або список; плейсхолдери видимі (SPEC-007 §3.1).
+import Text from './Text.astro';
+
+interface Props {
+  sections: { title: string; text?: string; items?: string[] }[];
+}
+const { sections } = Astro.props;
+---
+{
+  sections.map((s) => (
+    <section class="cp-section" data-content-section>
+      <h2>{s.title}</h2>
+      {s.text && (
+        <p>
+          <Text value={s.text} />
+        </p>
+      )}
+      {s.items && (
+        <ul class="cp-list">
+          {s.items.map((item) => (
+            <li>
+              <Text value={item} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  ))
+}

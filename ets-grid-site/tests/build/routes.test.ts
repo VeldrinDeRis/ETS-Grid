@@ -29,6 +29,9 @@ const expected: string[] = [
   routes.search,
   routes.about,
   routes.contacts,
+  // SPEC-007 §9, ревізія 7 SPEC-001: гід покупця
+  routes.guide,
+  routes.guideArticle('yak-obraty-zaryadnu-stantsiyu'),
 ];
 
 describe('SPEC-001/AC-02 усі адреси карти URL зібрані', () => {

@@ -1,8 +1,16 @@
 ---
+// Сторінка послуги (SPEC-007 §3.1, ТЗ §6.7): розділи з плейсхолдерами; у монтажу — таблиця пакетів.
 import type { GetStaticPaths } from 'astro';
-import StubPage from '../../layouts/StubPage.astro';
+import Sections from '../../components/content/Sections.astro';
+import Text from '../../components/content/Text.astro';
+import Section from '../../components/ui/Section.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import { structure } from '../../lib/catalog';
+import { content, type ContentPages } from '../../lib/content';
 import { routes } from '../../lib/routes';
+import '../../styles/content.css';
+
+type ServiceSlug = keyof ContentPages['services']['pages'];
 
 export const getStaticPaths = (() =>
   structure.services.map((service) => ({ params: { service: service.slug }, props: { service } }))) satisfies GetStaticPaths;
@@ -11,11 +19,55 @@ interface Props {
   service: { slug: string; name: string };
 }
 const { service } = Astro.props;
+const page = content.services.pages[service.slug as ServiceSlug];
 ---
-<StubPage
+<BaseLayout
   title={service.name}
-  description={`${service.name} від ETS GRID: що входить, строки, вартість.`}
-  spec="SPEC-007"
-  note="Зміст сторінки послуги — ТЗ §6.7."
+  description={`${service.name} від ETS GRID: що входить, строки, вартість. Київ і вся Україна.`}
   crumbs={[{ label: 'Послуги', href: routes.services }, { label: service.name }]}
-/>
+>
+  <Section>
+    <h1>{service.name}</h1>
+    <p class="cp-lead">{page.lead}</p>
+
+    {
+      page.packages && (
+        <section class="cp-section" data-content-block="packages">
+          <h2 id="packages-title">Пакети монтажу</h2>
+          <div class="cp-table-wrap" role="region" aria-labelledby="packages-title" tabindex="0">
+            <table class="cp-table">
+              <thead>
+                <tr>
+                  <th scope="col">Пакет</th>
+                  <th scope="col">Що входить</th>
+                  <th scope="col">Ціна</th>
+                </tr>
+              </thead>
+              <tbody>
+                {page.packages.map((p) => (
+                  <tr>
+                    <th scope="row">{p.name}</th>
+                    <td>
+                      <Text value={p.scope} />
+                    </td>
+                    <td>
+                      <Text value={p.price} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )
+    }
+
+    <div data-content-block="sections">
+      <Sections sections={page.sections} />
+    </div>
+
+    <div class="cp-actions">
+      <a class="cp-cta" href={routes.quote}>Розрахувати під ключ</a>
+    </div>
+  </Section>
+</BaseLayout>

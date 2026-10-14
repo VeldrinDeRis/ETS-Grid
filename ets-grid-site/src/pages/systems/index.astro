@@ -1,27 +1,50 @@
 ---
-import StubPage from '../../layouts/StubPage.astro';
-import { getSystems } from '../../lib/catalog';
+// Готові системи (SPEC-007 §3.1): 4 картки, ціна за правилом SPEC-006 §4.5.
+import Text from '../../components/content/Text.astro';
+import DemoBadge from '../../components/ui/DemoBadge.astro';
+import Section from '../../components/ui/Section.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProductsBy, getSystems } from '../../lib/catalog';
+import { content } from '../../lib/content';
+import { plural } from '../../lib/plural';
+import { systemPrice } from '../../lib/home';
 import { routes } from '../../lib/routes';
+import '../../styles/content.css';
 
 const systems = await getSystems();
+const products = await getProductsBy();
 ---
-<StubPage title="Готові системи" description="Готові енергосистеми під ключ: дім без відключень, дім + авто, паркінг, що заробляє, АЗС на слабкому вводі." spec="SPEC-007">
-  <ul role="list">
-    {
-      systems.map((s) => (
-        <li>
-          <a href={routes.system(s.slug)}>{s.name}</a>
-        </li>
-      ))
-    }
-  </ul>
-</StubPage>
-
-<style>
-  li a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    font-weight: 600;
-  }
-</style>
+<BaseLayout
+  title="Готові системи"
+  description="Готові енергосистеми під ключ: дім без відключень, дім + авто, паркінг, що заробляє, АЗС на слабкому вводі."
+  crumbs={[{ label: 'Готові системи' }]}
+>
+  <Section>
+    <h1>Готові системи</h1>
+    <p class="cp-lead">{content.systems.lead}</p>
+    <ul role="list" class="cp-cards" data-content-block="systems-list">
+      {
+        systems.map((s) => {
+          const price = systemPrice(s, products);
+          return (
+            <li class="cp-card" data-system={s.slug}>
+              <h2>
+                <a href={routes.system(s.slug)}>{s.name}</a>
+              </h2>
+              <p>
+                <Text value={s.result} />
+              </p>
+              <p class="cp-card__price num">
+                {price.text}
+                {price.demo && <DemoBadge />}
+              </p>
+              <p class="cp-card__muted">
+                У складі {s.items.length} {plural(s.items.length, ['позиція', 'позиції', 'позицій'])}
+              </p>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </Section>
+</BaseLayout>

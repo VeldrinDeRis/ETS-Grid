@@ -1,19 +1,89 @@
 ---
+// Контакти (SPEC-007 §3.1): контакти й графік — плейсхолдери, карта — рамка, форма SPEC-009 #rozrakhunok.
 import LeadForm from '../components/forms/LeadForm.astro';
-import StubPage from '../layouts/StubPage.astro';
+import Text from '../components/content/Text.astro';
+import Placeholder from '../components/ui/Placeholder.astro';
+import Section from '../components/ui/Section.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { structure } from '../lib/catalog';
+import { content } from '../lib/content';
+import { isPlaceholder } from '../lib/schema';
+import '../styles/content.css';
+
+const c = structure.contacts;
+const rows: [string, string][] = [
+  ['Телефон', c.phone],
+  ['Email', c.email],
+  ['Адреса', c.address],
+  ['Telegram', c.telegram],
+  ['Viber', c.viber],
+  ['Реквізити', c.requisites],
+];
 ---
-<StubPage
+<BaseLayout
   title="Контакти"
-  description="Контакти ETS GRID: телефон, месенджери, адреса. Київ і вся Україна."
-  spec="SPEC-007"
-  note="Контакти надає замовник."
+  description="Контакти ETS GRID: телефон, месенджери, адреса, графік роботи. Київ і вся Україна."
+  crumbs={[{ label: 'Контакти' }]}
 >
-  <section id="rozrakhunok" class="contacts-form">
-    <LeadForm kind="quote" />
-  </section>
-</StubPage>
+  <Section>
+    <h1>Контакти</h1>
+    <p class="cp-lead">{content.contacts.lead}</p>
+    <div class="ct">
+      <div>
+        <dl class="ct-list" data-content-block="contacts">
+          {
+            rows.map(([label, value]) => (
+              <div>
+                <dt>{label}</dt>
+                <dd>{isPlaceholder(value) ? <Placeholder label={value} /> : value}</dd>
+              </div>
+            ))
+          }
+          <div>
+            <dt>Графік роботи</dt>
+            <dd><Text value={content.contacts.schedule} /></dd>
+          </div>
+          <div>
+            <dt>Географія</dt>
+            <dd>{structure.region}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="cp-frame ct-map" data-content-block="map" aria-hidden="true"><Text value={content.contacts.map} /></div>
+    </div>
+
+    <section id="rozrakhunok" class="contacts-form" data-content-block="form">
+      <LeadForm kind="quote" />
+    </section>
+  </Section>
+</BaseLayout>
 
 <style>
+  .ct {
+    display: grid;
+    gap: var(--space-l);
+  }
+  @media (min-width: 960px) {
+    .ct {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    }
+  }
+  .ct-list {
+    display: grid;
+    gap: var(--space-s);
+    margin: 0;
+  }
+  .ct-list dt {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .ct-list dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  .ct-map {
+    min-height: 16rem;
+  }
   .contacts-form {
     margin-top: var(--space-xl);
     scroll-margin-top: var(--space-l);

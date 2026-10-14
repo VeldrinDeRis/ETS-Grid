@@ -1,10 +1,17 @@
 ---
+// Готова система (SPEC-007 §3.1, ТЗ §6.5): схема, склад, результат, ціна, строки, фінансування, CTA з параметрами.
 import type { GetStaticPaths } from 'astro';
-import ProductStubList from '../../components/layout/ProductStubList.astro';
-import StubPage from '../../layouts/StubPage.astro';
-import { getProduct, getSystems } from '../../lib/catalog';
+import ProductCard from '../../components/catalog/ProductCard.astro';
+import Text from '../../components/content/Text.astro';
+import DemoBadge from '../../components/ui/DemoBadge.astro';
+import Section from '../../components/ui/Section.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLevelById, getProduct, getProductsBy, getSystems } from '../../lib/catalog';
+import { content } from '../../lib/content';
+import { systemPrice } from '../../lib/home';
 import { routes } from '../../lib/routes';
 import type { Product, System } from '../../lib/schema';
+import '../../styles/content.css';
 
 export const getStaticPaths = (async () =>
   (await getSystems()).map((system) => ({ params: { slug: system.slug }, props: { system } }))) satisfies GetStaticPaths;
@@ -14,14 +21,133 @@ interface Props {
 }
 const { system } = Astro.props;
 const items = (await Promise.all(system.items.map((slug) => getProduct(slug)))).filter((p): p is Product => Boolean(p));
+const price = systemPrice(system, await getProductsBy());
+// Схема — за напрямом енергії: сонце → навіс → батарея → зарядка (як EnergyFlow на головній).
+const FLOW: Record<number, number> = { 2: 0, 4: 1, 3: 2, 1: 3 };
+const scheme = [...items].sort((a, b) => FLOW[a.level] - FLOW[b.level]);
 ---
-<StubPage
+<BaseLayout
   title={system.name}
-  description={`Готова система «${system.name}»: склад, результат, ціна під ключ.`}
-  spec="SPEC-007"
-  note="Тут будуть схема системи, склад, результат у цифрах, ціна «під ключ від», строки й фінансування (ТЗ §6.5)."
+  description={`Готова система «${system.name}»: склад, результат, ціна під ключ, строки й фінансування.`}
   crumbs={[{ label: 'Готові системи', href: routes.systems }, { label: system.name }]}
 >
-  <p slot="lead">{system.result}</p>
-  <ProductStubList products={items} />
-</StubPage>
+  <Section>
+    <h1>{system.name}</h1>
+
+    <section class="sys-result" aria-labelledby="sys-result-title" data-content-block="result">
+      <h2 id="sys-result-title">Що ви отримуєте</h2>
+      <p class="sys-result__value"><Text value={system.result} /></p>
+      <p class="sys-price num" data-content-block="price">
+        {price.text}
+        {price.demo && <DemoBadge />}
+      </p>
+      <p class="cp-card__muted"><Text value={content.systems.timeline} /></p>
+      <div class="cp-actions">
+        <a class="cp-cta" href={routes.quoteWith({ picker: 'system', system: system.slug })} data-content-block="cta">Розрахувати систему</a>
+        <a class="cp-cta cp-cta--outline" href={routes.financing}>Фінансування</a>
+      </div>
+      <p class="cp-card__muted">{content.systems.financing_note}</p>
+    </section>
+
+    <section aria-labelledby="sys-scheme-title" data-content-block="scheme">
+      <h2 id="sys-scheme-title">Як працює система</h2>
+      <ol class="sys-scheme">
+        {
+          scheme.map((p) => (
+            <li>
+              <a href={routes.product(p.slug)}>
+                <span class="sys-scheme__level">{getLevelById(p.level).name}</span>
+                <span class="sys-scheme__name">{p.name}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section aria-labelledby="sys-items-title" data-content-block="items">
+      <h2 id="sys-items-title">Склад системи</h2>
+      <div class="cp-cards">
+        {items.map((p) => <ProductCard product={p} variant="compact" headingLevel={3} />)}
+      </div>
+    </section>
+  </Section>
+</BaseLayout>
+
+<style>
+  .sys-result {
+    max-width: 44rem;
+    margin-bottom: var(--space-xl);
+  }
+  .sys-result h2,
+  section h2 {
+    font-size: var(--step-2);
+  }
+  .sys-result__value {
+    margin: 0 0 var(--space-xs);
+    font-size: var(--step-1);
+  }
+  .sys-price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    margin: 0 0 var(--space-2xs);
+    font-size: var(--step-2);
+    font-weight: 800;
+  }
+  .sys-scheme {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin: 0 0 var(--space-xl);
+    padding: 0;
+    list-style: none;
+  }
+  .sys-scheme li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+  }
+  /* Стрілка між вузлами — декоративна; порядок списку = напрям потоку. */
+  .sys-scheme li + li::before {
+    content: '→' / '';
+    color: var(--color-ink-muted);
+    font-size: var(--step-2);
+    font-weight: 700;
+  }
+  .sys-scheme a {
+    display: grid;
+    gap: 0.1em;
+    min-height: var(--tap);
+    padding: var(--space-xs) var(--space-s);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+  .sys-scheme a:hover .sys-scheme__name {
+    text-decoration: underline;
+  }
+  .sys-scheme__level {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .sys-scheme__name {
+    font-weight: 700;
+  }
+  @media (max-width: 639.98px) {
+    .sys-scheme {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .sys-scheme li {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .sys-scheme li + li::before {
+      content: '↓' / '';
+      align-self: center;
+    }
+  }
+</style>

@@ -1,0 +1,91 @@
+---
+// Стаття гіда (SPEC-007 §3.1, ТЗ §6.9): вступ, розділи, підбір, повʼязані товари.
+// Текст — з level-content.json рівня (SPEC-002), без нових фактів.
+import type { GetStaticPaths } from 'astro';
+import ProductCard from '../../components/catalog/ProductCard.astro';
+import Section from '../../components/ui/Section.astro';
+import levelContent from '../../data/level-content.json';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLevel, getProductsBy } from '../../lib/catalog';
+import { content } from '../../lib/content';
+import { routes } from '../../lib/routes';
+import '../../styles/content.css';
+
+type Article = (typeof content.guide.articles)[number];
+
+export const getStaticPaths = (() =>
+  content.guide.articles.map((article) => ({ params: { article: article.slug }, props: { article } }))) satisfies GetStaticPaths;
+
+interface Props {
+  article: Article;
+}
+const { article } = Astro.props;
+const text = levelContent[article.level];
+const level = getLevel(article.level);
+const related = (await getProductsBy({ level: article.level })).filter((p) => p.type !== 'cable').slice(0, 3);
+---
+<BaseLayout
+  title={article.title}
+  description={`${article.title}: ввід, розʼєм, AC чи DC, OCPP і балансування. Гід ETS GRID.`}
+  crumbs={[{ label: content.guide.title, href: routes.guide }, { label: article.title }]}
+>
+  <Section width="narrow">
+    <article>
+      <h1>{article.title}</h1>
+      <p class="cp-lead" data-content-block="intro">{text.value}</p>
+
+      <section class="cp-section" data-content-block="how-to-choose">
+        <h2>На що дивитися</h2>
+        <ol class="cp-list">
+          {text.how_to_choose.map((item) => <li>{item}</li>)}
+        </ol>
+      </section>
+
+      <section class="cp-section" data-content-block="picker">
+        <h2>{article.picker}</h2>
+        <p>Відповісте, де заряджаєте, яке авто і скільки кВт на вводі, — покажемо станції, що підходять.</p>
+        <a class="cp-cta" href={level.picker_href}>Підібрати станцію</a>
+      </section>
+
+      <section class="cp-section" data-content-block="faq">
+        <h2>Часті питання</h2>
+        {
+          text.faq.map((item) => (
+            <details class="guide-faq">
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))
+        }
+      </section>
+    </article>
+  </Section>
+  <Section>
+    <section data-content-block="related" aria-labelledby="related-title">
+      <h2 id="related-title">Товари з цього гіда</h2>
+      <div class="cp-cards">
+        {related.map((p) => <ProductCard product={p} variant="compact" headingLevel={3} />)}
+      </div>
+      <a class="cp-link" href={routes.level(level.slug)}>Усі {level.name.toLowerCase()}</a>
+    </section>
+  </Section>
+</BaseLayout>
+
+<style>
+  .guide-faq {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .guide-faq summary {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .guide-faq p {
+    margin: 0 0 var(--space-s);
+  }
+  #related-title {
+    font-size: var(--step-2);
+  }
+</style>

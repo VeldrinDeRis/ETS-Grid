@@ -18,6 +18,9 @@ export const routes = {
   compare: '/porivnyannya/',
   search: '/poshuk/',
   about: '/pro-kompaniyu/',
+  /** Гід покупця (SPEC-007 §3.1, ревізія 7 SPEC-001): у карті 03 адреси немає, ТЗ §6.9 вимагає шаблон статті. */
+  guide: '/gid/',
+  guideArticle: (slug: string) => `/gid/${slug}/`,
   contacts: '/kontakty/',
   /** Форма розрахунку; остаточну адресу задасть SPEC-009. */
   quote: '/kontakty/#rozrakhunok',

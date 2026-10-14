@@ -53,6 +53,8 @@ export interface LeadContext {
   cars: Record<string, string>;
   loads: Record<string, string>;
   connectors: Record<string, string>;
+  /** Назви готових систем (SPEC-007: CTA «Розрахувати систему»). */
+  systems?: Record<string, string>;
 }
 
 const WHERE: Record<string, string> = { home: 'дім', business: 'бізнес / паркінг', highway: 'траса / АЗС' };
@@ -121,6 +123,10 @@ export function describePicker(params: Record<string, string>, ctx: LeadContext)
         p.storage === 'true' ? 'з накопичувачем' : 'без накопичувача',
         `≈ ${formatUnit(Number(p.kwp), 'kWp')}, ${ports} ${plural(ports, ['порт', 'порти', 'портів'])}, ${formatUnit(Number(p.storage_kwh), 'кВт·год')}`,
       ].join('; ');
+    }
+    case 'system': {
+      if (!p.system) return null;
+      return `Готова система: ${ctx.systems?.[p.system] ?? p.system}`;
     }
     default:
       return null;

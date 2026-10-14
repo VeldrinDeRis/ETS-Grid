@@ -1,34 +1,75 @@
 ---
-import StubPage from '../layouts/StubPage.astro';
-import { getLevels } from '../lib/catalog';
+// 404 (SPEC-007 §3.1): пошук, 4 рівні, на головну.
+import Section from '../components/ui/Section.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { routes } from '../lib/routes';
-
-const levels = getLevels();
+import { levelLinks } from '../lib/shop-data';
+import '../styles/content.css';
 ---
-<StubPage
+<BaseLayout
   title="Сторінку не знайдено"
   description="Такої сторінки немає. Перейдіть до каталогу або на головну."
-  spec="SPEC-007"
+  crumbs={[{ label: 'Сторінку не знайдено' }]}
   robots="noindex, follow"
 >
-  <p slot="lead">Можливо, адресу змінено. Почніть з одного з розділів:</p>
-  <ul role="list">
-    {
-      levels.map((level) => (
-        <li>
-          <a href={routes.level(level.slug)}>{level.name}</a>
-        </li>
-      ))
-    }
-    <li><a href={routes.home}>На головну</a></li>
-  </ul>
-</StubPage>
+  <Section>
+    <h1>Сторінку не знайдено</h1>
+    <p class="cp-lead">Можливо, адресу змінено. Знайдіть товар пошуком або почніть з розділу.</p>
+    <form class="nf-search" role="search" action={routes.search} method="get" data-content-block="search">
+      <label for="nf-q">Пошук по каталогу</label>
+      <div class="nf-search__row">
+        <input id="nf-q" name="q" type="search" placeholder="Назва, артикул, розʼєм" />
+        <button type="submit">Знайти</button>
+      </div>
+    </form>
+    <ul role="list" class="cp-cards" data-content-block="levels">
+      {
+        levelLinks().map((l) => (
+          <li class="cp-card">
+            <h2>
+              <a href={l.url}>{l.name}</a>
+            </h2>
+            <p class="cp-card__muted">{l.short}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <a class="cp-link" href={routes.home}>На головну</a>
+  </Section>
+</BaseLayout>
 
 <style>
-  li a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
+  .nf-search {
+    display: grid;
+    gap: var(--space-3xs);
+    max-width: 32rem;
+    margin-bottom: var(--space-xl);
+  }
+  .nf-search label {
     font-weight: 600;
+  }
+  .nf-search__row {
+    display: flex;
+    gap: var(--space-2xs);
+  }
+  .nf-search input {
+    flex: 1;
+    min-width: 0;
+    min-height: var(--tap);
+    padding: 0 var(--space-xs);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  .nf-search button {
+    min-height: var(--tap);
+    padding: 0 var(--space-m);
+    border: 0;
+    border-radius: var(--radius-m);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    cursor: pointer;
   }
 </style>

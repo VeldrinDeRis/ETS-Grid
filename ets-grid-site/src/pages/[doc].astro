@@ -1,8 +1,12 @@
 ---
-// Документи (оферта, політики, гарантія) — тексти надає замовник (ТЗ §11); шаблон — SPEC-007.
+// Документи (оферта, політики, гарантія) — тексти надає замовник (ТЗ §11); шаблон — SPEC-007 §3.1.
 import type { GetStaticPaths } from 'astro';
-import StubPage from '../layouts/StubPage.astro';
+import Text from '../components/content/Text.astro';
+import Section from '../components/ui/Section.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { structure } from '../lib/catalog';
+import { content } from '../lib/content';
+import '../styles/content.css';
 
 export const getStaticPaths = (() =>
   structure.documents.map((doc) => ({ params: { doc: doc.slug }, props: { doc } }))) satisfies GetStaticPaths;
@@ -11,5 +15,13 @@ interface Props {
   doc: { slug: string; name: string };
 }
 const { doc } = Astro.props;
+const d = content.documents;
 ---
-<StubPage title={doc.name} description={`${doc.name} ETS GRID.`} spec="SPEC-007" note="Текст документа надає замовник." />
+<BaseLayout title={doc.name} description={`${doc.name} ETS GRID.`} crumbs={[{ label: doc.name }]}>
+  <Section width="narrow">
+    <h1>{doc.name}</h1>
+    <p class="cp-card__muted" data-content-block="edition"><Text value={d.edition} /></p>
+    <p>{d.note}</p>
+    <div class="cp-frame" data-content-block="document-body"><Text value={d.body} /></div>
+  </Section>
+</BaseLayout>

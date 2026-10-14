@@ -1,25 +1,29 @@
 ---
-import StubPage from '../../layouts/StubPage.astro';
+// Послуги (SPEC-007 §3.1): 4 картки.
+import Section from '../../components/ui/Section.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 import { structure } from '../../lib/catalog';
+import { content } from '../../lib/content';
 import { routes } from '../../lib/routes';
----
-<StubPage title="Послуги" description="Доставка, монтаж, проєкт і техумови, сервіс і гарантія від ETS GRID." spec="SPEC-007">
-  <ul role="list">
-    {
-      structure.services.map((s) => (
-        <li>
-          <a href={routes.service(s.slug)}>{s.name}</a>
-        </li>
-      ))
-    }
-  </ul>
-</StubPage>
+import '../../styles/content.css';
 
-<style>
-  li a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    font-weight: 600;
-  }
-</style>
+const pages = content.services.pages as Record<string, { short: string }>;
+---
+<BaseLayout title="Послуги" description="Доставка, монтаж, проєкт і техумови, сервіс і гарантія від ETS GRID." crumbs={[{ label: 'Послуги' }]}>
+  <Section>
+    <h1>Послуги</h1>
+    <p class="cp-lead">{content.services.lead}</p>
+    <ul role="list" class="cp-cards" data-content-block="services-list">
+      {
+        structure.services.map((s) => (
+          <li class="cp-card">
+            <h2>
+              <a href={routes.service(s.slug)}>{s.name}</a>
+            </h2>
+            <p>{pages[s.slug].short}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+</BaseLayout>

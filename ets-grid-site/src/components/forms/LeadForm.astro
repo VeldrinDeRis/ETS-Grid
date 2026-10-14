@@ -4,7 +4,7 @@
 import carsJson from '../../data/cars.json';
 import calcJson from '../../data/calc.json';
 import filtersJson from '../../data/filters.json';
-import { getLevels, getProductsBy } from '../../lib/catalog';
+import { getLevels, getProductsBy, getSystems } from '../../lib/catalog';
 import type { Car, FiltersFile } from '../../lib/filters';
 import { LIMITS, type LeadKind } from '../../lib/leads';
 import { priceView } from '../../lib/price';
@@ -37,6 +37,7 @@ const context = {
   cars: Object.fromEntries((carsJson as Car[]).map((c) => [c.id, `${c.brand} ${c.model}`])),
   loads: Object.fromEntries(calcJson.battery.loads.value.map((l) => [l.id, l.label])),
   connectors: Object.fromEntries((Array.isArray(connectorFacet?.values) ? connectorFacet.values : []) as [string, string][]),
+  systems: Object.fromEntries((await getSystems()).map((s) => [s.slug, s.name])),
 };
 
 const objectTypes = [

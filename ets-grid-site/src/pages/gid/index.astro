@@ -1,0 +1,27 @@
+---
+// Гід покупця (SPEC-007 §3.1): список статей. Адреса — рішення SPEC-007 §9 (ревізія 7 SPEC-001).
+import Section from '../../components/ui/Section.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { content } from '../../lib/content';
+import { routes } from '../../lib/routes';
+import '../../styles/content.css';
+
+const g = content.guide;
+---
+<BaseLayout title={g.title} description="Гід покупця ETS GRID: як обрати зарядну станцію, сонячну станцію чи батарею." crumbs={[{ label: g.title }]}>
+  <Section>
+    <h1>{g.title}</h1>
+    <p class="cp-lead">{g.lead}</p>
+    <ul role="list" class="cp-cards" data-content-block="articles">
+      {
+        g.articles.map((a) => (
+          <li class="cp-card">
+            <h2>
+              <a href={routes.guideArticle(a.slug)}>{a.title}</a>
+            </h2>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+</BaseLayout>

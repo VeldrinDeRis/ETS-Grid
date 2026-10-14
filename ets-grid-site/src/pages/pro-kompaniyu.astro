@@ -1,9 +1,46 @@
 ---
-import StubPage from '../layouts/StubPage.astro';
+// Про компанію (SPEC-007 §3.1): «Що робимо» — з ТЗ §1 без цифр; історія, команда, сертифікати — плейсхолдери.
+import Text from '../components/content/Text.astro';
+import Section from '../components/ui/Section.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { content } from '../lib/content';
+import { levelLinks } from '../lib/shop-data';
+import '../styles/content.css';
+
+const a = content.about;
+const levels = levelLinks();
 ---
-<StubPage
+<BaseLayout
   title="Про компанію"
   description="ETS GRID: зарядні станції, сонячна енергія й накопичувачі під ключ. Київ і вся Україна."
-  spec="SPEC-007"
-  note="Факти про компанію надає замовник."
-/>
+  crumbs={[{ label: 'Про компанію' }]}
+>
+  <Section>
+    <h1>Про компанію</h1>
+    <p class="cp-lead">{a.lead}</p>
+    {
+      a.sections.map((s) => (
+        <section class="cp-section" data-content-block={s.levels ? 'what-we-do' : 'section'}>
+          <h2>{s.title}</h2>
+          {s.text && (
+            <p>
+              <Text value={s.text} />
+            </p>
+          )}
+          {s.levels && (
+            <ul role="list" class="cp-cards">
+              {levels.map((l) => (
+                <li class="cp-card">
+                  <h3>
+                    <a href={l.url}>{l.name}</a>
+                  </h3>
+                  <p class="cp-card__muted">{l.short}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      ))
+    }
+  </Section>
+</BaseLayout>

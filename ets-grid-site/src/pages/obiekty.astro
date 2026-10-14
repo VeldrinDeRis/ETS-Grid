@@ -1,23 +1,69 @@
 ---
-// Обʼєкти: тільки реальні обʼєкти ETS GRID (D-005, ТЗ §8.3). До їх появи — плашка.
-import StubPage from '../layouts/StubPage.astro';
+// Обʼєкти (SPEC-007 §3.1): лише реальні обʼєкти ETS GRID (D-005, ТЗ §8.3). До їх появи — плашка
+// і порожній макет картки кейса, щоб було видно, які дані потрібні від замовника (D-031).
+import Text from '../components/content/Text.astro';
+import Section from '../components/ui/Section.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { content } from '../lib/content';
+import '../styles/content.css';
+
+const c = content.cases;
 ---
-<StubPage
+<BaseLayout
   title="Обʼєкти"
   description="Реальні обʼєкти ETS GRID: зарядні станції, СЕС, накопичувачі та Solar Carport."
-  spec="SPEC-007"
+  crumbs={[{ label: 'Обʼєкти' }]}
 >
-  <p class="cases-plate">Тут будуть реальні обʼєкти ETS GRID</p>
-</StubPage>
+  <Section>
+    <h1>Обʼєкти</h1>
+    <p class="cp-plate" data-content-block="plate">{c.plate}</p>
+
+    <section class="case-template" aria-labelledby="case-template-title" data-content-block="case-template">
+      <h2 id="case-template-title">Макет картки обʼєкта</h2>
+      <p class="cp-card__muted">{c.template_note}</p>
+      <article class="cp-card case-card">
+        <div class="cp-frame case-card__photo"><Text value={c.template.photo} /></div>
+        <h3><Text value={c.template.type} /> · <Text value={c.template.city} /></h3>
+        <dl class="case-card__facts">
+          <div>
+            <dt>Що поставили</dt>
+            <dd><Text value={c.template.equipment} /></dd>
+          </div>
+          <div>
+            <dt>Результат</dt>
+            <dd><Text value={c.template.result} /></dd>
+          </div>
+        </dl>
+      </article>
+    </section>
+  </Section>
+</BaseLayout>
 
 <style>
-  .cases-plate {
-    max-width: none;
-    padding: var(--space-xl) var(--space-m);
-    border: 1px dashed var(--color-placeholder);
-    border-radius: var(--radius-l);
-    color: var(--color-placeholder);
-    font-size: var(--step-1);
-    text-align: center;
+  .case-template {
+    margin-top: var(--space-xl);
+  }
+  .case-template h2 {
+    font-size: var(--step-2);
+  }
+  .case-card {
+    max-width: 24rem;
+    margin-top: var(--space-s);
+  }
+  .case-card__photo {
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+  .case-card__facts {
+    display: grid;
+    gap: var(--space-2xs);
+    margin: 0;
+  }
+  .case-card__facts dt {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .case-card__facts dd {
+    margin: 0;
   }
 </style>

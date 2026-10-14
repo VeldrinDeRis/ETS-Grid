@@ -248,6 +248,7 @@
 | 2026-10-14 | Готово: все 23 AC, start.cmd проверен Дмитрием | — |
 | 2026-10-14 | Ревизия 1: коллекция `levels` убрана, уровни — из `structure.json` | `file()` заменяет числовой `id` уровня на строковый, коллекция дублировала `structure.json`; контракт `lib/catalog.ts` не меняется |
 | 2026-10-14 | Ревизия 2: в `routes.ts` добавлена `quoteFor(slug)` → `/kontakty/?product={slug}#rozrakhunok` | нужна карточке SPEC-002 и форме SPEC-009 (D-027 п. 10) |
+| 2026-10-14 | Ревизия 7: `routes.guide` (`/gid/`) и `routes.guideArticle(slug)`; «Гід покупця» в подвале; `StubPage`/`StubNotice`/`ProductStubList` удалены — заглушек больше нет | SPEC-007 §9 (D-036) |
 | 2026-10-14 | Ревизия 6: поле поиска в шапке и в мобильном меню — WAI-ARIA Combobox (`role="combobox"`, `aria-controls` → `role="listbox"`), скрипт `src/scripts/search-suggest.ts` подключён из `header.ts`; без JS форма по-прежнему ведёт на `/poshuk/?q=` | SPEC-005 §3.7 (D-034) |
 | 2026-10-14 | Ревизия 5: ключ `etsgrid:recent:v1` в `KEYS` (недавно просмотренные) | SPEC-005 §3.1, нужен SPEC-003 (D-034) |
 | 2026-10-14 | Ревизия 4: `BaseLayout` подключает `src/scripts/utm.ts` — UTM первого входа в `sessionStorage` `etsgrid:utm` | SPEC-009 §3.3 (D-034) |

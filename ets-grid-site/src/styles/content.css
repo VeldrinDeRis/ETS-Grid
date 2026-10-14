@@ -1,0 +1,126 @@
+/* Контентні сторінки (SPEC-007). Лише токени SPEC-001. */
+.cp-lead {
+  max-width: 44rem;
+  margin: 0 0 var(--space-l);
+  color: var(--color-ink-muted);
+  font-size: var(--step-1);
+}
+.cp-section {
+  max-width: 44rem;
+  margin-bottom: var(--space-l);
+}
+.cp-section h2 {
+  margin: 0 0 var(--space-xs);
+  font-size: var(--step-2);
+}
+.cp-section p {
+  margin: 0 0 var(--space-xs);
+}
+.cp-list {
+  display: grid;
+  gap: var(--space-2xs);
+  margin: 0;
+  padding-left: 1.2em;
+}
+.cp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: var(--space-m);
+  margin-bottom: var(--space-xl);
+}
+.cp-card {
+  display: grid;
+  align-content: start;
+  gap: var(--space-xs);
+  padding: var(--space-m);
+  border-radius: var(--radius-l);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-1);
+}
+.cp-card h2,
+.cp-card h3 {
+  margin: 0;
+  font-size: var(--step-1);
+  line-height: 1.25;
+}
+.cp-card p {
+  margin: 0;
+}
+.cp-card__muted {
+  color: var(--color-ink-muted);
+  font-size: var(--step--1);
+}
+.cp-card__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2xs);
+  font-weight: 700;
+}
+.cp-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  font-weight: 600;
+}
+.cp-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  padding: 0 var(--space-l);
+  border-radius: var(--radius-m);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+.cp-cta--outline {
+  border: 2px solid currentColor;
+  background: transparent;
+  color: var(--color-ink);
+}
+.cp-frame {
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+  border: 1px dashed var(--color-placeholder);
+  border-radius: var(--radius-l);
+  color: var(--color-placeholder);
+}
+.cp-plate {
+  padding: var(--space-xl) var(--space-m);
+  border: 1px dashed var(--color-placeholder);
+  border-radius: var(--radius-l);
+  color: var(--color-placeholder);
+  font-size: var(--step-1);
+  text-align: center;
+}
+.cp-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-bottom: var(--space-l);
+}
+.cp-table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+}
+.cp-table th,
+.cp-table td {
+  padding: var(--space-xs) var(--space-s);
+  border-bottom: 1px solid var(--color-line);
+  text-align: left;
+  vertical-align: top;
+}
+.cp-table thead th {
+  color: var(--color-ink-muted);
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+.cp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+  margin-block: var(--space-l);
+}
