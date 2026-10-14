@@ -22,15 +22,21 @@
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.64.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "linkedom": "^0.18.13",
     "typescript": "^6.0.3",
     "vitest": "^5.0.4"
   },
   "dependencies": {
     "@astrojs/preact": "^6.0.6",
+    "@astrojs/react": "^7.0.1",
     "@astrojs/sitemap": "^3.7.4",
+    "@motionplus/core": "^4.1.0",
     "astro": "^7.3.8",
     "motion": "^14.2.0",
-    "preact": "^10.29.8"
+    "preact": "^10.29.8",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }

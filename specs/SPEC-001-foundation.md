@@ -139,7 +139,7 @@
 - `formatUnit(n, unit)` — число + U+00A0 + единица. Единицы пишутся строго: `кВт`, `кВт·год` (средняя точка U+00B7), `Вт`, `kWp`, `В`, `м²`, `год`.
 
 ### 3.9. Сборка, показ, конфигурация
-- `astro.config.mjs`: `output: 'static'`, `site: 'https://ets-grid.test'` (заведомо несуществующий домен, пока заказчик не назовёт свой, Q-7), `trailingSlash: 'always'`, интеграции `preact()` и `sitemap()`. Файл `src/fetch.ts` не создаём: имя зарезервировано в Astro 7.
+- `astro.config.mjs`: `output: 'static'`, `site: 'https://ets-grid.test'` (заведомо несуществующий домен, пока заказчик не назовёт свой, Q-7), `trailingSlash: 'always'`, интеграции `preact()` и `sitemap()`; с D-044 — ещё `react()` только для островов Motion+ в `src/islands/react/` (Preact — `include: src/islands/**`, `exclude: src/islands/react/**`). Файл `src/fetch.ts` не создаём: имя зарезервировано в Astro 7.
 - **Переходы между страницами:** CSS `@view-transition { navigation: auto; }`, без `<ClientRouter />` — ноль JS, прогрессивное улучшение (ТЗ §8.5), выключено при reduced-motion.
 - **Показ (D-019):** `npm run release` собирает `releases/ets-grid-site-ГГГГ-ММ-ДД.zip`:
   - `site/` — `dist/`, `serve.mjs` (статический сервер на Node без зависимостей: отдаёт `index.html` для адресов со `/`, `404.html` для неизвестных) и `start.cmd` (запускает сервер и открывает браузер);
@@ -253,3 +253,4 @@
 | 2026-10-14 | Ревизия 5: ключ `etsgrid:recent:v1` в `KEYS` (недавно просмотренные) | SPEC-005 §3.1, нужен SPEC-003 (D-034) |
 | 2026-10-14 | Ревизия 4: `BaseLayout` подключает `src/scripts/utm.ts` — UTM первого входа в `sessionStorage` `etsgrid:utm` | SPEC-009 §3.3 (D-034) |
 | 2026-10-14 | Ревизия 3: в `routes.ts` добавлена `quoteWith(params)` → `/kontakty/?picker=…#rozrakhunok` | CTA подборщиков SPEC-004 (D-029 п. 5) |
+| 2026-10-14 | Ревизия 8: интеграция `react()` рядом с `preact()` — React только для островов Motion+ в `src/islands/react/`; зависимость `@motionplus/core` из закрытого реестра (`.npmrc`, `MOTION_TOKEN`) | D-043, D-044 |

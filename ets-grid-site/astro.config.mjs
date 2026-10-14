@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import preact from '@astrojs/preact';
+import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
 // Службові сторінки не йдуть у sitemap (SPEC-008 §3.3); список дублює NOINDEX_PATHS із src/lib/seo.ts — тест звіряє.
@@ -16,5 +17,10 @@ export default defineConfig({
     // CSS — у HTML: без блокуючих запитів на першому екрані (SPEC-010 AC-10, трасування mobile).
     inlineStylesheets: 'always',
   },
-  integrations: [preact(), sitemap({ filter: (page) => !NOINDEX.some((p) => new URL(page).pathname === p) && !page.includes('404') })],
+  // Острови — Preact; React — лише для островів Motion+ у src/islands/react/ (D-044), файли з прагмою @jsxImportSource react.
+  integrations: [
+    preact({ include: ['**/src/islands/**/*.{ts,tsx}'], exclude: ['**/src/islands/react/**'] }),
+    react({ include: ['**/src/islands/react/**/*.{ts,tsx}'] }),
+    sitemap({ filter: (page) => !NOINDEX.some((p) => new URL(page).pathname === p) && !page.includes('404') }),
+  ],
 });
