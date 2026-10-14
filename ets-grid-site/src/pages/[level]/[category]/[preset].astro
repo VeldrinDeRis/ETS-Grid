@@ -1,0 +1,35 @@
+---
+// ЧПУ-сторінки фільтрів (SPEC-002 §3.4, 03 §1): лістинг категорії з передвстановленим фільтром.
+// У HTML — лише товари, що відповідають пресету: так сторінку бачать пошуковик і браузер без JS.
+import type { GetStaticPaths } from 'astro';
+import carsJson from '../../../data/cars.json';
+import filtersJson from '../../../data/filters.json';
+import ListingPage from '../../../components/catalog/ListingPage.astro';
+import { getCategory, getLevel, getProductsBy } from '../../../lib/catalog';
+import { applyFilters, resolveFacets, type Car, type FilterPreset, type FiltersFile } from '../../../lib/filters';
+import type { Category, Product, StructureLevel } from '../../../lib/schema';
+
+export const getStaticPaths = (async () => {
+  const filters = filtersJson as unknown as FiltersFile;
+  const paths = [];
+  for (const preset of filters.presets) {
+    const level = getLevel(preset.level);
+    const category = getCategory(preset.level, preset.category)!;
+    const all = await getProductsBy({ level: preset.level, category: preset.category });
+    const ctx = { cars: carsJson as Car[] };
+    const facets = resolveFacets(filters.levels[preset.level], all, ctx);
+    const products = applyFilters(all, { filters: preset.filters, sort: null }, facets, ctx);
+    paths.push({ params: { level: level.slug, category: category.slug, preset: preset.slug }, props: { level, category, products, preset } });
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+interface Props {
+  level: StructureLevel;
+  category: Category;
+  products: Product[];
+  preset: FilterPreset;
+}
+const { level, category, products, preset } = Astro.props;
+---
+<ListingPage level={level} category={category} products={products} preset={preset} />

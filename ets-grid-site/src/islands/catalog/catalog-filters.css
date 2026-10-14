@@ -1,0 +1,318 @@
+/* Острів фільтрів (SPEC-002). Тільки токени. */
+
+.cf-vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.cf-primary {
+  display: flex;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-m);
+  overflow-x: auto;
+  padding-bottom: var(--space-3xs);
+  scrollbar-width: thin;
+}
+
+.cf-chip,
+.cf-option,
+.cf-selected__chip,
+.cf-reset,
+.cf-open,
+.cf-show,
+.cf-sheet__close {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: var(--tap);
+  padding: 0 var(--space-s);
+  border: 1px solid var(--color-ink-muted);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.cf-chip {
+  flex: none;
+  font-weight: 600;
+}
+
+/* Приховані підписи всередині кнопок не мають виходити за стрічку чипів і розтягувати сторінку. */
+.cf-chip,
+.cf-option,
+.cf-selected__chip {
+  position: relative;
+}
+
+.cf-chip[aria-pressed='true'],
+.cf-option[aria-pressed='true'] {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+.cf-chip[aria-disabled='true'],
+.cf-option[aria-disabled='true'] {
+  border-style: dashed;
+  color: var(--color-ink-muted);
+  cursor: not-allowed;
+}
+
+.cf-option__count {
+  min-width: 1.4em;
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.cf-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-l);
+}
+
+@media (min-width: 960px) {
+  .cf-layout {
+    grid-template-columns: 18.5rem minmax(0, 1fr);
+  }
+  .cf-open {
+    display: none;
+  }
+}
+
+@media (max-width: 959.98px) {
+  .cf-sidebar {
+    display: none;
+  }
+}
+
+.cf-sidebar {
+  align-self: start;
+}
+
+.cf-facet {
+  padding-block: var(--space-xs);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.cf-facet summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cf-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  padding-block: var(--space-2xs);
+}
+
+.cf-option {
+  border-radius: var(--radius-m);
+  font-size: var(--step--1);
+}
+
+.cf-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3xs);
+  font-size: var(--step--1);
+  color: var(--color-ink-muted);
+}
+
+.cf-field select,
+.cf-field input[type='number'],
+.cf-sort select {
+  min-height: var(--tap);
+  padding: 0 var(--space-xs);
+  border: 1px solid var(--color-ink-muted);
+  border-radius: var(--radius-m);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--step-0);
+}
+
+.cf-interval {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xs);
+  padding-block: var(--space-2xs);
+}
+
+.cf-field--range {
+  grid-column: 1 / -1;
+}
+
+.cf-field--range input {
+  width: 100%;
+  min-height: var(--tap);
+  accent-color: var(--color-ink);
+}
+
+.cf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-s);
+  margin-bottom: var(--space-s);
+}
+
+.cf-total {
+  margin: 0 auto 0 0;
+}
+
+.cf-sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--step--1);
+  color: var(--color-ink-muted);
+}
+
+.cf-selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-m);
+}
+
+.cf-selected__chip {
+  border-color: var(--color-ink);
+  font-size: var(--step--1);
+}
+
+.cf-reset {
+  border-color: transparent;
+  background: transparent;
+  text-decoration: underline;
+  font-size: var(--step--1);
+}
+
+.cf-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-m);
+}
+
+.cf-results > [hidden] {
+  display: none;
+}
+
+.cf-empty {
+  margin-top: var(--space-l);
+  padding: var(--space-l);
+  border: 1px dashed var(--color-ink-muted);
+  border-radius: var(--radius-l);
+}
+
+.cf-empty__title {
+  font-size: var(--step-1);
+}
+
+.cf-empty__lead {
+  margin: var(--space-m) 0 var(--space-2xs);
+  color: var(--color-ink-muted);
+}
+
+.cf-empty__list {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.cf-empty__list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2xs);
+}
+
+.cf-empty__list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  font-weight: 600;
+}
+
+.cf-empty__form {
+  margin: var(--space-m) 0 0;
+  color: var(--color-placeholder);
+}
+
+/* --- нижня шторка (mobile) --- */
+.cf-sheet {
+  width: 100%;
+  max-width: 40rem;
+  max-height: 88vh;
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-l) var(--radius-l) 0 0;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.cf-sheet::backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+.cf-sheet[open] {
+  display: flex;
+  flex-direction: column;
+  animation: cf-sheet-in var(--dur) var(--ease-out);
+}
+
+@keyframes cf-sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+.cf-sheet__head,
+.cf-sheet__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-s);
+  padding: var(--space-s) var(--gutter);
+}
+
+.cf-sheet__head {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.cf-sheet__head h2 {
+  margin: 0;
+  font-size: var(--step-1);
+}
+
+.cf-sheet__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 var(--gutter);
+}
+
+.cf-sheet__foot {
+  border-top: 1px solid var(--color-line);
+}
+
+.cf-show {
+  flex: 1;
+  justify-content: center;
+  border-color: var(--color-accent);
+  border-radius: var(--radius-m);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-weight: 700;
+}

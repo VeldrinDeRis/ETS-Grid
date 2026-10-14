@@ -1,0 +1,61 @@
+---
+// Каталог з фільтрами (SPEC-002 §3.4, §3.7): серверні картки + острів фільтрів.
+// Порожній набір товарів — серверний екран порожньої видачі.
+import carsJson from '../../data/cars.json';
+import filtersJson from '../../data/filters.json';
+import CatalogFilters from '../../islands/catalog/CatalogFilters';
+import { getLevelById, getProductsBy } from '../../lib/catalog';
+import { intervalBounds, resolveFacets, visibleFacets, type Car, type FiltersFile } from '../../lib/filters';
+import { priceView } from '../../lib/price';
+import { routes } from '../../lib/routes';
+import type { Product } from '../../lib/schema';
+import EmptyState from './EmptyState.astro';
+import ProductCard from './ProductCard.astro';
+
+interface Props {
+  products: Product[];
+  levelId: number;
+  preset?: { filters: Record<string, string[]>; categoryUrl: string };
+  /** Рівень заголовка карток. */
+  headingLevel?: 2 | 3;
+}
+const { products, levelId, preset, headingLevel = 3 } = Astro.props;
+
+const filters = filtersJson as unknown as FiltersFile;
+const level = getLevelById(levelId);
+const config = filters.levels[level.key];
+const cars = level.key === 'charging' ? (carsJson as Car[]) : undefined;
+const ctx = { cars };
+const facets = visibleFacets(products, resolveFacets(config, products, ctx), ctx);
+const bounds = Object.fromEntries(
+  facets
+    .filter((f) => f.kind === 'interval')
+    .map((f) => [f.key, intervalBounds(products, f)])
+    .filter(([, b]) => b !== null),
+);
+const pool = await getProductsBy({ level: level.key });
+const poolInfo = Object.fromEntries(
+  pool.map((p) => [p.slug, { slug: p.slug, name: p.name, url: routes.product(p.slug), price: priceView(p).primary }]),
+);
+---
+{
+  products.length === 0 ? (
+    <EmptyState levelId={levelId} />
+  ) : (
+    <CatalogFilters
+      client:visible
+      facets={facets}
+      products={products}
+      pool={pool}
+      poolInfo={poolInfo}
+      bounds={bounds}
+      cars={cars}
+      levelId={levelId}
+      preset={preset}
+    >
+      {products.map((p) => (
+        <ProductCard product={p} headingLevel={headingLevel} />
+      ))}
+    </CatalogFilters>
+  )
+}

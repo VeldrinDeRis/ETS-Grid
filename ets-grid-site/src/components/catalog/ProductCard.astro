@@ -1,0 +1,227 @@
+---
+// Картка товару в лістингу (SPEC-002 §3.5). Використовують також SPEC-003 і SPEC-006.
+import { getLevelById } from '../../lib/catalog';
+import { cardBadge, keyChars } from '../../lib/filters';
+import { productImage } from '../../lib/images';
+import { routes } from '../../lib/routes';
+import type { Product } from '../../lib/schema';
+import Price from '../ui/Price.astro';
+
+interface Props {
+  product: Product;
+  variant?: 'listing' | 'compact';
+  headingLevel?: 2 | 3 | 4;
+}
+const { product, variant = 'listing', headingLevel = 3 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
+const image = productImage(product);
+const badge = cardBadge(product);
+const chars = variant === 'listing' ? keyChars(product) : [];
+const level = getLevelById(product.level);
+const inStock = product.stock === 'in_stock';
+---
+<article class:list={['product-card', `product-card--${variant}`]} data-product-card data-slug={product.slug}>
+  <div class="product-card__photo">
+    {
+      image ? (
+        <img src={image.src} alt={image.alt} width="400" height="400" loading="lazy" decoding="async" />
+      ) : (
+        <span class="product-card__photo-label" aria-hidden="true">{level.name}</span>
+      )
+    }
+    {badge && <span class="product-card__badge">{badge}</span>}
+  </div>
+
+  <div class="product-card__body">
+    <Heading class="product-card__title">
+      <a href={routes.product(product.slug)}>{product.name}</a>
+    </Heading>
+
+    {
+      chars.length > 0 && (
+        <ul role="list" class="product-card__chars">
+          {chars.map((c) => (
+            <li>{c}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    <Price product={product} />
+
+    <p class:list={['product-card__stock', inStock ? 'is-in-stock' : 'is-preorder']}>
+      <span class="product-card__led" aria-hidden="true"></span>
+      {inStock ? 'В наявності' : `Під замовлення · ${product.delivery_days} дн.`}
+    </p>
+
+    <div class="product-card__actions">
+      {
+        product.sale_mode === 'cart' ? (
+          <button type="button" class="product-card__cta js-only" data-add-to-cart={product.slug}>
+            До кошика
+          </button>
+        ) : (
+          <a class="product-card__cta product-card__cta--quote" href={routes.quoteFor(product.slug)}>
+            Розрахувати<span class="visually-hidden">: {product.name}</span>
+          </a>
+        )
+      }
+      {
+        variant === 'listing' && (
+          <button type="button" class="product-card__compare js-only" data-compare={product.slug} aria-pressed="false">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+              <path d="M8 4v16M16 4v16M4 8h8M12 16h8" />
+            </svg>
+            <span class="visually-hidden">Порівняти: {product.name}</span>
+          </button>
+        )
+      }
+    </div>
+    <p class="product-card__status visually-hidden" role="status" data-card-status></p>
+  </div>
+</article>
+
+<script>
+  import '../../scripts/card-actions';
+</script>
+
+<style>
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+    overflow: hidden;
+  }
+  .product-card__photo {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    background: var(--day-bg);
+    color: var(--day-ink-muted);
+  }
+  .product-card--compact .product-card__photo {
+    aspect-ratio: 4 / 3;
+  }
+  .product-card__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .product-card__photo-label {
+    font-size: var(--step--1);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .product-card__badge {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    padding: 0.15em 0.6em;
+    border-radius: 999px;
+    background: var(--day-surface);
+    color: var(--day-ink);
+    font-size: var(--step--1);
+    font-weight: 600;
+    box-shadow: var(--shadow-1);
+  }
+  .product-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-m);
+  }
+  .product-card__title {
+    margin: 0;
+    font-size: var(--step-1);
+    line-height: 1.25;
+  }
+  .product-card__title a {
+    text-decoration: none;
+  }
+  .product-card__title a:hover {
+    text-decoration: underline;
+  }
+  .product-card__chars {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+  .product-card__chars li {
+    padding: 0.1em 0.55em;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-s);
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  .product-card__stock {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin: 0;
+    font-size: var(--step--1);
+  }
+  .product-card__led {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .is-in-stock {
+    color: var(--color-status-ok);
+  }
+  .is-preorder {
+    color: var(--color-status-wait);
+  }
+  .product-card__actions {
+    display: flex;
+    gap: var(--space-2xs);
+    margin-top: auto;
+    padding-top: var(--space-2xs);
+  }
+  .product-card__cta {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap);
+    padding: 0 var(--space-s);
+    border: 2px solid var(--color-ink);
+    border-radius: var(--radius-m);
+    background: transparent;
+    color: var(--color-ink);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .product-card__cta:hover {
+    background: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  }
+  .product-card__compare {
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    min-height: var(--tap);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  .product-card__compare[aria-pressed='true'] {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>

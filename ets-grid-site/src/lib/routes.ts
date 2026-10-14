@@ -21,4 +21,8 @@ export const routes = {
   contacts: '/kontakty/',
   /** Форма розрахунку; остаточну адресу задасть SPEC-009. */
   quote: '/kontakty/#rozrakhunok',
+  /** Форма розрахунку з товаром (SPEC-001 ревізія 2): SPEC-009 читає ?product. */
+  quoteFor: (slug: string) => `/kontakty/?product=${encodeURIComponent(slug)}#rozrakhunok`,
+  /** ЧПУ-сторінка фільтра (SPEC-002 §3.4). */
+  preset: (levelSlug: string, categorySlug: string, presetSlug: string) => `/${levelSlug}/${categorySlug}/${presetSlug}/`,
 } as const;

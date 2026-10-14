@@ -36,11 +36,16 @@ function pageJsGz(p: ReturnType<typeof pages>[number]): number {
   return total;
 }
 
-const isListing = (url: string) => url.split('/').filter(Boolean).length === 2 && !url.startsWith('/product/');
+/** Сторінки каталогу (рівень, лістинг, ЧПУ) мають бюджет 150 КБ — на них острів фільтрів (SPEC-002 AC-18). */
+const isCatalogPage = (p: ReturnType<typeof pages>[number]) => p.html.includes('CatalogFilters');
 
-describe('SPEC-001/AC-20 бюджети JS і шрифтів', () => {
-  test.each(pages().map((p) => [p.url, p] as const))('%s: JS ≤ 100/150 КБ gz', (url, p) => {
-    expect(pageJsGz(p)).toBeLessThanOrEqual(isListing(url) ? CATALOG_LIMIT : CONTENT_LIMIT);
+describe('SPEC-001/AC-20, SPEC-002/AC-18 бюджети JS і шрифтів', () => {
+  test.each(pages().map((p) => [p.url, p] as const))('%s: JS ≤ 100/150 КБ gz', (_url, p) => {
+    expect(pageJsGz(p)).toBeLessThanOrEqual(isCatalogPage(p) ? CATALOG_LIMIT : CONTENT_LIMIT);
+  });
+
+  test('острів фільтрів є на сторінках каталогу', () => {
+    expect(pages().filter(isCatalogPage).length).toBeGreaterThanOrEqual(20);
   });
 
   test('файлів шрифтів ≤ 2 (до раунду дизайну — 0)', () => {

@@ -1,0 +1,110 @@
+---
+// «Як обрати», перехресні рівні та FAQ сторінки рівня (SPEC-002 §3.4 п. 5–7).
+import { getLevel } from '../../lib/catalog';
+import type { LevelText } from '../../lib/level-content';
+import { routes } from '../../lib/routes';
+
+interface Props {
+  part: 'guide' | 'cross' | 'faq';
+  text: LevelText;
+  levelName: string;
+}
+const { part, text, levelName } = Astro.props;
+---
+{
+  part === 'guide' && (
+    <div class="guide">
+      <h2>Як обрати: {levelName.toLowerCase()}</h2>
+      <ol class="guide__list">
+        {text.how_to_choose.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+{
+  part === 'cross' && (
+    <div class="cross">
+      <h2>Разом працює краще</h2>
+      <ul role="list" class="cross__list">
+        {text.cross.map((c) => {
+          const level = getLevel(c.level);
+          return (
+            <li>
+              <a href={routes.level(level.slug)} class="cross__item">
+                <span class="cross__name">{level.name}</span>
+                <span class="cross__text">{c.text}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  )
+}
+{
+  part === 'faq' && (
+    <div class="faq">
+      <h2>Питання й відповіді</h2>
+      {text.faq.map((item) => (
+        <details class="faq__item">
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .guide__list {
+    display: grid;
+    gap: var(--space-s);
+    max-width: 52rem;
+    padding-left: 1.4em;
+  }
+  .guide__list li::marker {
+    font-weight: 700;
+  }
+  .cross__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-s);
+  }
+  .cross__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    height: 100%;
+    padding: var(--space-m);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    text-decoration: none;
+  }
+  .cross__name {
+    font-weight: 700;
+  }
+  .cross__item:hover .cross__name {
+    text-decoration: underline;
+  }
+  .cross__text {
+    color: var(--color-ink-muted);
+  }
+  .faq {
+    max-width: 52rem;
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    min-height: 3.25rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .faq__item p {
+    padding-bottom: var(--space-s);
+  }
+</style>

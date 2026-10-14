@@ -1,0 +1,61 @@
+---
+// Міні-герой рівня (SPEC-002 §3.4 п. 1). Фото — після Q-6, до того — видимий плейсхолдер.
+import Placeholder from '../ui/Placeholder.astro';
+
+interface Props {
+  title: string;
+  value: string;
+  pickerHref: string;
+}
+const { title, value, pickerHref } = Astro.props;
+---
+<div class="level-hero">
+  <div class="level-hero__text">
+    <h1>{title}</h1>
+    <p class="level-hero__value">{value}</p>
+    <a class="level-hero__cta" href={pickerHref}>Підібрати за 3 питання</a>
+  </div>
+  <div class="level-hero__photo" aria-hidden="true">
+    <Placeholder label="[ФОТО]" />
+  </div>
+</div>
+
+<style>
+  .level-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: var(--space-xl);
+    align-items: center;
+  }
+  .level-hero__value {
+    font-size: var(--step-1);
+    color: var(--color-ink-muted);
+  }
+  .level-hero__cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--space-l);
+    border-radius: var(--radius-m);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .level-hero__photo {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+  @media (max-width: 959.98px) {
+    .level-hero {
+      grid-template-columns: 1fr;
+      gap: var(--space-m);
+    }
+    .level-hero__photo {
+      aspect-ratio: 16 / 9;
+    }
+  }
+</style>

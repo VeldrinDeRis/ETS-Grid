@@ -55,7 +55,7 @@ export const carSchema = z.object({
   dc_connector: z.enum(['ccs2', 'gbt_dc', 'chademo']).nullable(),
   ac_max_kw: z.number().positive().nullable(),
   dc_max_kw: z.number().positive().nullable(),
-  source: z.string().url(),
+  source: z.url({ protocol: /^https$/ }),
 });
 
 export type FacetConfig = z.infer<typeof facetSchema>;

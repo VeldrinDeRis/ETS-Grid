@@ -1,0 +1,60 @@
+---
+// «Популярні добірки»: посилання на ЧПУ-сторінки категорії (SPEC-002 §4). Видно з JS і без.
+import filtersJson from '../../data/filters.json';
+import type { FiltersFile } from '../../lib/filters';
+import { routes } from '../../lib/routes';
+import type { LevelKey } from '../../lib/schema';
+
+interface Props {
+  level: LevelKey;
+  levelSlug: string;
+  category: string;
+  current?: string;
+}
+const { level, levelSlug, category, current } = Astro.props;
+const presets = (filtersJson as unknown as FiltersFile).presets.filter((p) => p.level === level && p.category === category);
+---
+{
+  presets.length > 0 && (
+    <nav class="presets" aria-label="Популярні добірки">
+      <span class="presets__label">Популярні добірки:</span>
+      <ul role="list" class="presets__list">
+        {presets.map((p) => (
+          <li>
+            <a href={routes.preset(levelSlug, category, p.slug)} aria-current={p.slug === current ? 'page' : undefined}>
+              {p.h1}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .presets {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs) var(--space-s);
+    margin-bottom: var(--space-m);
+    font-size: var(--step--1);
+  }
+  .presets__label {
+    color: var(--color-ink-muted);
+  }
+  .presets__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-s);
+  }
+  .presets a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+  .presets a[aria-current='page'] {
+    font-weight: 700;
+    text-decoration: none;
+  }
+</style>

@@ -1,14 +1,15 @@
 import { describe, expect, test } from 'vitest';
 import catalog from '../../src/data/catalog.json';
-import cars from '../../src/data/cars.json';
+import carsJson from '../../src/data/cars.json';
 import filtersJson from '../../src/data/filters.json';
 import levelContent from '../../src/data/level-content.json';
 import structure from '../../src/data/structure.json';
-import { applyFilters, carSchema, filtersFileSchema, resolveFacets, type FiltersFile } from '../../src/lib/filters';
+import { applyFilters, carSchema, filtersFileSchema, resolveFacets, type Car, type FiltersFile } from '../../src/lib/filters';
 import { levelContentSchema } from '../../src/lib/level-content';
 import type { Product } from '../../src/lib/schema';
 
 const filters = filtersJson as unknown as FiltersFile;
+const cars = carsJson as Car[];
 const products = catalog.products.map((p) => ({ docs: [], related: [], ...p })) as unknown as Product[];
 const levelId = new Map(structure.levels.map((l) => [l.key, l.id]));
 

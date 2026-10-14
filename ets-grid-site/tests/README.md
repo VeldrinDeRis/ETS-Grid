@@ -62,3 +62,31 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-001/AC-22 zip для заказчика | build + вручную | `build/release.test.ts` | ✅ автотест; ⏳ двойной клик по `start.cmd` |
 | SPEC-001/AC-23 команды | вручную | — | ✅ |
 | `@smoke` главная → уровень → листинг → товар → кошик | functional | `functional/foundation.spec.ts` | ✅ |
+| SPEC-002/AC-01 состояние в URL | unit | `unit/filters.test.ts` | ✅ |
+| SPEC-002/AC-02 applyFilters | unit | `unit/filters.test.ts` | ✅ |
+| SPEC-002/AC-03 facetCounts | unit | `unit/filters.test.ts` | ✅ |
+| SPEC-002/AC-04 visibleFacets | unit | `unit/filters.test.ts` | ✅ |
+| SPEC-002/AC-05 сортировка | unit | `unit/filters.test.ts` | ✅ |
+| SPEC-002/AC-06 nearestProducts | unit | `unit/filters.test.ts` | ✅ |
+| SPEC-002/AC-07 plural | unit | `unit/plural.test.ts` | ✅ |
+| SPEC-002/AC-08 скорость 500 SKU | unit | `unit/filters-perf.test.ts` | ✅ |
+| SPEC-002/AC-09 cart.add, compare.toggle | unit | `unit/cart-compare.test.ts` | ✅ |
+| SPEC-002/AC-10 filters.json | data | `data/catalog-filters.test.ts` | ✅ |
+| SPEC-002/AC-11 ЧПУ непустые | data | `data/catalog-filters.test.ts` | ✅ |
+| SPEC-002/AC-12 cars.json с источниками | data | `data/catalog-filters.test.ts` | ✅ |
+| SPEC-002/AC-13 тексты уровней | data + вручную | `data/catalog-filters.test.ts` | ✅ |
+| SPEC-002/AC-14 товары и цены без JS | build | `build/catalog.test.ts` | ✅ |
+| SPEC-002/AC-15 страница уровня | build | `build/catalog.test.ts` | ✅ |
+| SPEC-002/AC-16 карточка | unit, build | `unit/card.test.ts`, `build/catalog.test.ts` | ✅ |
+| SPEC-002/AC-17 пустая категория | build | `build/catalog.test.ts` | ✅ |
+| SPEC-002/AC-18 JS ≤ 150 КБ | build | `build/budget.test.ts` | ✅ |
+| SPEC-002/AC-19 выбор значения | functional | `functional/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-20 снятие фильтров | functional | `functional/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-21 состояние из URL | functional | `functional/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-22 сортировка | functional | `functional/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-23 перебор главного фильтра | functional | `functional/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-24 шторка | functional | `functional/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-25 корзина и сравнение | functional | `functional/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-26 события аналитики | functional | `functional/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-27 axe-core | a11y | `a11y/catalog.spec.ts` | ✅ |
+| SPEC-002/AC-28 клавиатура | a11y | `a11y/catalog.spec.ts` | ✅ |

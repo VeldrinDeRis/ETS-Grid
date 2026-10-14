@@ -1,11 +1,16 @@
 ---
-// Сторінка рівня — заглушка; наповнює SPEC-002. Solar Carport має власну сторінку (SPEC-004).
+// Сторінка рівня (SPEC-002 §3.4, ТЗ §6.2). Solar Carport — окрема сторінка (SPEC-004).
 import type { GetStaticPaths } from 'astro';
+import levelContentJson from '../../data/level-content.json';
+import Catalog from '../../components/catalog/Catalog.astro';
+import CategoryTiles from '../../components/catalog/CategoryTiles.astro';
+import LevelGuide from '../../components/catalog/LevelGuide.astro';
+import LevelHero from '../../components/catalog/LevelHero.astro';
 import StubNotice from '../../components/layout/StubNotice.astro';
 import Section from '../../components/ui/Section.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCategories, getLevels } from '../../lib/catalog';
-import { routes } from '../../lib/routes';
+import { getCategories, getLevels, getProductsBy } from '../../lib/catalog';
+import type { LevelContent } from '../../lib/level-content';
 import type { StructureLevel } from '../../lib/schema';
 
 export const getStaticPaths = (() =>
@@ -17,45 +22,56 @@ interface Props {
   level: StructureLevel;
 }
 const { level } = Astro.props;
+const text = (levelContentJson as LevelContent)[level.key as keyof LevelContent];
 const categories = getCategories(level.key);
+const products = await getProductsBy({ level: level.key });
 ---
-<BaseLayout title={level.name} description={`${level.name}: ${level.short}. Підбір, доставка й монтаж.`} crumbs={[{ label: level.name }]}>
+<BaseLayout title={level.name} description={`${level.name}: ${text.value}`} crumbs={[{ label: level.name }]}>
   <Section>
-    <h1>{level.name}</h1>
-    <p>{level.short}</p>
-    <StubNotice spec="SPEC-002" note="Тут будуть міні-герой рівня, підбірник, каталог з фільтрами, «Як обрати» і FAQ (ТЗ §6.2)." />
-    <ul role="list" class="categories">
-      {
-        categories.map((c) => (
-          <li>
-            <a href={routes.category(level.slug, c.slug)}>{c.name}</a>
-            {c.hint && <span>{c.hint}</span>}
-          </li>
-        ))
-      }
-    </ul>
+    <div data-level-block="hero">
+      <LevelHero title={level.name} value={text.value} pickerHref="#pidbir" />
+    </div>
+  </Section>
+
+  <Section label="Розділи">
+    <div data-level-block="tiles">
+      <h2>Розділи</h2>
+      <CategoryTiles levelSlug={level.slug} categories={categories} products={products} />
+    </div>
+  </Section>
+
+  <Section id="pidbir" label="Підбір за 3 питання" surface="night">
+    <div data-level-block="picker">
+      <h2>Підбір за 3 питання</h2>
+      <StubNotice spec="SPEC-004" note="Тут буде підбірник рівня: 3 питання і рекомендація на цьому ж екрані." />
+    </div>
+  </Section>
+
+  <Section label="Каталог">
+    <div data-level-block="catalog">
+      <h2>Каталог: {level.name.toLowerCase()}</h2>
+      <Catalog products={products} levelId={level.id} />
+    </div>
+  </Section>
+
+  <Section>
+    <div data-level-block="guide">
+      <LevelGuide part="guide" text={text} levelName={level.name} />
+    </div>
+  </Section>
+
+  <Section>
+    <div data-level-block="cross">
+      <LevelGuide part="cross" text={text} levelName={level.name} />
+    </div>
+  </Section>
+
+  <Section>
+    <div data-level-block="faq">
+      <LevelGuide part="faq" text={text} levelName={level.name} />
+    </div>
+    <div data-level-block="form">
+      <StubNotice spec="SPEC-009" note="Тут буде форма заявки." />
+    </div>
   </Section>
 </BaseLayout>
-
-<style>
-  .categories {
-    display: grid;
-    gap: var(--space-2xs);
-  }
-  .categories li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2xs);
-  }
-  .categories a {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    font-weight: 600;
-  }
-  .categories span {
-    color: var(--color-ink-muted);
-    font-size: var(--step--1);
-  }
-</style>
