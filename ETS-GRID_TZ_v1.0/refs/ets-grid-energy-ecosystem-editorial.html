@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="ETS GRID — зарядная и солнечная инфраструктура нового поколения">
+<title>ETS GRID — Energy Infrastructure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#11110f;--paper:#ecebe4;--signal:#ff4d00;--silver:#b7b9b5;--line:rgba(236,235,228,.24);--ease:cubic-bezier(.76,0,.24,1)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--ink)}
+body{margin:0;background:var(--ink);color:var(--paper);font-family:"Instrument Sans",Arial,sans-serif;overflow-x:hidden}
+body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E")}
+button,a{font:inherit}
+a{color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--signal);outline-offset:4px}
+.shell{width:min(100% - 48px,1440px);margin-inline:auto}
+.site-head{position:fixed;z-index:50;top:0;left:0;right:0;height:86px;border-bottom:1px solid var(--line);mix-blend-mode:difference;color:#fff}
+.site-head .shell{height:100%;display:grid;grid-template-columns:220px 1fr auto;align-items:center;gap:24px}
+.logo{font-size:17px;font-weight:700;letter-spacing:-.04em;text-decoration:none}.logo span{color:var(--signal)}
+.menu{display:flex;justify-content:center;gap:30px}
+.menu button,.menu a{position:relative;border:0;background:none;color:inherit;text-decoration:none;padding:12px 0;font-size:13px}
+.menu button::after{content:"";position:absolute;left:0;right:100%;bottom:7px;height:1px;background:currentColor;transition:right .5s var(--ease)}
+.menu button:hover::after,.menu button[aria-current=true]::after{right:0}
+.head-cta{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:13px}.head-cta i{width:8px;height:8px;background:var(--signal);border-radius:50%;animation:blink 1.8s infinite}
+@keyframes blink{50%{opacity:.25}}
+.transition{position:fixed;z-index:80;inset:0;background:var(--signal);transform:translateY(101%);pointer-events:none}
+.transition.run{animation:wipe 1.15s var(--ease)}
+@keyframes wipe{0%{transform:translateY(101%)}45%,55%{transform:translateY(0)}100%{transform:translateY(-101%)}}
+.view{display:none}.view.active{display:block}
+.hero{position:relative;min-height:100svh;overflow:hidden;background:#191915}
+.hero-media{position:absolute;inset:0;background-position:center;background-size:cover;transform:scale(1.04);transition:transform 1.8s var(--ease);filter:saturate(.55) contrast(1.06)}
+.view.active .hero-media{transform:scale(1)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,12,10,.15),rgba(12,12,10,.16) 35%,rgba(12,12,10,.88))}
+.hero-inner{position:relative;z-index:2;min-height:100svh;padding:145px 0 42px;display:flex;flex-direction:column;justify-content:space-between}
+.kicker{display:flex;align-items:center;gap:13px;font:600 11px "JetBrains Mono";text-transform:uppercase;letter-spacing:.13em}.kicker::before{content:"";width:36px;height:1px;background:var(--signal)}
+.display{margin:0;max-width:1320px;font-size:clamp(62px,10.4vw,154px);font-weight:560;line-height:.79;letter-spacing:-.073em;text-transform:uppercase}
+.display .serif{font-family:"Instrument Serif";font-style:italic;font-weight:400;text-transform:none;letter-spacing:-.04em}
+.hero-bottom{display:grid;grid-template-columns:1fr minmax(260px,430px);align-items:end;gap:40px}
+.hero-index{font:400 12px "JetBrains Mono";letter-spacing:.08em}.hero-copy{font-size:18px;line-height:1.5;margin:0}.scroll{display:inline-flex;gap:12px;align-items:center;margin-top:22px;font:600 11px "JetBrains Mono";text-transform:uppercase;text-decoration:none}.scroll::after{content:"↓";color:var(--signal);font-size:18px}
+.ticker{border-block:1px solid #2d2d29;overflow:hidden;background:var(--ink);padding:16px 0}.ticker-track{width:max-content;white-space:nowrap;font:600 12px "JetBrains Mono";letter-spacing:.12em;text-transform:uppercase;animation:ticker 28s linear infinite}.ticker-track span{display:inline-block;margin-right:72px}.ticker-track b{color:var(--signal);font-weight:600}
+@keyframes ticker{to{transform:translateX(-50%)}}
+.section{padding:130px 0}
+.section.light{background:var(--paper);color:var(--ink)}
+.section.dark{background:var(--ink);color:var(--paper)}
+.section-head{display:grid;grid-template-columns:1fr 2fr;gap:50px;margin-bottom:90px}.section-label{font:600 11px "JetBrains Mono";letter-spacing:.11em;text-transform:uppercase;color:var(--signal)}.section-title{font-size:clamp(46px,7vw,104px);line-height:.92;letter-spacing:-.06em;margin:0;font-weight:540}.section-title em{font-family:"Instrument Serif";font-weight:400}
+.rule-list{border-top:1px solid currentColor}.rule{display:grid;grid-template-columns:90px 1fr 1.2fr auto;gap:24px;align-items:center;padding:26px 0;border-bottom:1px solid currentColor}.rule small{font:400 11px "JetBrains Mono";opacity:.6}.rule h3{font-size:clamp(22px,2.5vw,38px);letter-spacing:-.04em;margin:0}.rule p{margin:0;max-width:470px;line-height:1.5;opacity:.67}.rule a{font:600 11px "JetBrains Mono";text-decoration:none;text-transform:uppercase;border-bottom:1px solid;padding-bottom:4px}
+.split-media{display:grid;grid-template-columns:1.3fr .7fr;gap:24px;min-height:720px}.photo{position:relative;overflow:hidden;background:#333}.photo img{width:100%;height:100%;display:block;object-fit:cover;filter:saturate(.65);transition:transform 1.2s var(--ease),filter .5s}.photo:hover img{transform:scale(1.025);filter:saturate(.9)}.photo-caption{position:absolute;left:18px;right:18px;bottom:18px;display:flex;justify-content:space-between;font:600 10px "JetBrains Mono";text-transform:uppercase;letter-spacing:.1em;color:#fff}.manifesto{background:var(--signal);color:var(--ink);padding:36px;display:flex;flex-direction:column;justify-content:space-between}.manifesto .big-number{font-size:clamp(90px,13vw,190px);font-weight:620;line-height:.75;letter-spacing:-.09em}.manifesto p{font-size:22px;line-height:1.32;max-width:430px}
+.config{display:grid;grid-template-columns:.85fr 1.15fr;border-top:1px solid #333;border-bottom:1px solid #333}.config-control{padding:50px 50px 50px 0;border-right:1px solid #333}.config-result{padding:50px 0 50px 50px}.config-label{font:600 11px "JetBrains Mono";text-transform:uppercase;letter-spacing:.1em;color:var(--signal)}.config-value{font-size:clamp(86px,12vw,170px);font-weight:560;letter-spacing:-.09em;line-height:.9;margin:30px 0}.config-value small{font-size:.16em;letter-spacing:0;font-family:"JetBrains Mono";text-transform:uppercase}
+input[type=range]{width:100%;height:42px;appearance:none;background:transparent}input[type=range]::-webkit-slider-runnable-track{height:1px;background:#777}input[type=range]::-webkit-slider-thumb{appearance:none;width:20px;height:20px;background:var(--signal);border-radius:50%;margin-top:-9px}
+.data-grid{display:grid;grid-template-columns:repeat(4,1fr);margin-top:48px;border-top:1px solid #333}.datum{padding:22px 14px 10px 0;border-right:1px solid #333}.datum:last-child{border-right:0}.datum b{display:block;font-size:28px;letter-spacing:-.05em}.datum span{font:400 10px "JetBrains Mono";text-transform:uppercase;opacity:.55}
+.filters{display:flex;gap:24px;margin-bottom:48px}.filter{border:0;border-bottom:1px solid transparent;background:none;padding:0 0 7px;color:inherit;font:600 11px "JetBrains Mono";text-transform:uppercase}.filter.active{border-color:var(--signal);color:var(--signal)}
+.projects{border-top:1px solid currentColor}.project{display:grid;grid-template-columns:86px 1.3fr .8fr .7fr auto;align-items:center;gap:24px;min-height:112px;border-bottom:1px solid currentColor;transition:background .3s,padding .3s}.project:hover{background:#1b1b18;padding-inline:16px}.project.hidden{display:none}.project .num{font:400 11px "JetBrains Mono";opacity:.5}.project h3{font-size:clamp(24px,3.3vw,46px);font-weight:520;letter-spacing:-.05em;margin:0}.project span{font:400 11px "JetBrains Mono";text-transform:uppercase;opacity:.65}.arrow{font-size:28px;color:var(--signal)}
+.footer{padding:100px 0 36px;background:var(--signal);color:var(--ink)}.footer-title{font-size:clamp(64px,12vw,180px);line-height:.78;letter-spacing:-.075em;text-transform:uppercase;margin:0 0 90px;font-weight:600}.footer-title em{font-family:"Instrument Serif";font-weight:400;text-transform:none}.footer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;padding-top:22px;border-top:1px solid var(--ink);font:500 12px "JetBrains Mono";text-transform:uppercase}.footer-grid a{text-decoration:none}
+.reveal{opacity:0;transform:translateY(35px);transition:opacity .9s var(--ease),transform .9s var(--ease)}.reveal.seen{opacity:1;transform:none}
+@media(max-width:900px){.site-head{height:72px}.site-head .shell{grid-template-columns:1fr auto}.menu{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#11110ff0;padding:10px 14px;justify-content:space-around;border-top:1px solid #444}.head-cta{display:none}.shell{width:min(100% - 30px,1440px)}.hero-inner{padding-top:120px}.display{font-size:clamp(54px,15vw,100px)}.hero-bottom,.section-head{grid-template-columns:1fr}.hero-index{display:none}.section{padding:90px 0}.section-head{margin-bottom:52px}.rule{grid-template-columns:50px 1fr auto}.rule p{display:none}.split-media{grid-template-columns:1fr;min-height:0}.photo{height:65vh}.manifesto{min-height:420px}.config{grid-template-columns:1fr}.config-control{padding:35px 0;border-right:0;border-bottom:1px solid #333}.config-result{padding:35px 0}.data-grid{grid-template-columns:1fr 1fr}.project{grid-template-columns:45px 1fr auto}.project>span:not(.num){display:none}.footer-grid{grid-template-columns:1fr}.footer{padding-bottom:100px}}
+@media(max-width:520px){.menu{gap:4px}.menu button{font-size:10px}.hero-copy{font-size:16px}.display{font-size:48px}.section-title{font-size:44px}.photo{height:52vh}.rule{grid-template-columns:38px 1fr auto}.rule h3{font-size:23px}.config-value{font-size:86px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="transition" aria-hidden="true"></div>
+<header class="site-head">
+  <div class="shell">
+    <a class="logo" href="#" data-go="dc">ETS<span>GRID</span></a>
+    <nav class="menu" aria-label="Категории">
+      <button data-go="dc" aria-current="true">DC charging</button>
+      <button data-go="carport">Solar carport</button>
+      <button data-go="solar">Solar stations</button>
+    </nav>
+    <a class="head-cta" href="#contact"><i></i>Обсудить объект</a>
+  </div>
+</header>
+
+<main>
+<section class="view active" id="dc">
+  <div class="hero">
+    <div class="hero-media" style="background-image:url('https://www.tsg-solutions.com/app/uploads/2024/12/parking-de-covoiturage-electrique-bp-pulse-28-29b2fc-1280x1092.jpg')"></div>
+    <div class="shell hero-inner">
+      <div class="kicker">Energy infrastructure · 01</div>
+      <div>
+        <h1 class="display">Power for the <span class="serif">electric</span> age</h1>
+        <div class="hero-bottom">
+          <div class="hero-index">30—240 kW / OCPP / STORAGE READY</div>
+          <div><p class="hero-copy">Проектируем зарядную инфраструктуру как часть архитектуры объекта — от одной DC‑станции до энергетического хаба.</p><a class="scroll" href="#dc-systems">Исследовать системы</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ticker"><div class="ticker-track"><span>DC CHARGING <b>240 KW</b></span><span>ENERGY STORAGE</span><span>OCPP 2.0.1</span><span>TURNKEY DELIVERY</span><span>DC CHARGING <b>240 KW</b></span><span>ENERGY STORAGE</span><span>OCPP 2.0.1</span><span>TURNKEY DELIVERY</span></div></div>
+  <section class="section light" id="dc-systems"><div class="shell">
+    <div class="section-head reveal"><div class="section-label">Product architecture</div><h2 class="section-title">Не каталог устройств.<br><em>Система энергии.</em></h2></div>
+    <div class="rule-list reveal">
+      <div class="rule"><small>01</small><h3>DC‑станции</h3><p>Настенные, напольные и split‑решения для коммерческих площадок и трассовых хабов.</p><a href="ets-grid-neon-voltage.html">Каталог ↗</a></div>
+      <div class="rule"><small>02</small><h3>Накопители</h3><p>Буфер мощности, резерв и интеллектуальное управление стоимостью киловатт‑часа.</p><a href="#contact">Расчёт ↗</a></div>
+      <div class="rule"><small>03</small><h3>EMS & Billing</h3><p>Мониторинг, распределение мощности, тарифы, оплата и единый кабинет оператора.</p><a href="#contact">Подробнее ↗</a></div>
+    </div>
+  </div></section>
+</section>
+
+<section class="view" id="carport">
+  <div class="hero">
+    <div class="hero-media" style="background-image:url('https://cdn.marblism.com/t2qb29t8Rfk.webp')"></div>
+    <div class="shell hero-inner">
+      <div class="kicker">Solar architecture · 02</div>
+      <div>
+        <h1 class="display">Parking becomes <span class="serif">power</span></h1>
+        <div class="hero-bottom">
+          <div class="hero-index">PV CANOPY / EV / STORAGE / EMS</div>
+          <div><p class="hero-copy">Solar Carport превращает парковку в энергетический актив и остаётся архитектурой, а не инженерным компромиссом.</p><a class="scroll" href="#carport-config">Собрать конфигурацию</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="section dark"><div class="shell">
+    <div class="section-head reveal"><div class="section-label">Dual-use infrastructure</div><h2 class="section-title">Одна площадь.<br><em>Четыре функции.</em></h2></div>
+    <div class="split-media reveal">
+      <figure class="photo" style="margin:0"><img src="https://cloudfront-eu-central-1.images.arcpublishing.com/madsack/TNX46ZRRKBGX7GMTIE2KTCSNEI.jpg" alt="Современный зарядный хаб под навесом"><figcaption class="photo-caption"><span>Reference architecture</span><span>EV hub / night</span></figcaption></figure>
+      <aside class="manifesto"><div class="big-number">4×</div><p>Навес. Генерация. Зарядка. Накопление. Один конструктивный модуль, который масштабируется вместе с парковкой.</p><span class="section-label" style="color:inherit">ETS GRID / SOLAR CARPORT</span></aside>
+    </div>
+  </div></section>
+  <section class="section light" id="carport-config"><div class="shell">
+    <div class="section-head reveal"><div class="section-label">Preliminary configurator</div><h2 class="section-title">Масштаб задаёт<br><em>архитектуру.</em></h2></div>
+    <div class="config reveal">
+      <div class="config-control"><div class="config-label">Количество машиномест</div><div class="config-value"><span id="places">20</span><small>мест</small></div><input id="placeRange" type="range" min="2" max="100" step="2" value="20" aria-label="Количество машиномест"><p style="max-width:500px;line-height:1.5;opacity:.62">Демонстрационный расчёт для выбора масштаба. Геометрия, генерация и накопитель уточняются после обследования.</p></div>
+      <div class="config-result"><div class="config-label">Расчётная мощность</div><div class="config-value"><span id="kwp">66</span><small>kWp</small></div><div class="data-grid"><div class="datum"><b id="panels">120</b><span>PV panels</span></div><div class="datum"><b id="ports">10</b><span>EV ports</span></div><div class="datum"><b id="storage">100</b><span>kWh storage</span></div><div class="datum"><b id="co2">59</b><span>t CO₂ / year*</span></div></div></div>
+    </div>
+  </div></section>
+</section>
+
+<section class="view" id="solar">
+  <div class="hero">
+    <div class="hero-media" style="background-image:url('https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=2000&q=88')"></div>
+    <div class="shell hero-inner">
+      <div class="kicker">Solar generation · 03</div>
+      <div>
+        <h1 class="display">Own the <span class="serif">source</span></h1>
+        <div class="hero-bottom">
+          <div class="hero-index">ROOFTOP / GROUND / HYBRID</div>
+          <div><p class="hero-copy">Солнечные станции для бизнеса: от экономии собственного потребления до автономной микросети с накопителем.</p><a class="scroll" href="#solar-systems">Выбрать архитектуру</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="section dark" id="solar-systems"><div class="shell">
+    <div class="section-head reveal"><div class="section-label">System catalogue</div><h2 class="section-title">Выбирайте не панели.<br><em>Выбирайте сценарий.</em></h2></div>
+    <div class="filters reveal"><button class="filter active" data-filter="all">Все системы</button><button class="filter" data-filter="roof">Крыша</button><button class="filter" data-filter="ground">Земля</button><button class="filter" data-filter="hybrid">Гибрид</button></div>
+    <div class="projects reveal">
+      <article class="project" data-type="roof"><span class="num">01</span><h3>ETS Solar 30</h3><span>Rooftop</span><span>30 kWp</span><span class="arrow">↗</span></article>
+      <article class="project" data-type="roof"><span class="num">02</span><h3>ETS Solar 80</h3><span>Rooftop</span><span>80 kWp</span><span class="arrow">↗</span></article>
+      <article class="project" data-type="ground"><span class="num">03</span><h3>ETS Solar 120</h3><span>Ground mount</span><span>120 kWp</span><span class="arrow">↗</span></article>
+      <article class="project" data-type="hybrid"><span class="num">04</span><h3>ETS Solar Hub</h3><span>PV + Storage</span><span>250 kWp</span><span class="arrow">↗</span></article>
+    </div>
+  </div></section>
+</section>
+</main>
+
+<footer class="footer" id="contact"><div class="shell">
+  <h2 class="footer-title">Build the<br><em>next grid.</em></h2>
+  <div class="footer-grid"><a href="mailto:[EMAIL]">[EMAIL]</a><a href="tel:">[ТЕЛЕФОН]</a><span>© ETS GRID / 2026</span></div>
+</div></footer>
+
+<script>
+const views=[...document.querySelectorAll('.view')],buttons=[...document.querySelectorAll('[data-go]')],curtain=document.querySelector('.transition');
+let current='dc',busy=false;
+function activate(id){if(id===current||busy)return;busy=true;curtain.classList.add('run');setTimeout(()=>{views.forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.menu button').forEach(b=>b.setAttribute('aria-current',String(b.dataset.go===id)));current=id;scrollTo(0,0)},560);setTimeout(()=>{curtain.classList.remove('run');busy=false;observe()},1180)}
+buttons.forEach(b=>b.addEventListener('click',e=>{if(b.dataset.go){e.preventDefault();activate(b.dataset.go)}}));
+const range=document.querySelector('#placeRange');
+function calculate(){const n=+range.value;places.textContent=n;kwp.textContent=Math.round(n*3.3);panels.textContent=n*6;ports.textContent=Math.ceil(n/2);storage.textContent=Math.ceil(n*5/25)*25;co2.textContent=Math.round(n*2.95)}
+range.addEventListener('input',calculate);calculate();
+document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.project').forEach(p=>p.classList.toggle('hidden',b.dataset.filter!=='all'&&p.dataset.type!==b.dataset.filter))}));
+let io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('seen')}),{threshold:.12});
+function observe(){document.querySelectorAll('.view.active .reveal').forEach(el=>io.observe(el))}observe();
+window.addEventListener('scroll',()=>{const media=document.querySelector('.view.active .hero-media');if(media&&scrollY<innerHeight)media.style.transform='scale(1) translateY('+scrollY*.08+'px)'},{passive:true});
+</script>
+</body>
+</html>

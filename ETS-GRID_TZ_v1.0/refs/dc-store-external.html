@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ETS GRID — магазин DC-зарядных станций (макет)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&amp;family=Golos+Text:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+body{margin:0;font-family:'Golos Text',system-ui,sans-serif;color:#0F1714;background:#F2F4EF}
+*{box-sizing:border-box}
+a{color:#0F1714}a:hover{color:#3D4D10}
+button{font-family:inherit;cursor:pointer}
+input,select{font-family:inherit}
+:focus-visible{outline:3px solid #2B6BFF;outline-offset:2px}
+.lift{transition:transform .25s ease, box-shadow .25s ease}
+.lift:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(15,23,20,.14)}
+.btn{transition:transform .15s ease, filter .2s ease}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:scale(.96)}
+.flipper{transform-style:preserve-3d;transition:transform .75s cubic-bezier(.2,.7,.2,1)}
+.face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.flow{background-image:repeating-linear-gradient(90deg,#0F1714 0 10px,transparent 10px 20px);background-size:20px 100%;animation:flow .7s linear infinite}
+.led{animation:pulse 1.6s ease-in-out infinite}
+.rise{animation:rise .5s ease both}
+.navlink{text-decoration:none;color:#DDE3D8}
+.navlink:hover{color:#FFFFFF}
+@keyframes flow{to{background-position:20px 0}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes bumpA{0%{transform:scale(1)}40%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes bumpB{0%{transform:scale(1)}40%{transform:scale(1.4)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>html{scroll-behavior:smooth}[id]{scroll-margin-top:84px}</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="text/plain" id="tpl">
+<div style="--accent: {{accent}}; min-height: 100vh; background: #F2F4EF">
+
+<header style="background: #0F1714; color: #F2F4EF; position: sticky; top: 0; z-index: 20">
+<div style="max-width: 1240px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px">
+<a href="#top" style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 18px; letter-spacing: 0.04em; color: #F2F4EF; text-decoration: none">ETS<span style="color: var(--accent)">GRID</span></a>
+<nav aria-label="Основное меню" style="display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: 15px; flex: 1 1 auto">
+<a class="navlink" href="#picker" style="padding: 12px 0">Подбор</a>
+<a class="navlink" href="#catalog" style="padding: 12px 0">Каталог</a>
+<a class="navlink" href="#compare" style="padding: 12px 0">Сравнение</a>
+<a class="navlink" href="#solutions" style="padding: 12px 0">Решения</a>
+<a class="navlink" href="#install" style="padding: 12px 0">Монтаж</a>
+</nav>
+<a href="tel:" style="color: #F2F4EF; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 14px; padding: 12px 0">[ТЕЛЕФОН]</a>
+<a class="btn" href="#request" style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px; border-radius: 999px; background: var(--accent); color: #0F1714; text-decoration: none; font-weight: 600; font-size: 15px">
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 11h10.2L20 7H6.2"></path><circle cx="9" cy="19" r="1.5"></circle><circle cx="17" cy="19" r="1.5"></circle></svg>
+Корзина
+<span style="display: inline-block; min-width: 24px; padding: 2px 6px; border-radius: 999px; background: #0F1714; color: #F2F4EF; font-family: 'JetBrains Mono', monospace; font-size: 13px; text-align: center; animation: {{bumpAnim}} .45s ease">{{cart}}</span>
+</a>
+</div>
+</header>
+
+<section id="top" style="background: #0F1714; color: #F2F4EF">
+<div style="max-width: 1240px; margin: 0 auto; padding: 72px 24px 88px; display: flex; flex-wrap: wrap; gap: 48px; align-items: center">
+<div class="rise" style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent)">Коммерческие DC-станции · 30–240 кВт</div>
+<h1 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(2rem, 4.6vw, 3.75rem); line-height: 1.08">Быстрая зарядка для вашего объекта: подбор, поставка, монтаж</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.55; color: #C9D1C4; max-width: 34em">Подберём DC-станцию под вашу площадку и доступную мощность. Если сети не хватает, добавим накопитель и солнце. Привезём, смонтируем и подключим к биллингу.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<a class="btn" href="#picker" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: var(--accent); color: #0F1714; text-decoration: none; font-weight: 600; font-size: 17px">Подобрать станцию</a>
+<a class="btn" href="#catalog" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; border: 1.5px solid #5B665F; color: #F2F4EF; text-decoration: none; font-weight: 600; font-size: 17px">Смотреть каталог</a>
+</div>
+</div>
+<div class="rise" style="flex: 1 1 380px; min-width: 0; display: flex; justify-content: center">
+<div style="width: 100%; max-width: 440px; border-radius: 28px; background: #18231F; border: 1px solid #2B3833; padding: 32px; display: flex; flex-direction: column; gap: 24px">
+<div style="display: flex; align-items: flex-end; justify-content: center; gap: 18px; height: 250px; border-bottom: 3px solid #2B3833">
+<div style="width: 120px; height: 150px; border-radius: 10px 10px 2px 2px; background: #223029; border: 1px solid #3A4A43; display: flex; flex-direction: column; justify-content: flex-end; padding: 10px; gap: 6px">
+<div class="led" style="height: 10px; border-radius: 3px; background: var(--accent)"></div>
+<div class="led" style="height: 10px; border-radius: 3px; background: var(--accent); animation-delay: .25s"></div>
+<div class="led" style="height: 10px; border-radius: 3px; background: var(--accent); animation-delay: .5s"></div>
+<div style="height: 10px; border-radius: 3px; background: #3A4A43"></div>
+</div>
+<div class="flow" style="width: 44px; height: 4px; margin-bottom: 70px; filter: invert(1)"></div>
+<div style="width: 96px; height: 220px; border-radius: 14px 14px 2px 2px; background: #F2F4EF; display: flex; flex-direction: column; align-items: center; padding: 16px 12px; gap: 14px">
+<div style="width: 100%; height: 60px; border-radius: 6px; background: #0F1714; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 15px; color: var(--accent)">120 кВт</div>
+<div class="led" style="width: 100%; height: 6px; border-radius: 3px; background: #2F8F4E"></div>
+<div style="display: flex; gap: 10px">
+<div style="width: 18px; height: 18px; border-radius: 50%; background: #0F1714"></div>
+<div style="width: 18px; height: 18px; border-radius: 50%; background: #0F1714"></div>
+</div>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; font-size: 14px; color: #C9D1C4">
+<div><div style="font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 13px">НАКОПИТЕЛЬ</div>копит энергию от слабого ввода</div>
+<div><div style="font-family: 'JetBrains Mono', monospace; color: var(--accent); font-size: 13px">DC-СТАНЦИЯ</div>отдаёт полную мощность автомобилю</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="picker" style="max-width: 1240px; margin: 0 auto; padding: 88px 24px 0">
+<div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #4A5650">Подбор за минуту</div>
+<h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.5rem); line-height: 1.15">Хватит ли вашей мощности?</h2>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px">
+<div style="flex: 1 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #D9DED4; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<label for="gridPower" style="font-weight: 600; font-size: 17px">Доступная мощность на объекте</label>
+<div style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 44px; line-height: 1">{{grid}} <span style="font-size: 20px">кВт</span></div>
+<input id="gridPower" type="range" min="15" max="300" step="5" value="{{grid}}" onChange="{{setGrid}}" style="width: 100%; height: 44px; accent-color: #0F1714"/>
+<div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #4A5650"><span>15</span><span>300 кВт</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div id="needLabel" style="font-weight: 600; font-size: 17px">Какая мощность зарядки нужна</div>
+<div role="group" aria-labelledby="needLabel" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{needs}}" as="n" hint-placeholder-count="5">
+<button class="btn" type="button" aria-pressed="{{n.on}}" onClick="{{n.pick}}" style="min-height: 48px; padding: 0 18px; border-radius: 999px; border: 1.5px solid #0F1714; background: {{n.bg}}; color: {{n.fg}}; font-weight: 600; font-size: 16px">{{n.label}}</button>
+</sc-for>
+</div>
+</div>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; background: {{resBg}}; color: {{resFg}}; border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 22px; transition: background-color .4s ease, color .4s ease">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase">Результат</div>
+<div style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(1.5rem, 2.6vw, 2.1rem); line-height: 1.15">{{resTitle}}</div>
+<p style="margin: 0; font-size: 17px; line-height: 1.55">{{resText}}</p>
+<div style="display: flex; height: 52px; border-radius: 12px; overflow: hidden; border: 1.5px solid {{resFg}}; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600">
+<div style="width: {{gridPct}}%; background: {{resFg}}; color: {{resBg}}; display: flex; align-items: center; padding: 0 12px; white-space: nowrap; overflow: hidden; transition: width .5s cubic-bezier(.2,.7,.2,1)">сеть {{gridPart}} кВт</div>
+<div style="flex: 1 1 0; min-width: 0; display: flex; align-items: center; padding: 0 12px; white-space: nowrap; overflow: hidden">{{battLabel}}</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: auto">
+<div style="flex: 1 1 200px; min-width: 0"><div style="font-size: 14px">Рекомендуем</div><div style="font-weight: 600; font-size: 20px">{{resModel}}</div></div>
+<a class="btn" href="#request" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 22px; border-radius: 999px; background: {{resFg}}; color: {{resBg}}; text-decoration: none; font-weight: 600">Получить расчёт</a>
+</div>
+<div style="font-size: 13px">Оценка ориентировочная. Точный расчёт делаем после обследования объекта.</div>
+</div>
+</div>
+</section>
+
+<section id="catalog" style="max-width: 1240px; margin: 0 auto; padding: 96px 24px 0">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 32px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #4A5650">Каталог · {{shownCount}}</div>
+<h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.5rem); line-height: 1.15">DC-зарядные станции</h2>
+<div style="font-size: 16px; color: #4A5650">Нажмите на карточку, чтобы перевернуть её и увидеть характеристики.</div>
+</div>
+<div role="group" aria-label="Фильтр по мощности" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="5">
+<button class="btn" type="button" aria-pressed="{{f.on}}" onClick="{{f.pick}}" style="min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid #0F1714; background: {{f.bg}}; color: {{f.fg}}; font-weight: 600; font-size: 15px">{{f.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px">
+<sc-for list="{{products}}" as="p" hint-placeholder-count="6">
+<article class="lift" style="perspective: 1600px; border-radius: 22px">
+<div class="flipper" style="position: relative; height: 560px; transform: {{p.rot}}">
+
+<div class="face" style="position: absolute; inset: 0; background: #FFFFFF; border: 1px solid #D9DED4; border-radius: 22px; overflow: hidden; display: flex; flex-direction: column">
+<button type="button" onClick="{{p.flip}}" aria-label="{{p.flipLabel}}" style="flex: 1 1 auto; display: flex; flex-direction: column; border: 0; padding: 0; background: transparent; text-align: left; color: inherit">
+<span style="position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 10px; width: 100%; height: 230px; background: {{p.tint}}; border-bottom: 4px solid #0F1714; padding: 0 20px">
+<span style="position: absolute; top: 16px; left: 16px; padding: 5px 10px; border-radius: 999px; background: #0F1714; color: #F2F4EF; font-family: 'JetBrains Mono', monospace; font-size: 12px">{{p.tag}}</span>
+<span aria-hidden="true" style="position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0F1714" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 4v5h-5"></path></svg></span>
+<sc-for list="{{p.units}}" as="u" hint-placeholder-count="1">
+<span style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: {{u.w}}px; height: {{u.h}}px; margin-bottom: {{u.mb}}px; padding: 10px 8px; border-radius: 9px 9px 2px 2px; background: {{u.bg}}">
+<sc-if value="{{u.screen}}" hint-placeholder-val="{{true}}"><span style="width: 100%; height: 30px; border-radius: 4px; background: #F2F4EF"></span></sc-if>
+<span class="led" style="width: 100%; height: 5px; border-radius: 3px; background: {{u.led}}"></span>
+</span>
+</sc-for>
+</span>
+<span style="display: flex; flex-direction: column; gap: 10px; padding: 20px 22px 0">
+<span style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 20px; line-height: 1.2">{{p.name}}</span>
+<span style="font-size: 15px; line-height: 1.45; color: #4A5650">{{p.lead}}</span>
+<span style="display: flex; flex-wrap: wrap; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 13px">
+<span style="padding: 5px 9px; border-radius: 6px; background: #0F1714; color: #F2F4EF">{{p.power}}</span>
+<span style="padding: 5px 9px; border-radius: 6px; background: #E6EADF">{{p.ports}}</span>
+<span style="padding: 5px 9px; border-radius: 6px; background: #E6EADF">{{p.conn}}</span>
+</span>
+</span>
+</button>
+<div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 22px 22px">
+<div style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 18px">[ЦЕНА] $</div>
+<div style="display: flex; gap: 8px">
+<button class="btn" type="button" aria-pressed="{{p.inCompare}}" onClick="{{p.toggleCompare}}" style="flex: 1 1 0; min-height: 46px; border-radius: 12px; border: 1.5px solid #0F1714; background: {{p.cmpBg}}; color: #0F1714; font-weight: 600; font-size: 15px">{{p.cmpLabel}}</button>
+<button class="btn" type="button" onClick="{{addToCart}}" style="flex: 1 1 0; min-height: 46px; border-radius: 12px; border: 1.5px solid #0F1714; background: #0F1714; color: #F2F4EF; font-weight: 600; font-size: 15px">В корзину</button>
+</div>
+</div>
+</div>
+
+<div class="face" style="position: absolute; inset: 0; transform: rotateY(180deg); background: #0F1714; color: #F2F4EF; border-radius: 22px; overflow: hidden; display: flex; flex-direction: column">
+<button type="button" onClick="{{p.flip}}" aria-label="Вернуть карточку лицевой стороной" style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 16px; border: 0; padding: 26px 24px 0; background: transparent; text-align: left; color: inherit">
+<span style="display: flex; justify-content: space-between; align-items: center; gap: 12px">
+<span style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 18px; color: var(--accent)">{{p.name}}</span>
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path></svg>
+</span>
+<span style="display: flex; flex-direction: column">
+<sc-for list="{{p.specs}}" as="s" hint-placeholder-count="8">
+<span style="display: flex; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid #2B3833; font-size: 14px">
+<span style="color: #B4BEAF">{{s.k}}</span>
+<span style="font-family: 'JetBrains Mono', monospace; text-align: right">{{s.v}}</span>
+</span>
+</sc-for>
+</span>
+</button>
+<div style="padding: 16px 24px 24px">
+<a class="btn" href="#request" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 12px; background: var(--accent); color: #0F1714; text-decoration: none; font-weight: 600">Запросить КП с монтажом</a>
+</div>
+</div>
+
+</div>
+</article>
+</sc-for>
+</div>
+</section>
+
+<section id="compare" style="max-width: 1240px; margin: 0 auto; padding: 96px 24px 0">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #4A5650">Сравнение · {{compareCount}} из 4</div>
+<h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.5rem); line-height: 1.15">Сравните станции рядом</h2>
+</div>
+<label style="display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 600; font-size: 16px">
+<input type="checkbox" checked="{{diffOnly}}" onChange="{{toggleDiff}}" style="width: 22px; height: 22px; accent-color: #0F1714"/>
+Только отличия
+</label>
+</div>
+<sc-if value="{{compareEmpty}}" hint-placeholder-val="{{false}}">
+<div style="padding: 40px 32px; border: 1.5px dashed #8A948C; border-radius: 22px; font-size: 17px">Здесь пока пусто. Нажмите «Сравнить» на карточках в <a href="#catalog">каталоге</a>, чтобы добавить до четырёх станций.</div>
+</sc-if>
+<sc-if value="{{compareFilled}}" hint-placeholder-val="{{true}}">
+<div style="overflow-x: auto; background: #FFFFFF; border: 1px solid #D9DED4; border-radius: 22px">
+<table style="width: 100%; min-width: 720px; border-collapse: collapse; font-size: 15px">
+<thead>
+<tr>
+<th scope="col" style="width: 200px; padding: 20px 22px; text-align: left; vertical-align: bottom; font-weight: 500; color: #4A5650; border-bottom: 2px solid #0F1714">Параметр</th>
+<sc-for list="{{compared}}" as="c" hint-placeholder-count="3">
+<th class="rise" scope="col" style="padding: 20px 18px; text-align: left; vertical-align: bottom; border-bottom: 2px solid #0F1714">
+<div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px">
+<span style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 16px; line-height: 1.25">{{c.name}}</span>
+<button class="btn" type="button" onClick="{{c.remove}}" aria-label="{{c.removeLabel}}" style="flex: 0 0 auto; width: 44px; height: 44px; margin: -10px -10px 0 0; border: 0; border-radius: 50%; background: transparent; color: #0F1714; display: flex; align-items: center; justify-content: center"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</th>
+</sc-for>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="9">
+<tr class="rise">
+<th scope="row" style="padding: 14px 22px; text-align: left; font-weight: 500; color: #4A5650; border-bottom: 1px solid #E6EADF">{{r.label}}</th>
+<sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="3">
+<td style="padding: 14px 18px; font-family: 'JetBrains Mono', monospace; font-size: 14px; border-bottom: 1px solid #E6EADF; background: {{r.bg}}">{{cell.v}}</td>
+</sc-for>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+<div style="margin-top: 12px; font-size: 14px; color: #4A5650">Строки с отличиями подсвечены.</div>
+</sc-if>
+</section>
+
+<section id="solutions" style="margin-top: 96px; background: #E3E8DC">
+<div style="max-width: 1240px; margin: 0 auto; padding: 88px 24px">
+<div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #4A5650">Вопрос → наше решение</div>
+<h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.5rem); line-height: 1.15">А что, если…</h2>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+<div role="group" aria-label="Вопросы" style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{questions}}" as="q" hint-placeholder-count="7">
+<button class="btn" type="button" aria-pressed="{{q.on}}" onClick="{{q.pick}}" style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; padding: 12px 20px; border-radius: 16px; border: 1.5px solid {{q.border}}; background: {{q.bg}}; color: {{q.fg}}; text-align: left; font-weight: 600; font-size: 17px; line-height: 1.3">
+<span>{{q.q}}</span>
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: 0 0 auto"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+</button>
+</sc-for>
+</div>
+<div aria-live="polite" style="flex: 999 1 520px; min-width: 0; background: #FFFFFF; border-radius: 24px; padding: 36px; display: flex; flex-direction: column; gap: 24px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #4A5650">Наше решение</div>
+<h3 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(1.4rem, 2.4vw, 2rem); line-height: 1.15">{{sol.title}}</h3>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; max-width: 38em">{{sol.text}}</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 0; padding: 24px; border-radius: 18px; background: #F2F4EF">
+<sc-for list="{{sol.nodes}}" as="n" hint-placeholder-count="4">
+<div style="display: flex; align-items: center">
+<div style="min-width: 128px; padding: 14px 16px; border-radius: 12px; background: {{n.bg}}; color: {{n.fg}}; border: 1.5px solid #0F1714">
+<div style="font-weight: 600; font-size: 15px; line-height: 1.25">{{n.label}}</div>
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 4px">{{n.sub}}</div>
+</div>
+<sc-if value="{{n.next}}" hint-placeholder-val="{{true}}"><div class="flow" aria-hidden="true" style="width: 40px; height: 4px"></div></sc-if>
+</div>
+</sc-for>
+</div>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{sol.points}}" as="pt" hint-placeholder-count="3">
+<li style="display: flex; gap: 12px; font-size: 16px; line-height: 1.5"><span aria-hidden="true" style="flex: 0 0 auto; width: 10px; height: 10px; margin-top: 7px; background: #0F1714"></span><span>{{pt.t}}</span></li>
+</sc-for>
+</ul>
+<div><a class="btn" href="#request" style="display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 999px; background: #0F1714; color: #F2F4EF; text-decoration: none; font-weight: 600">Обсудить мой объект</a></div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="install" style="max-width: 1240px; margin: 0 auto; padding: 96px 24px 0">
+<div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 36px">
+<div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: #4A5650">Подбор и монтаж под ключ</div>
+<h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.5rem); line-height: 1.15">От заявки до первой зарядки</h2>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px">
+<li class="lift" style="background: #FFFFFF; border: 1px solid #D9DED4; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 12px"><span style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 32px">01</span><span style="font-weight: 600; font-size: 18px">Обследование</span><span style="font-size: 15px; line-height: 1.5; color: #4A5650">Выезжаем на объект, замеряем доступную мощность и смотрим место под станцию.</span></li>
+<li class="lift" style="background: #FFFFFF; border: 1px solid #D9DED4; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 12px"><span style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 32px">02</span><span style="font-weight: 600; font-size: 18px">Подбор и проект</span><span style="font-size: 15px; line-height: 1.5; color: #4A5650">Считаем конфигурацию: станция, накопитель, солнце. Готовим проект и техусловия.</span></li>
+<li class="lift" style="background: #FFFFFF; border: 1px solid #D9DED4; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 12px"><span style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 32px">03</span><span style="font-weight: 600; font-size: 18px">Поставка</span><span style="font-size: 15px; line-height: 1.5; color: #4A5650">Привозим оборудование на объект и проверяем комплектность.</span></li>
+<li class="lift" style="background: #FFFFFF; border: 1px solid #D9DED4; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 12px"><span style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 32px">04</span><span style="font-weight: 600; font-size: 18px">Монтаж и запуск</span><span style="font-size: 15px; line-height: 1.5; color: #4A5650">Фундамент, кабель, подключение, пусконаладка и тестовая зарядка.</span></li>
+<li class="lift" style="background: #0F1714; color: #F2F4EF; border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 12px"><span style="font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: 32px; color: var(--accent)">05</span><span style="font-weight: 600; font-size: 18px">Сервис</span><span style="font-size: 15px; line-height: 1.5; color: #C9D1C4">Подключаем биллинг и мониторинг, обслуживаем станцию после запуска.</span></li>
+</ol>
+</section>
+
+<section id="request" style="max-width: 1240px; margin: 0 auto; padding: 96px 24px">
+<div style="background: #0F1714; color: #F2F4EF; border-radius: 28px; padding: clamp(28px, 5vw, 56px); display: flex; flex-wrap: wrap; gap: 40px">
+<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-weight: 700; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.15">Получите подбор под ваш объект</h2>
+<p style="margin: 0; font-size: 18px; line-height: 1.55; color: #C9D1C4">Оставьте контакты и доступную мощность. Инженер пришлёт конфигурацию и смету с монтажом.</p>
+</div>
+<form style="flex: 1 1 400px; min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="fName" style="font-size: 14px">Имя</label><input id="fName" type="text" autocomplete="name" style="min-height: 50px; padding: 0 14px; border-radius: 12px; border: 1.5px solid #5B665F; background: #18231F; color: #F2F4EF; font-size: 16px"/></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="fPhone" style="font-size: 14px">Телефон</label><input id="fPhone" type="tel" autocomplete="tel" style="min-height: 50px; padding: 0 14px; border-radius: 12px; border: 1.5px solid #5B665F; background: #18231F; color: #F2F4EF; font-size: 16px"/></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="fSite" style="font-size: 14px">Тип объекта</label><select id="fSite" style="min-height: 50px; padding: 0 14px; border-radius: 12px; border: 1.5px solid #5B665F; background: #18231F; color: #F2F4EF; font-size: 16px"><option>АЗС или трасса</option><option>Торговый центр</option><option>Отель или ресторан</option><option>Автопарк</option><option>Паркинг ЖК</option></select></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><label for="fPower" style="font-size: 14px">Доступная мощность, кВт</label><input id="fPower" type="number" inputmode="numeric" value="{{grid}}" onChange="{{setGrid}}" style="min-height: 50px; padding: 0 14px; border-radius: 12px; border: 1.5px solid #5B665F; background: #18231F; color: #F2F4EF; font-size: 16px"/></div>
+<button class="btn" type="button" style="grid-column: 1 / -1; min-height: 54px; border: 0; border-radius: 999px; background: var(--accent); color: #0F1714; font-weight: 600; font-size: 17px">Получить подбор</button>
+</form>
+</div>
+</section>
+
+<footer style="border-top: 1px solid #D9DED4">
+<div style="max-width: 1240px; margin: 0 auto; padding: 32px 24px 48px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; font-size: 14px; color: #4A5650">
+<div style="font-family: 'Unbounded', sans-serif; font-weight: 700; color: #0F1714">ETS GRID</div>
+<div>[АДРЕС] · [ТЕЛЕФОН] · [EMAIL]</div>
+<div>Продажа, подбор и монтаж DC-зарядных станций</div>
+</div>
+</footer>
+
+</div>
+</script>
+<script>
+(function () {
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g;
+  var WHOLE = /^\s*\{\{\s*([^}]+?)\s*\}\}\s*$/;
+  function look(scope, path) {
+    if (path === 'true') return true;
+    if (path === 'false') return false;
+    var cur = scope, parts = path.split('.');
+    for (var i = 0; i < parts.length; i++) { if (cur == null) return undefined; cur = cur[parts[i]]; }
+    return cur;
+  }
+  function text(scope, s) { return s.replace(HOLE, function (_, p) { var v = look(scope, p); return v == null ? '' : String(v); }); }
+  function expand(nodes, scope, parent) {
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      if (n.nodeType === 3) { parent.appendChild(document.createTextNode(text(scope, n.data))); continue; }
+      if (n.nodeType !== 1) continue;
+      var tag = n.localName;
+      if (tag === 'sc-for') {
+        var list = look(scope, n.getAttribute('list').match(WHOLE)[1]) || [];
+        var as = n.getAttribute('as');
+        list.forEach(function (item, idx) { var s2 = Object.create(scope); s2[as] = item; s2.$index = idx; expand(n.childNodes, s2, parent); });
+        continue;
+      }
+      if (tag === 'sc-if') {
+        if (look(scope, n.getAttribute('value').match(WHOLE)[1])) expand(n.childNodes, scope, parent);
+        continue;
+      }
+      var el = document.createElementNS(n.namespaceURI, tag);
+      el.__h = {};
+      for (var a = 0; a < n.attributes.length; a++) {
+        var at = n.attributes[a], name = at.name, raw = at.value, m = raw.match(WHOLE);
+        if (name.indexOf('hint-') === 0 || name === 'xmlns') continue;
+        if (/^on[A-Z]/.test(name)) { el.__h[name === 'onChange' ? 'oninput' : name.toLowerCase()] = m ? look(scope, m[1]) : null; continue; }
+        if (m) {
+          var v = look(scope, m[1]);
+          if (name.indexOf('aria-') === 0) el.setAttribute(name, String(v));
+          else if (v === true) el.setAttribute(name, '');
+          else if (v !== false && v != null) el.setAttribute(name, String(v));
+        } else el.setAttribute(name, text(scope, raw));
+      }
+      expand(n.childNodes, scope, el);
+      parent.appendChild(el);
+    }
+  }
+  function bind(el) { for (var k in el.__h) el[k] = el.__h[k]; }
+  function morph(a, b) {
+    if (a.nodeType !== b.nodeType || a.nodeName !== b.nodeName) { a.parentNode.replaceChild(b, a); wire(b); return; }
+    if (a.nodeType === 3) { if (a.data !== b.data) a.data = b.data; return; }
+    var i, at;
+    for (i = a.attributes.length - 1; i >= 0; i--) { at = a.attributes[i]; if (!b.hasAttribute(at.name)) a.removeAttribute(at.name); }
+    for (i = 0; i < b.attributes.length; i++) { at = b.attributes[i]; if (a.getAttribute(at.name) !== at.value) a.setAttribute(at.name, at.value); }
+    if (a.localName === 'input') {
+      if (a.type === 'checkbox') a.checked = b.hasAttribute('checked');
+      else if (b.hasAttribute('value') && a.value !== b.getAttribute('value') && document.activeElement !== a) a.value = b.getAttribute('value');
+    }
+    a.__h = b.__h || {}; bind(a);
+    var ac = a.childNodes, bc = Array.prototype.slice.call(b.childNodes);
+    for (i = 0; i < bc.length; i++) { if (i < ac.length) morph(ac[i], bc[i]); else { a.appendChild(bc[i]); wire(bc[i]); } }
+    while (ac.length > bc.length) a.removeChild(a.lastChild);
+  }
+  function wire(n) { if (n.nodeType !== 1) return; if (n.__h) bind(n); for (var i = 0; i < n.childNodes.length; i++) wire(n.childNodes[i]); }
+
+  function DCLogic(props) { this.props = props || {}; this.state = {}; }
+  DCLogic.prototype.setState = function (p) {
+    if (typeof p === 'function') p = p(this.state);
+    this.state = Object.assign({}, this.state, p);
+    this.__render();
+  };
+  DCLogic.prototype.forceUpdate = function () { this.__render(); };
+  window.DCLogic = DCLogic;
+
+  window.__mount = function (Component, propDefs) {
+    var props = {};
+    Object.keys(propDefs).forEach(function (k) { if (k[0] !== '$') props[k] = propDefs[k].default; });
+    var src = '<div xmlns="http://www.w3.org/1999/xhtml">' + document.getElementById('tpl').textContent + '</div>';
+    var doc = new DOMParser().parseFromString(src, 'application/xhtml+xml');
+    if (doc.getElementsByTagName('parsererror').length) { console.error(doc.documentElement.textContent); return; }
+    var tplNodes = doc.documentElement.childNodes;
+    var app = document.getElementById('app');
+    var comp = new Component(props);
+    comp.__render = function () {
+      var box = document.createElement('div');
+      expand(tplNodes, comp.renderVals(), box);
+      if (!app.firstChild) { while (box.firstChild) app.appendChild(box.firstChild); wire(app); }
+      else morph(app, Object.assign(box, { __h: {} }));
+    };
+    comp.__render();
+  };
+})();
+</script>
+<script>
+class Component extends DCLogic {
+constructor(...args) {
+super(...args);
+this.state = { flipped: {}, compare: ['dc60', 'dc120', 'dc120b'], cart: 0, filter: 'all', q: 'power', grid: 40, need: 120, diffOnly: false };
+}
+catalog() {
+const ink = '#0F1714';
+const unit = (w, h, o) => Object.assign({ w: w, h: h, mb: 0, bg: ink, led: '#C8F03C', screen: true }, o || {});
+return [
+{ id: 'dc30', group: 'low', tag: 'Настенная', tint: '#E6EADF', name: 'ETS DC-30 Wall', lead: 'Компактная станция для отеля, офиса и паркинга.', kw: 30, power: '30 кВт', ports: '1 порт', conn: 'CCS2',
+units: [unit(70, 92, { mb: 64 })],
+f: { input: '3ф 400 В, от 32 кВт', volt: '150–1000 В', dist: 'Нет', form: 'Настенная', cable: 'Воздушное', ip: 'IP54', proto: 'OCPP 1.6J', batt: 'Опция' } },
+{ id: 'dc60', group: 'low', tag: 'Для ТЦ и паркинга', tint: '#E6EADF', name: 'ETS DC-60 Duo', lead: 'Два автомобиля одновременно, мощность делится между портами.', kw: 60, power: '60 кВт', ports: '2 порта', conn: 'CCS2 + GB/T',
+units: [unit(76, 156)],
+f: { input: '3ф 400 В, от 65 кВт', volt: '150–1000 В', dist: '30 + 30 или 60', form: 'Напольная', cable: 'Воздушное', ip: 'IP54', proto: 'OCPP 1.6J / 2.0.1', batt: 'Опция' } },
+{ id: 'dc120', group: 'mid', tag: 'Для трассы и АЗС', tint: '#DCE8C2', name: 'ETS DC-120 Duo', lead: 'Быстрая зарядка для трассы, АЗС и автопарка.', kw: 120, power: '120 кВт', ports: '2 порта', conn: '2 × CCS2',
+units: [unit(88, 176)],
+f: { input: '3ф 400 В, от 130 кВт', volt: '150–1000 В', dist: '60 + 60 или 120', form: 'Напольная', cable: 'Воздушное', ip: 'IP55', proto: 'OCPP 1.6J / 2.0.1', batt: 'Опция' } },
+{ id: 'dc160', group: 'mid', tag: 'Три разъёма', tint: '#DCE8C2', name: 'ETS DC-160 Trio', lead: 'Три стандарта разъёмов на одной стойке.', kw: 160, power: '160 кВт', ports: '3 порта', conn: 'CCS2 + GB/T + CHAdeMO',
+units: [unit(100, 184)],
+f: { input: '3ф 400 В, от 170 кВт', volt: '150–1000 В', dist: 'Модулями по 40 кВт', form: 'Напольная', cable: 'Воздушное', ip: 'IP55', proto: 'OCPP 1.6J / 2.0.1', batt: 'Опция' } },
+{ id: 'dc240', group: 'high', tag: 'Раздельная', tint: '#D5DDE6', name: 'ETS DC-240 Split', lead: 'Силовой шкаф и до четырёх выносных диспенсеров для хаба.', kw: 240, power: '240 кВт', ports: 'до 4 портов', conn: 'CCS2 / GB/T',
+units: [unit(104, 184, { screen: false, bg: '#2B3833' }), unit(54, 150), unit(54, 150)],
+f: { input: '3ф 400 В, от 255 кВт', volt: '150–1000 В', dist: 'Модулями по 40 кВт', form: 'Шкаф + диспенсеры', cable: 'Жидкостное, опция', ip: 'IP55', proto: 'OCPP 2.0.1', batt: 'Опция' } },
+{ id: 'dc120b', group: 'batt', tag: 'С накопителем', tint: '#F3E6BF', name: 'ETS DC-120 Battery', lead: 'Станция 120 кВт с накопителем: работает на слабом вводе.', kw: 120, power: '120 кВт', ports: '2 порта', conn: '2 × CCS2',
+units: [unit(116, 132, { screen: false, bg: '#2B3833', led: '#FFC233' }), unit(76, 168)],
+f: { input: '3ф 400 В, от 30 кВт', volt: '150–1000 В', dist: '60 + 60 или 120', form: 'Станция + шкаф АКБ', cable: 'Воздушное', ip: 'IP55', proto: 'OCPP 1.6J / 2.0.1', batt: 'В комплекте, [ЁМКОСТЬ] кВт·ч' } }
+];
+}
+solutions() {
+return [
+{ id: 'power', q: 'Что, если мощности сети не хватает?', title: 'Накопитель + зарядная станция', text: 'Накопитель заряжается от слабого ввода между сессиями и быстро отдаёт энергию, когда подъехал автомобиль. Станция выдаёт полную мощность, даже если ввод в несколько раз слабее.', nodes: [['Сеть', 'слабый ввод'], ['Накопитель', 'буфер энергии', 1], ['DC-станция', 'полная мощность'], ['Электромобиль', 'быстрая зарядка']], points: ['Не нужно ждать увеличения мощности от облэнерго.', 'Ёмкость накопителя считаем по вашему трафику.', 'Позже к системе можно добавить солнечные панели.'] },
+{ id: 'solar', q: 'Можно ли заряжать от солнца?', title: 'Солнце + накопитель + станция', text: 'Панели на навесе или крыше заряжают накопитель днём. Солнце снижает стоимость киловатт-часа, но основой остаются сеть и накопитель: генерация зависит от сезона.', nodes: [['Солнечные панели', 'навес или крыша', 1], ['Инвертор', 'гибридный'], ['Накопитель', 'хранит излишки'], ['DC-станция', 'зарядка']], points: ['Навес с панелями защищает парковочные места от солнца и осадков.', 'Излишки энергии уходят в накопитель, а не теряются.', 'Сеть остаётся резервом на пасмурные дни.'] },
+{ id: 'blackout', q: 'Что, если отключат свет?', title: 'Автономный режим', text: 'Накопитель держит станцию в работе во время отключений. Время автономии зависит от ёмкости, её подбираем под ваш график отключений и трафик.', nodes: [['Накопитель', 'автономия', 1], ['DC-станция', 'работает без сети'], ['Электромобиль', 'зарядка']], points: ['Станция продолжает принимать клиентов, пока соседние не работают.', 'Переключение на накопитель происходит автоматически.', 'Можно предусмотреть резервный ввод от генератора.'] },
+{ id: 'tariff', q: 'Как не переплачивать за электроэнергию?', title: 'Управление энергией', text: 'Система управления заряжает накопитель в дешёвые часы и срезает пики потребления днём. Вы продаёте киловатт-часы по дневной цене, а покупаете по ночной.', nodes: [['Сеть', 'дешёвые часы'], ['Система EMS', 'расписание', 1], ['Накопитель', 'запас на день'], ['DC-станция', 'продажа']], points: ['Расписание учитывает почасовые цены и прогноз трафика.', 'Пиковая нагрузка на ввод не превышает разрешённую.', 'Вся статистика доступна в личном кабинете.'] },
+{ id: 'grow', q: 'Что, если машин станет больше?', title: 'Модульная станция', text: 'Силовые модули добавляются в тот же шкаф, а к силовой стойке подключаются новые диспенсеры. Фундамент и кабель закладываем с запасом сразу.', nodes: [['Силовой шкаф', 'базовая мощность'], ['+ модуль', 'наращивание', 1], ['Диспенсер 1', '2 порта'], ['Диспенсер 2', '2 порта']], points: ['Начинаете с меньшей мощности и меньших вложений.', 'Расширение занимает дни, а не месяцы.', 'Все порты управляются как одна станция.'] },
+{ id: 'pay', q: 'Как принимать оплату и следить за станцией?', title: 'Биллинг и мониторинг по OCPP', text: 'Станция подключается к платформе управления: тарифы, оплата картой и в приложении, RFID-карты для автопарка, удалённая диагностика.', nodes: [['Водитель', 'приложение или карта'], ['Платформа', 'OCPP, тарифы', 1], ['DC-станция', 'сессия зарядки'], ['Ваш кабинет', 'выручка, отчёты']], points: ['Вы сами задаёте цену за киловатт-час и за простой.', 'Ошибки станции видны удалённо, многие сбрасываются без выезда.', 'Отчёты по сессиям выгружаются для бухгалтерии.'] },
+{ id: 'paper', q: 'Кто займётся проектом и согласованиями?', title: 'Монтаж под ключ', text: 'Берём на себя обследование, проект, техусловия, строительные работы и пусконаладку. Вы получаете работающую станцию и одного ответственного.', nodes: [['Обследование', 'замеры на объекте'], ['Проект и ТУ', 'документы', 1], ['Монтаж', 'фундамент, кабель'], ['Пусконаладка', 'тестовая зарядка']], points: ['Один договор на оборудование и работы.', 'Сроки и состав работ фиксируем в смете до старта.', 'После запуска остаёмся на сервисе.'] }
+];
+}
+renderVals() {
+const s = this.state;
+const ink = '#0F1714';
+const accent = this.props.accent ?? '#C8F03C';
+const all = this.catalog();
+const labels = [['power', 'Мощность'], ['ports', 'Порты'], ['conn', 'Разъёмы'], ['input', 'Вход от сети'], ['volt', 'Выходное напряжение'], ['dist', 'Распределение мощности'], ['form', 'Исполнение'], ['cable', 'Охлаждение кабеля'], ['ip', 'Защита'], ['proto', 'Протокол'], ['batt', 'Накопитель']];
+const val = (p, k) => (p[k] !== undefined ? p[k] : p.f[k]);
+
+const toggleCompare = (id) => () => {
+const cur = this.state.compare;
+if (cur.indexOf(id) >= 0) this.setState({ compare: cur.filter((x) => x !== id) });
+else if (cur.length < 4) this.setState({ compare: cur.concat([id]) });
+};
+const full = s.compare.length >= 4;
+const shown = all.filter((p) => s.filter === 'all' || p.group === s.filter);
+const products = shown.map((p) => {
+const on = s.compare.indexOf(p.id) >= 0;
+const flipped = !!s.flipped[p.id];
+return Object.assign({}, p, {
+rot: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+flip: () => this.setState({ flipped: Object.assign({}, this.state.flipped, { [p.id]: !this.state.flipped[p.id] }) }),
+flipLabel: p.name + ': показать характеристики',
+inCompare: on,
+cmpLabel: on ? 'В сравнении' : (full ? 'Максимум 4' : 'Сравнить'),
+cmpBg: on ? accent : '#FFFFFF',
+toggleCompare: toggleCompare(p.id),
+specs: labels.slice(3).map((l) => ({ k: l[1], v: val(p, l[0]) }))
+});
+});
+
+const filterDefs = [['all', 'Все'], ['low', 'до 60 кВт'], ['mid', '120–160 кВт'], ['high', '240 кВт'], ['batt', 'С накопителем']];
+const filters = filterDefs.map((f) => ({ label: f[1], on: s.filter === f[0], bg: s.filter === f[0] ? ink : 'transparent', fg: s.filter === f[0] ? '#F2F4EF' : ink, pick: () => this.setState({ filter: f[0] }) }));
+
+const compared = s.compare.map((id) => all.filter((p) => p.id === id)[0]).filter(Boolean).map((p) => ({ name: p.name, removeLabel: 'Убрать из сравнения: ' + p.name, remove: toggleCompare(p.id), p: p }));
+let rows = labels.map((l) => {
+const cells = compared.map((c) => ({ v: val(c.p, l[0]) }));
+const same = cells.every((c) => c.v === (cells[0] && cells[0].v));
+return { label: l[1], cells: cells, same: same, bg: same || cells.length < 2 ? 'transparent' : '#F1F6DF' };
+});
+rows.push({ label: 'Цена', cells: compared.map(() => ({ v: '[ЦЕНА] $' })), same: true, bg: 'transparent' });
+if (s.diffOnly) rows = rows.filter((r) => !r.same);
+
+const need = s.need;
+const grid = s.grid;
+const deficit = Math.max(0, need - grid);
+const ok = deficit === 0;
+const direct = { 30: 'ETS DC-30 Wall', 60: 'ETS DC-60 Duo', 120: 'ETS DC-120 Duo', 160: 'ETS DC-160 Trio', 240: 'ETS DC-240 Split' };
+const needs = [30, 60, 120, 160, 240].map((n) => ({ label: n + ' кВт', on: need === n, bg: need === n ? ink : 'transparent', fg: need === n ? '#F2F4EF' : ink, pick: () => this.setState({ need: n }) }));
+
+const sols = this.solutions();
+const active = sols.filter((x) => x.id === s.q)[0] || sols[0];
+const questions = sols.map((x) => ({ q: x.q, on: x.id === active.id, bg: x.id === active.id ? ink : '#FFFFFF', fg: x.id === active.id ? '#F2F4EF' : ink, border: x.id === active.id ? ink : '#C4CBBE', pick: () => this.setState({ q: x.id }) }));
+const sol = { title: active.title, text: active.text, points: active.points.map((t) => ({ t: t })), nodes: active.nodes.map((n, i) => ({ label: n[0], sub: n[1], bg: n[2] ? accent : '#FFFFFF', fg: ink, next: i < active.nodes.length - 1 })) };
+
+return {
+accent: accent,
+cart: s.cart,
+bumpAnim: s.cart === 0 ? 'none' : (s.cart % 2 ? 'bumpA' : 'bumpB'),
+addToCart: () => this.setState({ cart: this.state.cart + 1 }),
+grid: grid,
+setGrid: (e) => { const v = Math.max(15, Math.min(300, Number(e.target.value) || 15)); this.setState({ grid: v }); },
+needs: needs,
+resBg: ok ? '#FFFFFF' : accent,
+resFg: ink,
+resTitle: ok ? 'Сети хватает' : 'Не хватает ' + deficit + ' кВт',
+resText: ok ? 'Станцию на ' + need + ' кВт можно подключить напрямую. Запас по мощности: ' + (grid - need) + ' кВт.' : 'Добавляем накопитель: он заряжается от ваших ' + grid + ' кВт между сессиями и добавляет недостающие ' + deficit + ' кВт во время зарядки.',
+gridPct: Math.round(Math.min(grid, need) / need * 100),
+gridPart: Math.min(grid, need),
+battLabel: ok ? '' : 'накопитель ' + deficit + ' кВт',
+resModel: ok ? direct[need] : (need === 120 ? 'ETS DC-120 Battery' : direct[need] + ' + накопитель'),
+filters: filters,
+shownCount: products.length + ' из ' + all.length,
+products: products,
+compareCount: compared.length,
+compareEmpty: compared.length === 0,
+compareFilled: compared.length > 0,
+compared: compared,
+rows: rows,
+diffOnly: s.diffOnly,
+toggleDiff: () => this.setState({ diffOnly: !this.state.diffOnly }),
+questions: questions,
+sol: sol
+};
+}
+}
+__mount(Component, {"accent":{"editor":"color","default":"#C8F03C","options":["#C8F03C","#FFC233","#5EE6C5","#FF8A4C"]},"$preview":{"width":1440,"height":5900}});
+</script>
+</body>
+</html>

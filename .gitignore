@@ -1,0 +1,16 @@
+# зависимости и сборка
+node_modules/
+dist/
+.astro/
+
+# локальные настройки
+.claude/settings.local.json
+.env*
+
+# тяжёлые артефакты
+releases/*.zip
+sources/photos/raw/
+
+# ОС
+Thumbs.db
+.DS_Store
