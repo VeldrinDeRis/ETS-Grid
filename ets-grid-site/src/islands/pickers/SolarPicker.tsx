@@ -15,7 +15,12 @@ interface Props {
 export default function SolarPicker({ kits, calc }: Props) {
   const ready = useReady();
   const [purpose, setPurpose] = useState<'home' | 'business'>('home');
-  const [monthlyKwh, setMonthly] = useState(400);
+  const [monthlyInput, setMonthly] = useState(400);
+  const tariff = calc.solar.tariff_uah_per_kwh;
+  const [mode, setMode] = useState<'kwh' | 'bill'>('kwh');
+  const [bill, setBill] = useState(2000);
+  // Рахунок → кВт·год лише коли замовник дав тариф (Q-9); до того — варіант видимий, але неактивний (D-031).
+  const monthlyKwh = mode === 'bill' && tariff ? Math.max(calc.solar.monthly_kwh_min, Math.round(bill / tariff)) : monthlyInput;
   const [mount, setMount] = useState<'roof' | 'ground'>('roof');
   const [touched, setTouched] = useState(false);
   const touch = <T,>(set: (v: T) => void) => (v: T) => {
@@ -43,16 +48,45 @@ export default function SolarPicker({ kits, calc }: Props) {
             { value: 'business', label: 'Бізнес' },
           ]}
         />
-        <NumberSlider
-          id="sp-monthly"
-          label="2. Споживання на місяць"
-          unit="кВт·год"
-          min={calc.solar.monthly_kwh_min}
-          max={calc.solar.monthly_kwh_max}
-          step={10}
-          value={monthlyKwh}
-          onChange={touch(setMonthly)}
-        />
+        <fieldset class="pk-fieldset">
+          <legend class="pk-label">2. Як рахуємо споживання</legend>
+          <div class="pk-options">
+            <label class="pk-option">
+              <input type="radio" name="sp-mode" checked={mode === 'kwh'} onChange={() => touch(setMode)('kwh')} />
+              <span>кВт·год на місяць</span>
+            </label>
+            <label class="pk-option" data-bill-option aria-disabled={tariff ? undefined : 'true'}>
+              <input
+                type="radio"
+                name="sp-mode"
+                checked={mode === 'bill'}
+                disabled={!tariff}
+                aria-describedby={tariff ? undefined : 'sp-bill-note'}
+                onChange={() => touch(setMode)('bill')}
+              />
+              <span>Рахунок, ₴</span>
+            </label>
+          </div>
+          {!tariff && (
+            <p class="pk-hint" id="sp-bill-note" data-bill-note>
+              Тариф надасть замовник — поки рахуємо за кВт·год.
+            </p>
+          )}
+        </fieldset>
+        {mode === 'bill' && tariff ? (
+          <NumberSlider id="sp-bill" label="Рахунок за місяць" unit="₴" min={100} max={50000} step={50} value={bill} onChange={touch(setBill)} />
+        ) : (
+          <NumberSlider
+            id="sp-monthly"
+            label="Споживання на місяць"
+            unit="кВт·год"
+            min={calc.solar.monthly_kwh_min}
+            max={calc.solar.monthly_kwh_max}
+            step={10}
+            value={monthlyInput}
+            onChange={touch(setMonthly)}
+          />
+        )}
         <Choice
           name="sp-mount"
           legend="3. Де ставимо панелі"

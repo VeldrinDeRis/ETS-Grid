@@ -30,6 +30,8 @@ interface PoolItem {
 
 interface Props {
   facets: ResolvedFacet[];
+  /** Фасети рівня без даних — видимі неактивні з поміткою (D-031). */
+  missing?: { key: string; label: string }[];
   products: Product[];
   /** Товари рівня для порожньої видачі. */
   pool: Product[];
@@ -69,7 +71,7 @@ function selectedMetric(state: FilterState, facets: ResolvedFacet[]): number | n
 }
 
 export default function CatalogFilters(props: Props) {
-  const { facets, products, pool, poolInfo, bounds, cars, levelId, preset, children } = props;
+  const { facets, missing = [], products, pool, poolInfo, bounds, cars, levelId, preset, children } = props;
   const ctx = useMemo(() => ({ cars }), [cars]);
   const [state, setState] = useState<FilterState>({ filters: { ...(preset?.filters ?? {}) }, sort: null });
   const [ready, setReady] = useState(false);
@@ -233,13 +235,20 @@ export default function CatalogFilters(props: Props) {
     );
   };
 
-  const facetList = (prefix: string) =>
-    secondary.map((facet, i) => (
+  const facetList = (prefix: string) => [
+    ...secondary.map((facet, i) => (
       <details class="cf-facet" open={i < 4}>
         <summary id={`${prefix}-${facet.key}`}>{facet.label}</summary>
         {facetBody(facet)}
       </details>
-    ));
+    )),
+    ...missing.map((m) => (
+      <div class="cf-facet cf-facet--missing" data-missing-facet={m.key} aria-disabled="true">
+        <p class="cf-facet__title">{m.label}</p>
+        <p class="cf-missing">Дані надасть замовник</p>
+      </div>
+    )),
+  ];
 
   return (
     <div class="cf" data-ready={ready ? 'true' : undefined}>
@@ -250,7 +259,7 @@ export default function CatalogFilters(props: Props) {
       )}
 
       <div class="cf-layout">
-        {secondary.length > 0 && (
+        {secondary.length + missing.length > 0 && (
           <aside class="cf-sidebar js-only" aria-label="Фільтри">
             {facetList('side')}
           </aside>
@@ -264,7 +273,7 @@ export default function CatalogFilters(props: Props) {
             <span class="cf-vh" aria-live="polite">
               {announced}
             </span>
-            {secondary.length > 0 && (
+            {secondary.length + missing.length > 0 && (
               <button type="button" class="cf-open" ref={opener} onClick={openSheet} aria-haspopup="dialog">
                 Фільтри{activeCount(state) > 0 ? ` (${activeCount(state)})` : ''}
               </button>
@@ -275,6 +284,9 @@ export default function CatalogFilters(props: Props) {
                 {SORT_OPTIONS.map((o) => (
                   <option value={o.value ?? ''}>{o.label}</option>
                 ))}
+                <option value="new" disabled>
+                  Новинки — немає дати появи товару
+                </option>
               </select>
             </label>
           </div>
@@ -323,7 +335,7 @@ export default function CatalogFilters(props: Props) {
         </div>
       </div>
 
-      {secondary.length > 0 && (
+      {secondary.length + missing.length > 0 && (
         <dialog class="cf-sheet" ref={sheet} aria-labelledby="cf-sheet-title" onClose={() => opener.current?.focus()}>
           <div class="cf-sheet__head">
             <h2 id="cf-sheet-title">Фільтри</h2>

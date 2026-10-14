@@ -111,6 +111,24 @@
   cursor: pointer;
 }
 
+.cf-facet--missing {
+  color: var(--color-ink-muted);
+}
+
+.cf-facet__title {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+  margin: 0;
+  font-weight: 600;
+}
+
+.cf-missing {
+  margin: 0 0 var(--space-2xs);
+  color: var(--color-placeholder);
+  font-size: var(--step--1);
+}
+
 .cf-options {
   display: flex;
   flex-wrap: wrap;
@@ -176,8 +194,16 @@
   display: flex;
   align-items: center;
   gap: var(--space-2xs);
+  min-width: 0;
+  max-width: 100%;
   font-size: var(--step--1);
   color: var(--color-ink-muted);
+}
+
+/* Довгий пункт «Новинки — немає дати…» не розтягує панель на 320 px. */
+.cf-sort select {
+  width: 11rem;
+  max-width: 100%;
 }
 
 .cf-selected {

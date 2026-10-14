@@ -135,3 +135,5 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-003/AC-11 путь до корзины ≤ 6 шагов | functional | `functional/product.spec.ts` | ✅ |
 | SPEC-003/AC-12 axe-core | a11y | `a11y/product.spec.ts` | ✅ |
 | SPEC-003/AC-13 JS ≤ 100 КБ | build | `build/budget.test.ts` | ✅ |
+| SPEC-002/AC-29 пробелы видны: фасеты без данных, «Новинки» | unit, functional | `unit/missing-facets.test.ts`, `functional/catalog.spec.ts` | ✅ |
+| SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |

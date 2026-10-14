@@ -194,6 +194,33 @@ test.describe('SPEC-002/AC-25 кошик і порівняння з картки
   });
 });
 
+test.describe('SPEC-002/AC-29 пробіли видно (D-031)', () => {
+  test('фасети рівня без даних — неактивні з поміткою; «Новинки» — неактивна', async ({ page }, info) => {
+    const catalog = new CatalogPage(page);
+    await catalog.open('/batarei/');
+    const scope = isDesktop(info) ? page.locator('.cf-sidebar') : page.locator('.cf-sheet');
+    if (!isDesktop(info)) await page.getByRole('button', { name: /^Фільтри/ }).click();
+    for (const label of ['Сумісні інвертори', 'Бренд', 'Гарантія']) {
+      const facet = scope.locator('[data-missing-facet]', { hasText: label });
+      await expect(facet).toBeVisible();
+      await expect(facet).toContainText('Дані надасть замовник');
+      await expect(facet).toHaveAttribute('aria-disabled', 'true');
+    }
+    const newest = page.locator('.cf-sort option[value="new"]');
+    await expect(newest).toHaveText('Новинки — немає дати появи товару');
+    // toBeDisabled для <option> у Playwright ненадійний — перевіряємо атрибут і властивість напряму.
+    await expect(newest).toHaveAttribute('disabled', '');
+    expect(await newest.evaluate((o: HTMLOptionElement) => o.disabled)).toBe(true);
+  });
+
+  test('фасет «не про цю категорію» не показується як пробіл', async ({ page }, info) => {
+    test.skip(!isDesktop(info), 'desktop');
+    const catalog = new CatalogPage(page);
+    await catalog.open('/sonyachni-paneli/paneli/');
+    await expect(page.locator('.cf-sidebar [data-missing-facet]', { hasText: 'Тип інвертора' })).toHaveCount(0);
+  });
+});
+
 test('SPEC-002/AC-26 події аналітики', async ({ page }) => {
   const events: string[] = [];
   page.on('console', async (msg) => {

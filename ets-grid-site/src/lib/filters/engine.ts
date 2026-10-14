@@ -211,6 +211,16 @@ export function visibleFacets(products: Product[], facets: ResolvedFacet[], _ctx
   });
 }
 
+/**
+ * Фасети рівня, за якими в усьому рівні немає реальних даних (D-031, SPEC-002 ревізія 3):
+ * показуються неактивними з поміткою «Дані надасть замовник». Головний фільтр сюди не потрапляє.
+ * Передавати товари всього рівня, а не лістингу — інакше фасет «не про цю категорію» вважатиметься пробілом.
+ */
+export function missingFacets(levelProducts: Product[], facets: ResolvedFacet[], ctx: FilterContext = {}): ResolvedFacet[] {
+  const present = new Set(visibleFacets(levelProducts, facets, ctx).map((f) => f.key));
+  return facets.filter((f) => !f.primary && !present.has(f.key));
+}
+
 /** Межі для повзунка ціни. */
 export function intervalBounds(products: Product[], facet: ResolvedFacet): [number, number] | null {
   const xs = products.map((p) => fieldValue(p, facet.field)).filter((x): x is number => typeof x === 'number');

@@ -5,7 +5,7 @@ import carsJson from '../../data/cars.json';
 import filtersJson from '../../data/filters.json';
 import CatalogFilters from '../../islands/catalog/CatalogFilters';
 import { getLevelById, getProductsBy } from '../../lib/catalog';
-import { intervalBounds, resolveFacets, visibleFacets, type Car, type FiltersFile } from '../../lib/filters';
+import { intervalBounds, missingFacets, resolveFacets, visibleFacets, type Car, type FiltersFile } from '../../lib/filters';
 import { priceView } from '../../lib/price';
 import { routes } from '../../lib/routes';
 import type { Product } from '../../lib/schema';
@@ -34,6 +34,8 @@ const bounds = Object.fromEntries(
     .filter(([, b]) => b !== null),
 );
 const pool = await getProductsBy({ level: level.key });
+// Фасети рівня без реальних даних — видимі неактивні (D-031, SPEC-002 ревізія 3).
+const missing = missingFacets(pool, resolveFacets(config, pool, ctx), ctx).map((f) => ({ key: f.key, label: f.label }));
 const poolInfo = Object.fromEntries(
   pool.map((p) => [p.slug, { slug: p.slug, name: p.name, url: routes.product(p.slug), price: priceView(p).primary }]),
 );
@@ -45,6 +47,7 @@ const poolInfo = Object.fromEntries(
     <CatalogFilters
       client:visible
       facets={facets}
+      missing={missing}
       products={products}
       pool={pool}
       poolInfo={poolInfo}

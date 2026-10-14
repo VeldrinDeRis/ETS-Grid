@@ -32,7 +32,7 @@ test.describe('SPEC-004/AC-12 підбірники реагують одразу
   test('СЕС: 400 → 4,2 kWp; 800 → 8,3 kWp', async ({ page }) => {
     const root = await openPicker(page, '/sonyachni-paneli/', 'solar');
     await expect(root.locator('.pk-big')).toHaveText('4,2');
-    const field = root.getByLabel('2. Споживання на місяць, кВт·год');
+    const field = root.getByLabel('Споживання на місяць, кВт·год');
     await field.fill('800');
     await field.blur();
     await expect(root.locator('.pk-big')).toHaveText('8,3');
@@ -95,6 +95,17 @@ test.describe('SPEC-004/AC-15 повзунок і поле синхронні, �
       el.dispatchEvent(new Event('input', { bubbles: true }));
     });
     await expect(field).toHaveValue('120');
+  });
+});
+
+test.describe('SPEC-004/AC-20 «рахунок, ₴» видимий неактивний до тарифу (D-031, Q-9)', () => {
+  test('варіант є, вимкнений, з поміткою; розрахунок іде за кВт·год', async ({ page }) => {
+    const root = await openPicker(page, '/sonyachni-paneli/', 'solar');
+    const bill = root.getByLabel('Рахунок, ₴');
+    await expect(bill).toBeVisible();
+    await expect(bill).toBeDisabled();
+    await expect(root.locator('[data-bill-note]')).toHaveText('Тариф надасть замовник — поки рахуємо за кВт·год.');
+    await expect(root.getByLabel('кВт·год на місяць')).toBeChecked();
   });
 });
 
