@@ -1,4 +1,6 @@
 // Логіка фільтрації (SPEC-002 §3.2): чисті функції без DOM, спільні для сервера й острова.
+import { autonomyHours } from '../calc/formulas';
+import { calc } from '../calc/config';
 import { formatNumber, NBSP } from '../format';
 import type { Product } from '../schema';
 import type { Car, FacetConfig, LevelFilterConfig } from './config';
@@ -52,6 +54,8 @@ export function productPrice(p: Product): number | null {
 /** Значення поля товару за описом `field` фасету. */
 export function fieldValue(p: Product, field: string): unknown {
   if (field === 'price') return productPrice(p);
+  // Час автономії на «базових потребах» (SPEC-004 §3.5, D-029 п. 3).
+  if (field === 'autonomy_h') return autonomyHours(p, calc);
   if (field === 'price_per_w') {
     const w = p.attrs.panel_w;
     return p.price_equipment !== null && typeof w === 'number' && w > 0 ? p.price_equipment / w : null;

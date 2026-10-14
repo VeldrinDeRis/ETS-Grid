@@ -1,0 +1,48 @@
+{
+  "_note": "Коефіцієнти підбірників (SPEC-004 §3.1, D-029). Правити тут — без зміни коду. У кожного значення — джерело.",
+  "power": {
+    "need_options_kw": {"value": [7, 11, 22, 60, 120, 160, 240], "source": "03 §3.1"},
+    "grid_min_kw": {"value": 3, "source": "03 §3.1 (повзунок 3–300)"},
+    "grid_max_kw": {"value": 300, "source": "03 §3.1 (повзунок 3–300)"},
+    "ac_max_kw": {"value": 22, "source": "каталог: AC-станції до 22 кВт, вище — DC"},
+    "battery_buffer_h": {"value": 0.5, "source": "03 §3.1: буфер на 30 хв сесії"},
+    "battery_round_kwh": {"value": 10, "source": "03 §3.1: ceil(deficit × 0,5 / 10) × 10"}
+  },
+  "battery": {
+    "loads": {
+      "value": [
+        {"id": "light_internet", "label": "Світло й інтернет", "w": 150},
+        {"id": "fridge", "label": "Холодильник", "w": 150},
+        {"id": "boiler_pump", "label": "Котел і насос", "w": 250},
+        {"id": "tv_laptop", "label": "ТВ / ноутбук", "w": 150},
+        {"id": "water_heater", "label": "Бойлер", "w": 2000},
+        {"id": "ev", "label": "Заряджати авто", "w": 7000}
+      ],
+      "source": "03 §3.2"
+    },
+    "dod": {"value": 0.9, "source": "03 §3.2"},
+    "inverter_eff": {"value": 0.95, "source": "03 §3.2"},
+    "hours_min": {"value": 1, "source": "SPEC-004 §3.3"},
+    "hours_max": {"value": 48, "source": "SPEC-004 §3.3"},
+    "autonomy_reference_loads": {"value": ["light_internet", "fridge"], "source": "D-029 п. 3: «базові потреби» = 300 Вт"}
+  },
+  "solar": {
+    "yield_kwh_per_kwp_year": {"value": 1150, "source": "03 §3.3: 1100–1200 кВт·год на kWp у рік"},
+    "panel_w": {"value": 550, "source": "03 §3.3"},
+    "area_m2_per_panel": {"value": 2.6, "source": "03 §3.3"},
+    "monthly_kwh_min": {"value": 50, "source": "SPEC-004 §4"},
+    "monthly_kwh_max": {"value": 20000, "source": "SPEC-004 §4"},
+    "tariff_uah_per_kwh": {"value": null, "source": "Q-9: тариф надає замовник"}
+  },
+  "carport": {
+    "places_min": {"value": 2, "source": "03 §3.4"},
+    "places_max": {"value": 100, "source": "03 §3.4"},
+    "places_step": {"value": 2, "source": "03 §3.4"},
+    "kwp_per_place": {"value": 3.3, "source": "03 §3.4; референс editorial"},
+    "panels_per_place": {"value": 6, "source": "03 §3.4"},
+    "places_per_port": {"value": 2, "source": "03 §3.4: ceil(places / 2)"},
+    "storage_kwh_per_place": {"value": 5, "source": "03 §3.4"},
+    "storage_round_kwh": {"value": 25, "source": "03 §3.4: ceil(places × 5 / 25) × 25"},
+    "co2_t_per_place_year": {"value": 2.95, "source": "03 §3.4, позначка «*орієнтовно»"}
+  }
+}
