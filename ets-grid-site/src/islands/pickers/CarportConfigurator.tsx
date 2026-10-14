@@ -10,9 +10,11 @@ interface Props {
   carports: Product[];
   info: Record<string, ProductInfo>;
   calc: Calc;
+  /** mini — лише кількість місць, розрахунок із зарядками й накопичувачем (головна, SPEC-006 блок 6). */
+  mode?: 'full' | 'mini';
 }
 
-export default function CarportConfigurator({ carports, info, calc }: Props) {
+export default function CarportConfigurator({ carports, info, calc, mode = 'full' }: Props) {
   const ready = useReady();
   const c = calc.carport;
   const [places, setPlaces] = useState(20);
@@ -44,32 +46,40 @@ export default function CarportConfigurator({ carports, info, calc }: Props) {
             setTouched(true);
           }}
         />
-        <Choice
-          name="cc-chargers"
-          legend="2. Потрібні зарядки?"
-          value={chargers}
-          onChange={(v) => {
-            setChargers(v);
-            setTouched(true);
-          }}
-          options={[
-            { value: 'yes', label: 'Так' },
-            { value: 'no', label: 'Ні' },
-          ]}
-        />
-        <Choice
-          name="cc-storage"
-          legend="3. Потрібен накопичувач?"
-          value={storage}
-          onChange={(v) => {
-            setStorage(v);
-            setTouched(true);
-          }}
-          options={[
-            { value: 'yes', label: 'Так' },
-            { value: 'no', label: 'Ні' },
-          ]}
-        />
+        {mode === 'mini' ? (
+          <p class="pk-muted">
+            Розрахунок — із зарядками й накопичувачем. <a href="/solar-carport/#konfigurator">Повний конфігуратор</a>
+          </p>
+        ) : (
+          <>
+            <Choice
+              name="cc-chargers"
+              legend="2. Потрібні зарядки?"
+              value={chargers}
+              onChange={(v) => {
+                setChargers(v);
+                setTouched(true);
+              }}
+              options={[
+                { value: 'yes', label: 'Так' },
+                { value: 'no', label: 'Ні' },
+              ]}
+            />
+            <Choice
+              name="cc-storage"
+              legend="3. Потрібен накопичувач?"
+              value={storage}
+              onChange={(v) => {
+                setStorage(v);
+                setTouched(true);
+              }}
+              options={[
+                { value: 'yes', label: 'Так' },
+                { value: 'no', label: 'Ні' },
+              ]}
+            />
+          </>
+        )}
       </form>
 
       <Result summary={summary}>

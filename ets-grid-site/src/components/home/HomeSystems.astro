@@ -1,0 +1,158 @@
+---
+// Блок 2 — «Що вам потрібно?»: вкладки сегментів із готовими системами (SPEC-006 §4.2, §4.5).
+// Без JS — усі панелі підряд із заголовками; з JS — WAI-ARIA Tabs (src/scripts/home.ts).
+import { getProductsBy, getSystems } from '../../lib/catalog';
+import { home, systemPrice } from '../../lib/home';
+import { routes } from '../../lib/routes';
+import DemoBadge from '../ui/DemoBadge.astro';
+
+const systems = await getSystems();
+const products = await getProductsBy();
+const MIN = 3;
+---
+<div class="systems" data-tabs>
+  <h2 id="systems-title">Що вам потрібно?</h2>
+  <div class="systems__tablist js-only" role="tablist" aria-labelledby="systems-title">
+    {
+      home.tabs.map((tab, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`tab-${tab.segment}`}
+          aria-controls={`panel-${tab.segment}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+        >
+          {tab.label}
+        </button>
+      ))
+    }
+  </div>
+  {
+    home.tabs.map((tab) => {
+      const list = systems.filter((s) => s.segment === tab.segment);
+      return (
+        <section class="systems__panel" role="tabpanel" id={`panel-${tab.segment}`} aria-labelledby={`tab-${tab.segment}`} data-tab-panel>
+          <h3 class="systems__panel-title">{tab.label}</h3>
+          <ul role="list" class="systems__list">
+            {list.map((s) => {
+              const price = systemPrice(s, products);
+              return (
+                <li class="systems__item">
+                  <h4 class="systems__name">{s.name}</h4>
+                  <p class="systems__result">{s.result}</p>
+                  <p class="systems__price num">
+                    {price.text}
+                    {price.demo && <DemoBadge />}
+                  </p>
+                  <a class="systems__link" href={routes.system(s.slug)}>
+                    Детальніше<span class="visually-hidden">: {s.name}</span>
+                  </a>
+                </li>
+              );
+            })}
+            {list.length < MIN && (
+              <li class="systems__item systems__item--fallback">
+                <h4 class="systems__name">Підберемо систему під ваш обʼєкт</h4>
+                <p class="systems__result">Відповісте на 3 питання — порахуємо склад і ціну.</p>
+                <a class="systems__link" href={tab.fallback_href}>
+                  Підібрати<span class="visually-hidden">: {tab.label}</span>
+                </a>
+              </li>
+            )}
+          </ul>
+        </section>
+      );
+    })
+  }
+</div>
+
+<style>
+  .systems__tablist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-bottom: var(--space-m);
+  }
+  .systems__tablist button {
+    min-height: var(--tap);
+    padding: 0 var(--space-m);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-ink);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .systems__tablist button[aria-selected='true'] {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  :global(html.js) .systems__panel-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .systems__panel + .systems__panel {
+    margin-top: var(--space-l);
+  }
+  :global(html.js) .systems__panel + .systems__panel {
+    margin-top: 0;
+  }
+  .systems__panel[hidden] {
+    display: none;
+  }
+  .systems__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-s);
+  }
+  .systems__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+  }
+  .systems__item--fallback {
+    border: 1px dashed var(--color-ink-muted);
+    background: transparent;
+    box-shadow: none;
+  }
+  .systems__name {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+  .systems__result {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+  .systems__price {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    align-items: baseline;
+    margin: 0;
+    font-weight: 700;
+  }
+  .systems__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    margin-top: auto;
+    font-weight: 600;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>

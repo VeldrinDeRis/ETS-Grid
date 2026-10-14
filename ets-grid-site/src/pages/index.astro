@@ -1,61 +1,67 @@
 ---
-// Головна — заглушка; наповнює SPEC-006 після раунду дизайну.
-import StubNotice from '../components/layout/StubNotice.astro';
+// Головна (SPEC-006, етап 1): 11 блоків ТЗ §6.1 у фіксованому порядку.
+import EnergyFlow from '../components/home/EnergyFlow.astro';
+import HomeBlocks from '../components/home/HomeBlocks.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import HomeHits from '../components/home/HomeHits.astro';
+import HomeSystems from '../components/home/HomeSystems.astro';
 import Picker from '../components/pickers/Picker.astro';
 import Section from '../components/ui/Section.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getLevels } from '../lib/catalog';
-import { routes } from '../lib/routes';
+import { activeVariant } from '../lib/home';
 
-const levels = getLevels();
+const variant = activeVariant();
 ---
 <BaseLayout
-  title="ETS GRID — зарядні станції та сонячна енергія під ключ"
-  description="Зарядні станції, сонячні панелі, батареї та Solar Carport з підбором, доставкою й монтажем. Київ і вся Україна."
+  title={`ETS GRID — ${variant.h1}`}
+  description="Зарядні станції, сонячні панелі, батареї та Solar Carport для бізнесу й дому: перевірка вводу, доставка, монтаж під ключ. Київ і вся Україна."
 >
-  <Section>
-    <h1>Зарядні станції та сонячна енергія під ключ</h1>
-    <StubNotice spec="SPEC-006" note="Тут буде продаючий перший екран і 11 блоків головної з ТЗ §6.1." />
-    <ul role="list" class="levels">
-      {
-        levels.map((level) => (
-          <li>
-            <a href={routes.level(level.slug)}>
-              <strong>{level.name}</strong>
-              <span>{level.short}</span>
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+  <HomeHero />
+
+  <Section label="Що вам потрібно?">
+    <div data-home-block="systems"><HomeSystems /></div>
   </Section>
 
   <Section id="potuzhnist" label="Чи вистачить потужності?" surface="night">
-    <!-- SPEC-004 §3.3: тимчасово на заглушці; SPEC-006 переставить у блок 3 головної (D-029 п. 6). -->
-    <h2>Чи вистачить потужності?</h2>
-    <Picker kind="power" />
+    <div data-home-block="power">
+      <h2>Чи вистачить потужності?</h2>
+      <Picker kind="power" />
+    </div>
+  </Section>
+
+  <Section label="Хіти каталогу">
+    <div data-home-block="hits"><HomeHits /></div>
+  </Section>
+
+  <Section label="Не тільки розетка" surface="night">
+    <div data-home-block="flow"><EnergyFlow /></div>
+  </Section>
+
+  <Section label="Solar Carport">
+    <div data-home-block="carport"><HomeBlocks part="carport" /></div>
+  </Section>
+
+  <Section label="Як ми працюємо">
+    <div data-home-block="steps"><HomeBlocks part="steps" /></div>
+  </Section>
+
+  <Section label="Незручні питання">
+    <div data-home-block="faq"><HomeBlocks part="faq" /></div>
+  </Section>
+
+  <Section label="Обʼєкти">
+    <div data-home-block="cases"><HomeBlocks part="cases" /></div>
+  </Section>
+
+  <Section label="Фінансування">
+    <div data-home-block="financing"><HomeBlocks part="financing" /></div>
+  </Section>
+
+  <Section label="Заявка" surface="night">
+    <div data-home-block="final"><HomeBlocks part="final" /></div>
   </Section>
 </BaseLayout>
 
-<style>
-  .levels {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    gap: var(--space-s);
-  }
-  .levels a {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3xs);
-    height: 100%;
-    padding: var(--space-m);
-    border-radius: var(--radius-m);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-1);
-    text-decoration: none;
-  }
-  .levels span {
-    color: var(--color-ink-muted);
-    font-size: var(--step--1);
-  }
-</style>
+<script>
+  import '../scripts/home';
+</script>

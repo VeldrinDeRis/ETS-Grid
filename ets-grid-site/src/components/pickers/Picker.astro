@@ -17,8 +17,10 @@ import ScenarioTable from './ScenarioTable.astro';
 
 interface Props {
   kind: 'charging' | 'power' | 'solar' | 'battery' | 'carport';
+  /** mini — лише головне питання (Carport на головній, SPEC-006). */
+  mode?: 'full' | 'mini';
 }
-const { kind } = Astro.props;
+const { kind, mode = 'full' } = Astro.props;
 
 const levelKey = kind === 'power' ? 'charging' : kind;
 const products = await getProductsBy({ level: levelKey });
