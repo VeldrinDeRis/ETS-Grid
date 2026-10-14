@@ -46,5 +46,8 @@
 - Проверка: Playwright MCP, Chrome DevTools MCP (`lighthouse_audit`), встроенный браузер.
 - Windows: PowerShell с `ExecutionPolicy RemoteSigned` (CurrentUser) — `npx`/`npm` работают.
 
+## Имена файлов (D-025)
+Новые файлы и папки — на английском, kebab-case; компоненты — PascalCase. Без транслита и кириллицы. Исключения: `brief/` (файлы заказчика), `src/pages/` (путь = URL из карты 03, транслит), slug в данных.
+
 ## Git
 Локальная идентичность задана в репозитории. Коммитить по логическим шагам; `brief/` не редактировать.
