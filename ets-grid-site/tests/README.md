@@ -191,3 +191,4 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-010/AC-09 визуальные эталоны: главная, уровень, листинг, карточка × 375/1440 | visual | `visual/templates.spec.ts` | ✅ |
 | SPEC-010/AC-10 Lighthouse mobile | вручную | `qa/README.md` | ✅ |
 | SPEC-010/AC-08 фото в CREDITS.md, AVIF/WebP, места на страницах | build | `build/images.test.ts` | ✅ |
+| D-042 иллюстрации товаров с меткой, без них — портативная и адаптер; вне JSON-LD | build | `build/images.test.ts` | ✅ |

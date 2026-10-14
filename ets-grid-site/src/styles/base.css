@@ -189,3 +189,17 @@ input[type='checkbox']:disabled {
 .crumbs + main > section:first-child {
   padding-top: var(--space-l);
 }
+
+/* Мітка «Ілюстративне фото» (D-042): видно, що на фото схоже обладнання, а не сам товар. */
+.photo-note {
+  position: absolute;
+  left: var(--space-xs);
+  bottom: var(--space-xs);
+  z-index: 1;
+  padding: 0.2em 0.6em;
+  border-radius: var(--radius-s);
+  background: var(--day-ink);
+  color: var(--day-bg);
+  font-size: var(--step--1);
+  line-height: 1.3;
+}

@@ -1,41 +1,60 @@
-// Оптимізація фото для макета (SPEC-010 §5): кадрування, AVIF + WebP у кількох ширинах → public/img/.
-// Сирі файли — у ../sources/photos/raw/ (поза git). Запуск: node scripts/photos.mjs
+// Оптимізація фото для макета (SPEC-010 §5, D-042): кадрування, AVIF + WebP у кількох ширинах → public/img/photos/.
+// Сирі файли — у ../sources/photos/raw/ (поза git). Запуск: node scripts/photos.mjs [ключ…]
 import { mkdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const sharp = createRequire(import.meta.url)('sharp');
-const RAW = new URL('../../sources/photos/raw/2026-10-14/', import.meta.url);
-const OUT = new URL('../public/img/photos/', import.meta.url);
+const RAW = fileURLToPath(new URL('../../sources/photos/raw/2026-10-14/', import.meta.url));
+const OUT = fileURLToPath(new URL('../public/img/photos/', import.meta.url));
 mkdirSync(OUT, { recursive: true });
 
-/** crop — частки кадру [x, y, w, h]; ratio результату 4:3. */
+/**
+ * src — сирий файл; crop — частки кадру [x, y, w, h], результат приводиться до ratio по центру вирізу.
+ * Герої — 4:3 (640/1280/1920); товарні ілюстрації — 1:1 (480/960), ключі з префіксом «p-».
+ */
+const HERO = { ratio: 4 / 3, widths: [640, 1280, 1920] };
+const PRODUCT = { ratio: 1, widths: [480, 960] };
 export const PHOTOS = [
-  { key: 'hero-dc-night', crop: [0, 0.06, 0.78, 0.88] },
-  { key: 'home-ac-wallbox', crop: [0.08, 0, 0.67, 1] },
-  { key: 'roof-solar', crop: [0, 0, 1, 1] },
-  { key: 'bess-container', crop: [0, 0.24, 1, 0.5625] },
-  { key: 'carport-charging', crop: [0, 0, 1, 1] },
-  { key: 'carport-below', crop: [0, 0.18, 1, 0.56] },
+  { key: 'hero-dc-night', src: 'hero-dc-night', crop: [0, 0.06, 0.78, 0.88], ...HERO },
+  { key: 'home-ac-wallbox', src: 'home-ac-wallbox', crop: [0.08, 0, 0.67, 1], ...HERO },
+  { key: 'roof-solar', src: 'roof-solar', crop: [0, 0, 1, 1], ...HERO },
+  { key: 'bess-container', src: 'bess-container', crop: [0, 0.24, 1, 0.5625], ...HERO },
+  { key: 'carport-charging', src: 'carport-charging', crop: [0, 0, 1, 1], ...HERO },
+  { key: 'carport-below', src: 'carport-below', crop: [0, 0.18, 1, 0.56], ...HERO },
+  // ілюстрації товарів (D-042)
+  { key: 'p-ac-wallbox', src: 'home-ac-wallbox', crop: [0.25, 0, 0.5, 1], ...PRODUCT },
+  { key: 'p-ac-duo', src: 'duo-two-cables', crop: [0.15, 0, 0.7, 1], ...PRODUCT },
+  { key: 'p-dc-charging', src: 'dc-charging-car', crop: [0, 0.2, 1, 0.6], ...PRODUCT },
+  { key: 'p-panel', src: 'panel-on-roof', crop: [0.1, 0, 0.8, 1], ...PRODUCT },
+  { key: 'p-inverter', src: 'inverter-battery-wall', crop: [0, 0.05, 1, 0.75], ...PRODUCT },
+  { key: 'p-solar-kit', src: 'roof-solar', crop: [0.2, 0, 0.6, 1], ...PRODUCT },
+  { key: 'p-home-battery', src: 'home-battery', crop: [0.44, 0.37, 0.56, 0.63], ...PRODUCT },
+  { key: 'p-bess', src: 'bess-container', crop: [0, 0.2, 1, 0.75], ...PRODUCT },
+  { key: 'p-carport', src: 'carport-charging', crop: [0.15, 0, 0.7, 1], ...PRODUCT },
+  { key: 'p-carport-below', src: 'carport-below', crop: [0, 0.15, 1, 0.6], ...PRODUCT },
 ];
-const WIDTHS = [640, 1280, 1920];
 
-for (const p of PHOTOS) {
-  const src = sharp(new URL(`${p.key}.jpg`, RAW).pathname.replace(/^\/(\w:)/, '$1'));
-  const { width, height } = await src.metadata();
+const only = new Set(process.argv.slice(2));
+for (const p of PHOTOS.filter((x) => only.size === 0 || only.has(x.key))) {
+  const file = join(RAW, `${p.src}.jpg`);
+  const { width, height } = await sharp(file).metadata();
   const [x, y, w, h] = p.crop;
   let left = Math.round(x * width), top = Math.round(y * height), cw = Math.round(w * width), ch = Math.round(h * height);
-  // приводимо до 4:3 по центру вирізу
-  if (cw / ch > 4 / 3) { const nw = Math.round(ch * 4 / 3); left += Math.round((cw - nw) / 2); cw = nw; }
-  else { const nh = Math.round(cw * 3 / 4); top += Math.round((ch - nh) / 2); ch = nh; }
-  for (const size of WIDTHS.filter((s) => s <= cw)) {
-    const base = sharp(new URL(`${p.key}.jpg`, RAW).pathname.replace(/^\/(\w:)/, '$1'))
-      .extract({ left, top, width: cw, height: ch })
-      .resize({ width: size })
-      .modulate({ saturation: 0.9 });
-    const dir = OUT.pathname.replace(/^\/(\w:)/, '$1');
-    await base.clone().avif({ quality: 50 }).toFile(join(dir, `${p.key}-${size}.avif`));
-    await base.clone().webp({ quality: 72 }).toFile(join(dir, `${p.key}-${size}.webp`));
+  if (cw / ch > p.ratio) {
+    const nw = Math.round(ch * p.ratio);
+    left += Math.round((cw - nw) / 2);
+    cw = nw;
+  } else {
+    const nh = Math.round(cw / p.ratio);
+    top += Math.round((ch - nh) / 2);
+    ch = nh;
   }
-  console.log(p.key, `${cw}x${ch}`, 'from', `${width}x${height}`);
+  for (const size of p.widths.filter((s) => s <= cw)) {
+    const base = sharp(file).extract({ left, top, width: cw, height: ch }).resize({ width: size }).modulate({ saturation: 0.9 });
+    await base.clone().avif({ quality: 50 }).toFile(join(OUT, `${p.key}-${size}.avif`));
+    await base.clone().webp({ quality: 72 }).toFile(join(OUT, `${p.key}-${size}.webp`));
+  }
+  console.log(p.key, `${cw}x${ch}`, 'from', `${p.src} ${width}x${height}`);
 }

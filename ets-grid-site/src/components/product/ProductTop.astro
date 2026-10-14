@@ -8,6 +8,8 @@ import { routes } from '../../lib/routes';
 import type { LevelKey, Product } from '../../lib/schema';
 import DemoBadge from '../ui/DemoBadge.astro';
 import { LEVEL_ICON } from '../../lib/level-icons';
+import { ILLUSTRATION_LABEL, PRODUCT_ILLUSTRATION } from '../../lib/photos';
+import Photo from '../ui/Photo.astro';
 import Icon, { type IconName } from '../layout/Icon.astro';
 import Placeholder from '../ui/Placeholder.astro';
 import Price from '../ui/Price.astro';
@@ -22,6 +24,8 @@ const SLOTS = 4;
 const toggle = hasToggle(product);
 const install = installPrice(product);
 const compositionKey = product.type === 'kit' ? 'kit' : levelKey;
+/** Ілюстрація до фото від замовника (D-042) — лише на місці головного фото. */
+const illustration = image ? undefined : PRODUCT_ILLUSTRATION[product.slug];
 const composition = (productContent.composition as Record<string, string[]>)[compositionKey] ?? [];
 const inStock = product.stock === 'in_stock';
 const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
@@ -50,6 +54,11 @@ function rowIcon(row: { key?: string; label: string }): IconName | undefined {
                 <img src={image.src} alt={image.alt} width="600" height="600" />
                 <span class="visually-hidden">Збільшити фото</span>
               </button>
+            </li>
+          ) : i === 0 && illustration ? (
+            <li class="gallery__item gallery__item--main gallery__item--illustration">
+              <Photo photo={illustration} sizes="(max-width: 959px) calc(100vw - 2rem), 40vw" priority />
+              <span class="photo-note">{ILLUSTRATION_LABEL}</span>
             </li>
           ) : (
             <li class:list={['gallery__item', { 'gallery__item--main': i === 0 }]} data-gallery-placeholder>
@@ -202,6 +211,9 @@ function rowIcon(row: { key?: string; label: string }): IconName | undefined {
   /* Місце без фото — видима рамка (D-031), щоб пробіл було видно на будь-якому фоні. */
   .gallery__item[data-gallery-placeholder] {
     border: 1px dashed var(--color-placeholder);
+  }
+  .gallery__item--illustration {
+    position: relative;
   }
   .gallery__empty {
     display: grid;

@@ -7,6 +7,8 @@ import { routes } from '../../lib/routes';
 import type { Product } from '../../lib/schema';
 import { LEVEL_ICON } from '../../lib/level-icons';
 import Icon from '../layout/Icon.astro';
+import { ILLUSTRATION_LABEL, PRODUCT_ILLUSTRATION } from '../../lib/photos';
+import Photo from '../ui/Photo.astro';
 import Price from '../ui/Price.astro';
 
 interface Props {
@@ -21,12 +23,18 @@ const badge = cardBadge(product);
 const chars = variant === 'listing' ? keyChars(product) : [];
 const level = getLevelById(product.level);
 const inStock = product.stock === 'in_stock';
+const illustration = image ? undefined : PRODUCT_ILLUSTRATION[product.slug];
 ---
 <article class:list={['product-card', `product-card--${variant}`]} data-product-card data-slug={product.slug}>
   <div class="product-card__photo">
     {
       image ? (
         <img src={image.src} alt={image.alt} width="400" height="400" loading="lazy" decoding="async" />
+      ) : illustration ? (
+        <>
+          <Photo photo={illustration} sizes="(max-width: 639px) calc(100vw - 3rem), 18rem" class="product-card__illustration" />
+          <span class="photo-note">{ILLUSTRATION_LABEL}</span>
+        </>
       ) : (
         <span class="product-card__photo-label" aria-hidden="true">
           <Icon name={LEVEL_ICON[level.key]} size={36} />
