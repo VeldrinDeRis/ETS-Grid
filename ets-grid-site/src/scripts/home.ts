@@ -1,6 +1,6 @@
 // Поведінка головної (SPEC-006 §4.7): вкладки, фільтри хітів, варіант героя, аналітика, лінії енергії.
 import { splitText } from '@motionplus/core';
-import { animate, inView, stagger } from 'motion';
+import { animate, frame, inView, motionValue, stagger } from 'motion';
 import { track } from '../lib/track';
 
 /* ---------- вкладки блоку 2: WAI-ARIA Tabs ---------- */
@@ -114,4 +114,30 @@ if (heroTitle && document.documentElement.dataset.motion === 'on' && !reduce) {
       heroTitle.removeAttribute('aria-label');
     });
   });
+}
+
+/* ---------- Акт I · лампа-курсор над героєм (SPEC-006 §4.9, D-054) ----------
+   За прикладом Motion+ «Conic gradient pointer»: позиція вказівника → motionValue → frame.render, без читання
+   розмірів у кожному кадрі. Лише desktop із точним вказівником; при reduced-motion лампа не вмикається. */
+const heroBlock = document.querySelector<HTMLElement>('[data-home-block="hero"]');
+const heroLamp = heroBlock?.querySelector<HTMLElement>('[data-hero-lamp]');
+if (heroBlock && heroLamp && !reduce && matchMedia('(pointer: fine)').matches) {
+  const lx = motionValue(0);
+  const ly = motionValue(0);
+  let rect = heroBlock.getBoundingClientRect();
+  const measure = () => (rect = heroBlock.getBoundingClientRect());
+  const render = () => {
+    heroBlock.style.setProperty('--lx', `${lx.get()}px`);
+    heroBlock.style.setProperty('--ly', `${ly.get()}px`);
+  };
+  lx.on('change', () => frame.render(render));
+  ly.on('change', () => frame.render(render));
+  addEventListener('resize', () => frame.read(measure));
+  addEventListener('scroll', () => frame.read(measure), { passive: true });
+  heroBlock.addEventListener('pointermove', (e) => {
+    lx.set(e.clientX - rect.left);
+    ly.set(e.clientY - rect.top);
+  });
+  heroBlock.addEventListener('pointerenter', () => animate(heroLamp, { opacity: 1 }, { duration: 0.6, ease: [0.16, 1, 0.3, 1] }));
+  heroBlock.addEventListener('pointerleave', () => animate(heroLamp, { opacity: 0 }, { duration: 0.9, ease: [0.16, 1, 0.3, 1] }));
 }

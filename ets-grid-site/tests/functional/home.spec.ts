@@ -10,16 +10,45 @@ const levelOf = (slug: string) => catalog.products.find((p) => p.slug === slug)!
 const variant = (id: string) => homeJson.hero.variants.find((v) => v.id === id)!;
 
 test.describe('SPEC-006/AC-04 рамки фото видно на обох екранах (D-031)', () => {
-  test('фото героя і навісу видимі; на 375 фото героя — після плиток рівнів', async ({ page }, info) => {
+  test('фото героя — тло всього блоку, фото навісу видиме (рев. 5, акт I)', async ({ page }) => {
     await page.goto('/');
     const heroPhoto = page.locator('.hero__photo');
     await expect(heroPhoto).toBeVisible();
     await expect(page.locator('.carport__photo')).toBeVisible();
+    const hero = (await page.locator('[data-home-block="hero"]').boundingBox())!;
+    const photo = (await heroPhoto.boundingBox())!;
+    expect(Math.abs(photo.y - hero.y)).toBeLessThanOrEqual(2);
+    expect(Math.abs(photo.height - hero.height)).toBeLessThanOrEqual(2);
+    expect(Math.abs(photo.width - hero.width)).toBeLessThanOrEqual(2);
+    await expect(heroPhoto.locator('img')).toHaveAttribute('fetchpriority', 'high');
+  });
+});
+
+test.describe('SPEC-006/AC-28 лампа-курсор над героєм (акт I)', () => {
+  test('desktop: після руху вказівника лампа видима і йде за ним; на 375 лампи нема', async ({ page }, info) => {
+    await page.goto('/');
+    const lamp = page.locator('[data-hero-lamp]');
     if (isMobile(info)) {
-      const tiles = await page.locator('.hero__tiles').boundingBox();
-      const photo = await heroPhoto.boundingBox();
-      expect(photo!.y).toBeGreaterThan(tiles!.y);
+      await expect(lamp).toBeHidden();
+      return;
     }
+    await page.mouse.move(900, 300);
+    await page.mouse.move(1000, 400);
+    await expect(lamp).toHaveCSS('opacity', '1', { timeout: 1500 });
+    const vars = await page.locator('[data-home-block="hero"]').evaluate((el) => [el.style.getPropertyValue('--lx'), el.style.getPropertyValue('--ly')]);
+    expect(vars[0]).toBe('1000px');
+    expect(parseFloat(vars[1])).toBeGreaterThan(0);
+    await page.mouse.move(700, 20);
+    await expect(lamp).toHaveCSS('opacity', '0', { timeout: 2000 });
+  });
+});
+
+test.describe('SPEC-006/AC-29 довіра і контакт у першому екрані 1440', () => {
+  test.beforeEach(({}, info) => test.skip(!isDesktop(info), 'тільки desktop'));
+  test('полоса довіри й контакти — в межах 900 px, лампа не акцентний елемент (AC-17)', async ({ page }) => {
+    await page.goto('/');
+    const box = (await page.locator('[data-home-block="hero"] .hero__trust').boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
   });
 });
 

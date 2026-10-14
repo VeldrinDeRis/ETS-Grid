@@ -35,6 +35,14 @@ test.describe('SPEC-006/AC-19 вкладки без JS', () => {
 test.describe('SPEC-006/AC-20 reduced-motion', () => {
   test.use({ reducedMotion: 'reduce' });
 
+  test('SPEC-006/AC-28: лампа-курсор не вмикається', async ({ page }) => {
+    await page.goto('/');
+    await page.mouse.move(900, 300);
+    await page.mouse.move(1000, 400);
+    await page.waitForTimeout(500);
+    await expect(page.locator('[data-hero-lamp]')).not.toHaveCSS('opacity', '1');
+  });
+
   test('лінії енергії не анімуються', async ({ page }) => {
     await page.goto('/');
     const flow = page.locator('[data-energy-flow]');
