@@ -1,0 +1,387 @@
+<title>ETS GRID: выбор направления</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@400..800&family=Wix+Madefor+Text:wght@400..700&family=Fira+Sans+Extra+Condensed:wght@700;800&family=Commissioner:wght@400..700&display=swap">
+<style>
+  /* Рабочий лист сравнения: нейтральная рамка, внутри — два направления в своих шрифтах и цветах.
+     Две колонки на десктопе, одна под другой на телефоне. */
+  :root {
+    --bg: #F3F4F2;
+    --panel: #FFFFFF;
+    --fg: #15171A;
+    --muted: #5A5F66;
+    --line: #DADDD8;
+    --pick: #15171A;
+    --font-ui: "Commissioner", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+    /* А «Теплий світ» */
+    --a-night: #0D1424;
+    --a-night-surface: #16203A;
+    --a-night-ink: #F4F6F8;
+    --a-night-muted: #A7B1C2;
+    --a-day: #F4F6F8;
+    --a-day-surface: #FFFFFF;
+    --a-day-ink: #0D1424;
+    --a-day-muted: #4A5568;
+    --a-accent: #FFB547;
+    --a-line: #D9DEE5;
+    --a-display: "Geologica", system-ui, sans-serif;
+    --a-text: "Wix Madefor Text", system-ui, sans-serif;
+
+    /* Б «Сигнал» */
+    --b-night: #11110F;
+    --b-night-surface: #1D1D1A;
+    --b-night-ink: #ECEBE4;
+    --b-night-muted: #A6A399;
+    --b-day: #ECEBE4;
+    --b-day-surface: #F8F7F2;
+    --b-day-ink: #11110F;
+    --b-day-muted: #57554D;
+    --b-accent: #FF4D00;
+    --b-line: #D2D0C6;
+    --b-display: "Fira Sans Extra Condensed", system-ui, sans-serif;
+    --b-text: "Commissioner", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141618; --panel: #1C1F22; --fg: #ECEDEA; --muted: #A3A8AE; --line: #2E3236; --pick: #ECEDEA;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141618; --panel: #1C1F22; --fg: #ECEDEA; --muted: #A3A8AE; --line: #2E3236; --pick: #ECEDEA;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.55 var(--font-ui);
+    padding-inline: clamp(16px, 4vw, 48px);
+    padding-block: 32px 64px;
+  }
+  .wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 40px; }
+  h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.15; }
+  p { margin: 0; }
+
+  .intro { display: grid; gap: 12px; max-width: 70ch; }
+  .intro h1 { font-size: clamp(26px, 3vw, 36px); font-weight: 700; letter-spacing: -0.01em; }
+  .intro p { color: var(--muted); }
+  .intro .ask { color: var(--fg); font-weight: 600; }
+
+  .pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  @media (max-width: 860px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+
+  .dir { display: grid; gap: 0; border: 1px solid var(--line); background: var(--panel); min-width: 0; }
+  .dir--a { border-radius: 18px; overflow: hidden; }
+  .dir--b { border-radius: 3px; overflow: hidden; }
+
+  .dir__head { padding: 28px 28px 24px; display: grid; gap: 10px; }
+  .dir--a .dir__head { background: var(--a-night); color: var(--a-night-ink); }
+  .dir--b .dir__head { background: var(--b-night); color: var(--b-night-ink); }
+  .dir__name { font-size: 40px; line-height: 1; }
+  .dir--a .dir__name { font-family: var(--a-display); font-weight: 750; letter-spacing: -0.03em; }
+  .dir--b .dir__name { font-family: var(--b-display); font-weight: 800; font-size: 48px; }
+  .dir__thesis { max-width: 46ch; font-size: 15px; }
+  .dir--a .dir__thesis { font-family: var(--a-text); color: var(--a-night-muted); }
+  .dir--b .dir__thesis { font-family: var(--b-text); color: var(--b-night-muted); }
+
+  .block { padding: 22px 28px; border-top: 1px solid var(--line); display: grid; gap: 12px; min-width: 0; }
+  .block h3 { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+  /* палитра */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .sw { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+  .sw i { display: block; height: 44px; border: 1px solid var(--line); }
+  .dir--a .sw i { border-radius: 10px; }
+  .dir--b .sw i { border-radius: 0; }
+  .sw b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  /* шрифты */
+  .spec { display: grid; gap: 6px; }
+  .spec__display { font-size: 34px; line-height: 1.05; }
+  .dir--a .spec__display { font-family: var(--a-display); font-weight: 700; letter-spacing: -0.025em; }
+  .dir--b .spec__display { font-family: var(--b-display); font-weight: 800; font-size: 40px; }
+  .spec__text { font-size: 16px; max-width: 52ch; }
+  .dir--a .spec__text, .dir--a .num { font-family: var(--a-text); }
+  .dir--b .spec__text, .dir--b .num { font-family: var(--b-text); }
+  .spec__meta { font-size: 13px; color: var(--muted); }
+  .num { font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 700; }
+
+  /* форма */
+  .shapes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .shape-card { padding: 14px 16px; min-width: 150px; display: grid; gap: 4px; font-size: 13px; }
+  .dir--a .shape-card { background: var(--a-day-surface); color: var(--a-day-ink); border-radius: 18px; box-shadow: 0 1px 2px rgb(13 20 36 / .06), 0 6px 20px rgb(13 20 36 / .1); font-family: var(--a-text); }
+  .dir--b .shape-card { background: var(--b-day-surface); color: var(--b-day-ink); border-radius: 3px; box-shadow: 0 0 0 1px var(--b-line); font-family: var(--b-text); }
+  .shape-card strong { font-size: 18px; }
+  .btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; font-weight: 700; font-size: 14px; border: 0; }
+  .dir--a .btn { background: var(--a-accent); color: var(--a-night); border-radius: 10px; font-family: var(--a-text); }
+  .dir--b .btn { background: var(--b-accent); color: var(--b-night); border-radius: 2px; font-family: var(--b-text); }
+  .chip { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; font-size: 13px; border: 1px solid; }
+  .dir--a .chip { border-radius: 999px; border-color: var(--a-day-muted); color: var(--a-day-ink); background: var(--a-day); font-family: var(--a-text); }
+  .dir--b .chip { border-radius: 2px; border-color: var(--b-day-muted); color: var(--b-day-ink); background: var(--b-day); font-family: var(--b-text); }
+
+  /* иконки */
+  .icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 10px; }
+  .icon { display: grid; justify-items: center; gap: 6px; padding: 12px 6px; font-size: 12px; text-align: center; }
+  .dir--a .icon { background: var(--a-night); color: var(--a-night-ink); border-radius: 12px; }
+  .dir--b .icon { background: var(--b-day); color: var(--b-day-ink); border-radius: 0; box-shadow: inset 0 0 0 1px var(--b-line); }
+  .icon svg { width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+  .dir--a .icon svg { stroke-width: 1.75; }
+  .dir--b .icon svg { stroke-width: 1.5; stroke-linecap: square; stroke-linejoin: miter; }
+  .dir--a .icon .hot { stroke: var(--a-accent); }
+  .dir--b .icon .hot { stroke: var(--b-accent); }
+
+  /* движение «світло вмикається» */
+  .motion { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: center; }
+  .stage { width: 148px; height: 104px; display: grid; place-items: center; position: relative; }
+  .dir--a .stage { background: var(--a-night); border-radius: 12px; }
+  .dir--b .stage { background: var(--b-night); border-radius: 0; }
+  .window { width: 44px; height: 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 3px; }
+  .dir--a .window { border-radius: 4px; background: #1d2a48; }
+  .dir--b .window { background: #2a2a26; }
+  .window span { display: block; opacity: 0.12; transform: scaleY(0.96); }
+  .dir--a .window span { background: var(--a-accent); border-radius: 2px; }
+  .dir--b .window span { background: var(--b-accent); }
+  .stage.is-on .window span { opacity: 1; transform: none; }
+  .dir--a .stage.is-on .window span { transition: opacity 560ms cubic-bezier(.22,1,.36,1), transform 560ms cubic-bezier(.22,1,.36,1); }
+  .dir--a .stage.is-on .window span:nth-child(2) { transition-delay: 60ms; }
+  .dir--a .stage.is-on .window span:nth-child(3) { transition-delay: 120ms; }
+  .dir--a .stage.is-on .window span:nth-child(4) { transition-delay: 180ms; }
+  /* Б: лампы пульта включаются ступенькой, без плавного разгорания */
+  .dir--b .stage.is-on .window span { transition: opacity 0ms; }
+  .dir--b .stage.is-on .window span:nth-child(1) { transition-delay: 80ms; }
+  .dir--b .stage.is-on .window span:nth-child(2) { transition-delay: 200ms; }
+  .dir--b .stage.is-on .window span:nth-child(3) { transition-delay: 320ms; }
+  .dir--b .stage.is-on .window span:nth-child(4) { transition-delay: 440ms; }
+  .motion__ctl { display: grid; gap: 8px; justify-items: start; font-size: 14px; }
+  .toggle { min-height: 40px; padding: 0 16px; font: inherit; font-weight: 600; color: var(--fg); background: transparent; border: 1px solid var(--fg); border-radius: 6px; cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) {
+    .stage.is-on .window span { transition: none !important; }
+  }
+
+  .list { display: grid; gap: 6px; padding-left: 1.1em; margin: 0; font-size: 14px; }
+  .risk { font-size: 14px; }
+  .risk b { font-weight: 600; }
+
+  /* экраны */
+  .screens { display: grid; gap: 28px; }
+  .screens h2 { font-size: 22px; }
+  .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 860px) { .row { grid-template-columns: minmax(0, 1fr); } }
+  figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+  figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); background: var(--panel); }
+  figcaption { font-size: 13px; color: var(--muted); }
+  .phones { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 860px) { .phones { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .decide { display: grid; gap: 12px; padding: 24px 28px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; max-width: 80ch; }
+  .decide h2 { font-size: 22px; }
+  .decide ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+  :focus-visible { outline: 3px solid var(--pick); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <h1>Два визуальных направления ETS GRID</h1>
+    <p>SPEC-010, шаг «Показ». Оба направления собраны в живом прототипе на одних и тех же страницах, одинаковыми данными. Имена токенов не менялись: направление переключается одним атрибутом палитры, поэтому второе можно оставить запасным вариантом.</p>
+    <p>Общая форма для обоих — мнемосхема энергосистемы: линии энергии и лампы-индикаторы вместо декора. Направления расходятся в материале: тёплое окно ночью или диспетчерский пульт.</p>
+    <p class="ask">Нужен ваш выбор: А, Б или одно из них с правками. Фото пока нет ни в одном (только видимые рамки); скачивание — после вашего разрешения на список кадров.</p>
+  </header>
+
+  <section class="pair" aria-label="Направления">
+    <!-- ================= А ================= -->
+    <article class="dir dir--a" aria-labelledby="a-name">
+      <div class="dir__head">
+        <h2 class="dir__name" id="a-name">А «Теплий світ»</h2>
+        <p class="dir__thesis">Окно, которое светится в тёмном доме во время отключения. Ночные секции синие, единственный источник света — тёплый янтарь кнопки и линий энергии. Мягкие углы окна, тень как от света изнутри.</p>
+      </div>
+
+      <div class="block">
+        <h3>Цвет: ночь и день</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:var(--a-night)"></i><b>#0D1424</b>ночь, фон</div>
+          <div class="sw"><i style="background:var(--a-night-surface)"></i><b>#16203A</b>ночь, плашки</div>
+          <div class="sw"><i style="background:var(--a-accent)"></i><b>#FFB547</b>свет, акцент</div>
+          <div class="sw"><i style="background:var(--a-day)"></i><b>#F4F6F8</b>день, фон</div>
+          <div class="sw"><i style="background:var(--a-day-surface)"></i><b>#FFFFFF</b>день, карточки</div>
+          <div class="sw"><i style="background:var(--a-day-muted)"></i><b>#4A5568</b>вторичный текст</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Шрифты</h3>
+        <div class="spec">
+          <p class="spec__display">Світло лишається. Ґанок, їжак, єнот, обʼєкт</p>
+          <p class="spec__text">Перевіримо потужність вашого вводу, підберемо станції, сонце й накопичувач. Ціни з монтажем, Київ і вся Україна.</p>
+          <p class="num">11 900 ₴ · 7,4 кВт · 10 кВт·год</p>
+          <p class="spec__meta">Geologica (заголовки) + Wix Madefor Text (текст и цифры). Обе — OFL, полная украинская кириллица, ровные табличные цифры.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Форма и глубина</h3>
+        <div class="shapes">
+          <div class="shape-card"><span>ETS Home 7</span><strong>24 900 ₴</strong><span>з монтажем від 32 900 ₴</span></div>
+          <span class="btn">Підібрати станцію</span>
+          <span class="chip">Type 2 · 3</span>
+        </div>
+        <p class="spec__meta">Радиусы 6 / 10 / 18 px, «таблетки» у чипов. Мягкая тень с смещением вниз.</p>
+      </div>
+
+      <div class="block">
+        <h3>Иконки (образец, обводка 1,75)</h3>
+        <div class="icons">
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="hot" d="M17 4 9 18h7l-1 10 8-14h-7z"/></svg>Потужність</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="11"/><circle cx="11.5" cy="13" r="1.6"/><circle cx="20.5" cy="13" r="1.6"/><circle cx="16" cy="10" r="1.6"/><circle cx="12.5" cy="19.5" r="1.6"/><circle cx="19.5" cy="19.5" r="1.6"/></svg>Type 2</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 26V12a8 8 0 0 1 16 0v14"/><path d="M5 26h22"/><path class="hot" d="M13 14h6M16 11v6"/></svg>Станція</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><circle class="hot" cx="16" cy="16" r="5"/><path d="M16 4v3M16 25v3M4 16h3M25 16h3M7.5 7.5l2 2M22.5 22.5l2 2M7.5 24.5l2-2M22.5 9.5l2-2"/></svg>Сонце</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="7" y="6" width="18" height="22" rx="3"/><path d="M13 3h6"/><path class="hot" d="M11 22h10M11 18h10M11 14h10"/></svg>Батарея</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 6 8v8c0 6 4.5 10 10 12 5.5-2 10-6 10-12V8z"/><path class="hot" d="m11.5 16 3 3 6-6"/></svg>Гарантія</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Движение «світло вмикається»</h3>
+        <div class="motion">
+          <div class="stage" id="a-stage" aria-hidden="true"><div class="window"><span></span><span></span><span></span><span></span></div></div>
+          <div class="motion__ctl">
+            <p>Нарастание яркости 560 мс, четыре стекла с шагом 60 мс; только opacity и transform. При «уменьшить движение» — сразу включено.</p>
+            <button class="toggle" type="button" data-stage="a-stage" aria-pressed="false">Включить свет</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Фото</h3>
+        <ul class="list">
+          <li>Товар на #F4F6F8, 1:1, мягкая тень снизу.</li>
+          <li>Объекты 16:9 вечером: тёплый свет фонарей и станций, приглушённая насыщенность.</li>
+          <li>Герой — станция на паркинге в сумерках, когда уже горит свет.</li>
+        </ul>
+      </div>
+
+      <div class="block">
+        <p class="risk"><b>Риск:</b> тёмно-синий с янтарём — частая пара у энергокомпаний; отличие держится на образе окна и линиях энергии, их надо довести до конца. Сильная сторона — прямо говорит про блэкаут, понятнее частному клиенту.</p>
+      </div>
+    </article>
+
+    <!-- ================= Б ================= -->
+    <article class="dir dir--b" aria-labelledby="b-name">
+      <div class="dir__head">
+        <h2 class="dir__name" id="b-name">Б «Сигнал»</h2>
+        <p class="dir__thesis">Диспетчерский пульт энергосистемы: графит и бумага, узкие надписи приборов, сигнальный оранжевый только там, где течёт энергия или ждёт действие. Прямые углы, рамки вместо теней.</p>
+      </div>
+
+      <div class="block">
+        <h3>Цвет: ночь и день</h3>
+        <div class="swatches">
+          <div class="sw"><i style="background:var(--b-night)"></i><b>#11110F</b>ночь, фон</div>
+          <div class="sw"><i style="background:var(--b-night-surface)"></i><b>#1D1D1A</b>ночь, плашки</div>
+          <div class="sw"><i style="background:var(--b-accent)"></i><b>#FF4D00</b>сигнал, акцент</div>
+          <div class="sw"><i style="background:var(--b-day)"></i><b>#ECEBE4</b>день, фон</div>
+          <div class="sw"><i style="background:var(--b-day-surface)"></i><b>#F8F7F2</b>день, карточки</div>
+          <div class="sw"><i style="background:var(--b-day-muted)"></i><b>#57554D</b>вторичный текст</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Шрифты</h3>
+        <div class="spec">
+          <p class="spec__display">Світло лишається. Ґанок, їжак, єнот, обʼєкт</p>
+          <p class="spec__text">Перевіримо потужність вашого вводу, підберемо станції, сонце й накопичувач. Ціни з монтажем, Київ і вся Україна.</p>
+          <p class="num">11 900 ₴ · 7,4 кВт · 10 кВт·год</p>
+          <p class="spec__meta">Fira Sans Extra Condensed (заголовки) + Commissioner (текст и цифры). Обе — OFL, полная украинская кириллица, стандартные формы букв.</p>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Форма и глубина</h3>
+        <div class="shapes">
+          <div class="shape-card"><span>ETS Home 7</span><strong>24 900 ₴</strong><span>з монтажем від 32 900 ₴</span></div>
+          <span class="btn">Підібрати станцію</span>
+          <span class="chip">Type 2 · 3</span>
+        </div>
+        <p class="spec__meta">Радиусы 0 / 2 / 3 px, чипы прямоугольные. Глубина — рамкой в 1 px, тень только у всплывающих панелей.</p>
+      </div>
+
+      <div class="block">
+        <h3>Иконки (образец, обводка 1,5)</h3>
+        <div class="icons">
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="hot" d="M17 4 9 18h7l-1 10 8-14h-7z"/></svg>Потужність</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="11"/><circle cx="11.5" cy="13" r="1.6"/><circle cx="20.5" cy="13" r="1.6"/><circle cx="16" cy="10" r="1.6"/><circle cx="12.5" cy="19.5" r="1.6"/><circle cx="19.5" cy="19.5" r="1.6"/></svg>Type 2</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 26V8h16v18"/><path d="M5 26h22"/><path class="hot" d="M13 14h6M16 11v6"/></svg>Станція</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><rect class="hot" x="11" y="11" width="10" height="10"/><path d="M16 4v3M16 25v3M4 16h3M25 16h3M7.5 7.5l2 2M22.5 22.5l2 2M7.5 24.5l2-2M22.5 9.5l2-2"/></svg>Сонце</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="7" y="6" width="18" height="22"/><path d="M13 3h6"/><path class="hot" d="M11 22h10M11 18h10M11 14h10"/></svg>Батарея</div>
+          <div class="icon"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 6 8v8c0 6 4.5 10 10 12 5.5-2 10-6 10-12V8z"/><path class="hot" d="m11.5 16 3 3 6-6"/></svg>Гарантія</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Движение «світло вмикається»</h3>
+        <div class="motion">
+          <div class="stage" id="b-stage" aria-hidden="true"><div class="window"><span></span><span></span><span></span><span></span></div></div>
+          <div class="motion__ctl">
+            <p>Лампы пульта загораются ступенькой по очереди, 120 мс между ними, без разгорания — как индикаторы. При «уменьшить движение» — сразу включено.</p>
+            <button class="toggle" type="button" data-stage="b-stage" aria-pressed="false">Включить свет</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Фото</h3>
+        <ul class="list">
+          <li>Товар на #ECEBE4, 1:1, без тени, в тонкой рамке.</li>
+          <li>Объекты 3:2 днём, нейтральный свет, чёткая геометрия навесов и щитов.</li>
+          <li>Герой — станция крупным планом, разъём и индикатор зарядки.</li>
+        </ul>
+      </div>
+
+      <div class="block">
+        <p class="risk"><b>Риск:</b> строже и «технарнее», ближе бизнесу и АЗС, но частному клиенту холоднее. Узкий акцидентный шрифт требует коротких заголовков; длинные Н1 на телефоне занимают 3–4 строки.</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="screens" aria-labelledby="screens-title">
+    <h2 id="screens-title">Те же страницы в прототипе</h2>
+
+    <div class="row">
+      <figure><img src="a-home-1440.png" width="1440" height="900" alt="Главная, первый экран, 1440 px, направление А" loading="lazy"><figcaption>А · главная, 1440</figcaption></figure>
+      <figure><img src="b-home-1440.png" width="1440" height="900" alt="Главная, первый экран, 1440 px, направление Б" loading="lazy"><figcaption>Б · главная, 1440</figcaption></figure>
+    </div>
+    <div class="row">
+      <figure><img src="a-cards-1440.png" width="1440" height="900" alt="Листинг «Для дому» с карточками, 1440 px, направление А" loading="lazy"><figcaption>А · листинг и карточки, 1440</figcaption></figure>
+      <figure><img src="b-cards-1440.png" width="1440" height="900" alt="Листинг «Для дому» с карточками, 1440 px, направление Б" loading="lazy"><figcaption>Б · листинг и карточки, 1440</figcaption></figure>
+    </div>
+    <div class="phones">
+      <figure><img src="a-home-375.png" width="750" height="1624" alt="Главная, 375 px, направление А" loading="lazy"><figcaption>А · главная, 375</figcaption></figure>
+      <figure><img src="b-home-375.png" width="750" height="1624" alt="Главная, 375 px, направление Б" loading="lazy"><figcaption>Б · главная, 375</figcaption></figure>
+      <figure><img src="a-cards-375.png" width="750" height="1624" alt="Листинг, 375 px, направление А" loading="lazy"><figcaption>А · листинг, 375</figcaption></figure>
+      <figure><img src="b-cards-375.png" width="750" height="1624" alt="Листинг, 375 px, направление Б" loading="lazy"><figcaption>Б · листинг, 375</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="decide" aria-labelledby="decide-title">
+    <h2 id="decide-title">Что дальше после выбора</h2>
+    <ol>
+      <li>Записываю выбор в DECISIONS и журнал гипотезы H-010.</li>
+      <li>Пишу DESIGN.md по выбранному направлению, перевожу шрифты на свой хостинг: сабсет, не больше 2 файлов на первый экран.</li>
+      <li>Собираю иконки компонентами и довожу шаблоны: главная, уровень, листинг, карточка.</li>
+      <li>Фото — только после вашего разрешения на конкретный список кадров с источниками и лицензиями.</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+  for (const btn of document.querySelectorAll('[data-stage]')) {
+    btn.addEventListener('click', () => {
+      const stage = document.getElementById(btn.dataset.stage);
+      const on = !stage.classList.contains('is-on');
+      stage.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', String(on));
+      btn.textContent = on ? 'Выключить свет' : 'Включить свет';
+    });
+  }
+</script>

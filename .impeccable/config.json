@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "research/spec-010/directions.html"
+        ],
+        "createdAt": "2026-10-14T06:51:46.168Z",
+        "reason": "Claude: detector pairs light-theme backgrounds with dark-theme tokens on a two-theme review page; every theme defines fg/bg pairs together"
+      }
+    ]
+  }
+}

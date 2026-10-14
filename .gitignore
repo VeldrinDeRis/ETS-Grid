@@ -21,3 +21,6 @@ playwright-report/
 
 # сырые отчёты Lighthouse (итоги — в qa/README.md)
 qa/lighthouse/
+
+# кэш детектора impeccable
+.impeccable/hook.cache.json
