@@ -6,6 +6,7 @@
 | Утверждает | Дмитрий |
 | Утверждена | 2026-10-14, D-027 (Q-2 — экран пустой выдачи) |
 | Зависит от | SPEC-001 (🏁) |
+| Гипотезы | H-002, H-004, H-005 (расхождение: карточка на характеристиках), H-006, H-007, H-008, H-009 ([HYPOTHESES.md](../HYPOTHESES.md)) |
 | Папки в коде | `src/data/filters.json`, `src/data/level-content.json`, `src/data/cars.json`, `src/lib/filters/`, `src/lib/plural.ts`, `src/lib/cart.ts` и `src/lib/compare.ts` (только функции из §3.6), `src/components/catalog/`, `src/islands/catalog/`, `src/pages/[level]/index.astro`, `src/pages/[level]/[category]/index.astro`, `src/pages/[level]/[category]/[preset].astro`, `tests/*/catalog*` |
 
 ## 1. Цель
