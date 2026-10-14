@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { presetStorage } from '../helpers/viewports';
+import { heroSettled, presetStorage } from '../helpers/viewports';
 
 const PAGES: [string, string][] = [
   ['/', 'power'],
@@ -24,6 +24,7 @@ for (const palette of ['a', 'b'] as const) {
         await presetStorage(page, { 'etsgrid:palette': palette });
         await page.goto(url);
         await hydrate(page, kind);
+        await heroSettled(page);
         const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
         const serious = result.violations
           .filter((v) => v.impact === 'serious' || v.impact === 'critical')

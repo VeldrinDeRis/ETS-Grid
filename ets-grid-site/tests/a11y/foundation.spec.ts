@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { isDesktop, presetStorage, SAMPLE_PAGES } from '../helpers/viewports';
+import { heroSettled, isDesktop, presetStorage, SAMPLE_PAGES } from '../helpers/viewports';
 
 for (const palette of ['a', 'b'] as const) {
   test.describe(`SPEC-001/AC-18 axe-core, палітра ${palette.toUpperCase()}`, () => {
@@ -9,6 +9,7 @@ for (const palette of ['a', 'b'] as const) {
         await presetStorage(page, { 'etsgrid:palette': palette });
         await page.goto(url);
         await expect(page.locator('html')).toHaveAttribute('data-palette', palette);
+        await heroSettled(page);
         const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
         const serious = result.violations
           .filter((v) => v.impact === 'serious' || v.impact === 'critical')

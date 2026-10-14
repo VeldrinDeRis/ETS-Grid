@@ -17,3 +17,11 @@ export async function presetStorage(page: Page, values: Record<string, unknown>)
 export async function cssVar(page: Page, name: string): Promise<string> {
   return page.evaluate((n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), name);
 }
+
+/** Чекає кінця проходу слів H1 героя (SPEC-006 AC-24): контраст перевіряємо в кінцевому стані. На інших сторінках — одразу. */
+export async function heroSettled(page: Page) {
+  await page.waitForFunction(() => {
+    const h1 = document.querySelector('.hero__title');
+    return !h1 || (!h1.querySelector('.hero__word') && getComputedStyle(h1).opacity === '1');
+  }, null, { timeout: 3000 });
+}
