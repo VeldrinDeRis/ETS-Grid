@@ -24,3 +24,6 @@ qa/lighthouse/
 
 # кэш детектора impeccable
 .impeccable/hook.cache.json
+
+# снимки ревью impeccable
+.impeccable/review/
