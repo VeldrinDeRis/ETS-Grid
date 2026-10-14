@@ -248,4 +248,5 @@
 | 2026-10-14 | Готово: все 23 AC, start.cmd проверен Дмитрием | — |
 | 2026-10-14 | Ревизия 1: коллекция `levels` убрана, уровни — из `structure.json` | `file()` заменяет числовой `id` уровня на строковый, коллекция дублировала `structure.json`; контракт `lib/catalog.ts` не меняется |
 | 2026-10-14 | Ревизия 2: в `routes.ts` добавлена `quoteFor(slug)` → `/kontakty/?product={slug}#rozrakhunok` | нужна карточке SPEC-002 и форме SPEC-009 (D-027 п. 10) |
+| 2026-10-14 | Ревизия 4: `BaseLayout` подключает `src/scripts/utm.ts` — UTM первого входа в `sessionStorage` `etsgrid:utm` | SPEC-009 §3.3 (D-034) |
 | 2026-10-14 | Ревизия 3: в `routes.ts` добавлена `quoteWith(params)` → `/kontakty/?picker=…#rozrakhunok` | CTA подборщиков SPEC-004 (D-029 п. 5) |
