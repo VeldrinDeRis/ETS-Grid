@@ -1,0 +1,119 @@
+---
+// Блок 5 — «Не тільки розетка»: потік енергії від сонця до авто й дому (SPEC-006 §4.2, ревізія 1).
+// Список вузлів-посилань; лінії декоративні. Рух — лише transform/opacity, src/scripts/home.ts (motion + inView).
+import { home } from '../../lib/home';
+---
+<div class="flow" data-energy-flow>
+  <h2>Не тільки розетка</h2>
+  <p class="flow__lead">Одна система від однієї компанії: сонце заряджає батарею, батарея — авто й дім.</p>
+  <ol class="flow__list">
+    {
+      home.flow.map((node, i) => (
+        <li class="flow__node">
+          <a class="flow__link" href={node.href}>
+            <span class="flow__dot" aria-hidden="true" />
+            <span class="flow__label">{node.label}</span>
+            <span class="flow__text">{node.text}</span>
+          </a>
+          {i < home.flow.length - 1 && (
+            <span class="flow__line" aria-hidden="true">
+              <span class="flow__pulse" data-flow-pulse />
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .flow__lead {
+    color: var(--color-ink-muted);
+    margin-bottom: var(--space-l);
+  }
+  .flow__list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .flow__node {
+    position: relative;
+    display: flex;
+  }
+  .flow__link {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    width: 100%;
+    padding: var(--space-s) var(--space-xs);
+    text-decoration: none;
+  }
+  .flow__link:hover .flow__label {
+    text-decoration: underline;
+  }
+  .flow__dot {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 18%, transparent);
+  }
+  .flow__label {
+    font-weight: 700;
+    font-size: var(--step-1);
+  }
+  .flow__text {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  /* Лінія від точки цього вузла до точки наступного. */
+  .flow__line {
+    position: absolute;
+    top: calc(var(--space-s) + 0.625rem - 1px);
+    left: calc(var(--space-xs) + 1.25rem + 8px);
+    right: calc(-1 * (var(--space-xs) - 8px));
+    height: 2px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+  .flow__pulse {
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    opacity: 0;
+  }
+
+  @media (max-width: 959.98px) {
+    .flow__list {
+      grid-template-columns: 1fr;
+    }
+    .flow__link {
+      display: grid;
+      grid-template-columns: 1.25rem 1fr;
+      column-gap: var(--space-s);
+      padding: var(--space-xs) 0;
+    }
+    .flow__dot {
+      grid-row: span 2;
+    }
+    .flow__line {
+      top: calc(var(--space-xs) + 1.25rem + 8px);
+      bottom: calc(-1 * (var(--space-xs) - 8px));
+      left: calc(0.625rem - 1px);
+      right: auto;
+      width: 2px;
+      height: auto;
+    }
+    .flow__pulse {
+      width: 100%;
+      height: 40%;
+      background: linear-gradient(180deg, transparent, var(--color-accent), transparent);
+    }
+  }
+</style>

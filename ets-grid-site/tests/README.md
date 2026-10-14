@@ -149,3 +149,23 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-005/AC-10 без JS — понятная строка; индекс и combobox | build | `build/shop.test.ts` | ✅ |
 | SPEC-005/AC-11 axe-core | a11y | `a11y/shop.spec.ts` | ✅ |
 | SPEC-005/AC-12 JS ≤ 100 КБ | build | `build/budget.test.ts` | ✅ |
+| SPEC-006/AC-01 home-content.json | data | `data/home.test.ts` | ✅ |
+| SPEC-006/AC-02 systemPrice | unit | `unit/home.test.ts` | ✅ |
+| SPEC-006/AC-03 нет выдуманных фактов | data | `data/home.test.ts` | ✅ |
+| SPEC-006/AC-04 блоки 1–11, плашка объектов, рамки фото | build, functional | `build/home.test.ts`, `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-05 первый экран | build | `build/home.test.ts` | ✅ |
+| SPEC-006/AC-06 вкладки блока 2 | build | `build/home.test.ts` | ✅ |
+| SPEC-006/AC-07 хиты | build | `build/home.test.ts` | ✅ |
+| SPEC-006/AC-08 схема потока | build | `build/home.test.ts` | ✅ |
+| SPEC-006/AC-09 одна плашка-манифест | build | `build/home.test.ts` | ✅ |
+| SPEC-006/AC-10 JS ≤ 100 КБ | build | `build/budget.test.ts` | ✅ |
+| SPEC-006/AC-11 1440: первый экран целиком | functional | `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-12 375: CTA в первом экране, плитки лентой | functional | `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-13 CTA и аналитика | functional | `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-14 вкладки и фильтры хитов | functional | `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-15 варианты героя | functional | `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-16 мини-конфигуратор | functional | `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-17 один акцент в первом экране | functional | `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-18 axe-core | a11y | `a11y/home.spec.ts` | ✅ |
+| SPEC-006/AC-19 вкладки: WAI-ARIA и без JS | a11y, functional | `a11y/home.spec.ts`, `functional/home.spec.ts` | ✅ |
+| SPEC-006/AC-20 reduced-motion | a11y | `a11y/home.spec.ts` | ✅ |

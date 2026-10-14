@@ -1,0 +1,193 @@
+---
+// Блоки 6, 7, 8, 10, 11 головної (SPEC-006 §4.2). Один компонент — частини за `part`.
+import { home } from '../../lib/home';
+import { routes } from '../../lib/routes';
+import LeadForm from '../forms/LeadForm.astro';
+import Picker from '../pickers/Picker.astro';
+import Placeholder from '../ui/Placeholder.astro';
+
+interface Props {
+  part: 'carport' | 'steps' | 'faq' | 'cases' | 'financing' | 'final';
+}
+const { part } = Astro.props;
+---
+{
+  part === 'carport' && (
+    <div class="carport">
+      <h2>Solar Carport</h2>
+      <div class="carport__grid">
+        <aside class="manifesto" data-manifesto>
+          <p class="manifesto__big" aria-hidden="true">4×</p>
+          <p class="manifesto__text">Навіс. Генерація. Зарядка. Накопичення. Одна конструкція над вашим паркінгом.</p>
+        </aside>
+        <div class="carport__photo" aria-hidden="true">
+          <Placeholder label="[ФОТО НАВІСУ]" />
+        </div>
+      </div>
+      <div class="carport__config">
+        <Picker kind="carport" mode="mini" />
+      </div>
+      <p>
+        <a class="carport__more" href={routes.level('solar-carport')}>Усе про Solar Carport</a>
+      </p>
+    </div>
+  )
+}
+{
+  part === 'steps' && (
+    <div class="steps">
+      <h2>Як ми працюємо</h2>
+      <ol class="steps__list">
+        {home.steps.map((s) => (
+          <li>
+            <strong>{s.title}</strong>
+            <Placeholder label={s.term} />
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+{
+  part === 'faq' && (
+    <div class="faq">
+      <h2>Незручні питання. Прямі відповіді</h2>
+      {home.faq.map((item) => (
+        <details class="faq__item">
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  )
+}
+{
+  part === 'cases' && (
+    <div class="cases">
+      <h2>Обʼєкти</h2>
+      <p class="cases-plate">Тут будуть реальні обʼєкти ETS GRID</p>
+      <p>
+        <a class="carport__more" href={routes.cases}>Сторінка обʼєктів</a>
+      </p>
+    </div>
+  )
+}
+{
+  part === 'financing' && (
+    <div class="financing">
+      <h2>{home.financing.title}</h2>
+      <ul role="list" class="financing__list">
+        {home.financing.items.map((item) => (
+          <li>
+            {item.split(/(\[[^\]]+\])/).map((chunk) => (/^\[[^\]]+\]$/.test(chunk) ? <Placeholder label={chunk} /> : chunk))}
+          </li>
+        ))}
+      </ul>
+      <p class="financing__checked">
+        {home.financing.checked.split(/(\[[^\]]+\])/).map((chunk) => (/^\[[^\]]+\]$/.test(chunk) ? <Placeholder label={chunk} /> : chunk))}
+      </p>
+      <a class="financing__cta" href={routes.financing}>
+        {home.financing.cta}
+      </a>
+    </div>
+  )
+}
+{
+  part === 'final' && (
+    <div class="final">
+      <LeadForm kind="final" title={home.final_form.title} />
+    </div>
+  )
+}
+
+<style>
+  .carport__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: var(--space-m);
+    margin-bottom: var(--space-l);
+  }
+  .manifesto {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    border-radius: var(--radius-l);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .manifesto__big {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 3rem + 6vw, 8rem);
+    font-weight: 800;
+    line-height: 0.9;
+  }
+  .manifesto__text {
+    margin: 0;
+    font-size: var(--step-1);
+    font-weight: 600;
+  }
+  .carport__photo {
+    display: grid;
+    place-items: center;
+    min-height: 14rem;
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+  .carport__more,
+  .financing__cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+  }
+  .steps__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-s);
+    padding-left: 1.4em;
+  }
+  .steps__list li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+  .faq {
+    max-width: 52rem;
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    min-height: 3.25rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .financing__list {
+    display: grid;
+    gap: var(--space-2xs);
+    font-size: var(--step-1);
+  }
+  .financing__checked {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .cases-plate {
+    max-width: none;
+    padding: var(--space-xl) var(--space-m);
+    border: 1px dashed var(--color-placeholder);
+    border-radius: var(--radius-l);
+    color: var(--color-placeholder);
+    font-size: var(--step-1);
+    text-align: center;
+  }
+  @media (max-width: 959.98px) {
+    .carport__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

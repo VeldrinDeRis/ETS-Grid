@@ -1,0 +1,253 @@
+---
+// Блок 1 — продаючий перший екран (SPEC-006 §4.2, ТЗ §6.1).
+// Усі варіанти тексту — в HTML як дані; src/scripts/home.ts підміняє їх за ?hero=.
+import { getLevels, getProduct, getProductsBy, structure } from '../../lib/catalog';
+import { activeVariant, home, levelFromPrice } from '../../lib/home';
+import { routes } from '../../lib/routes';
+import { isPlaceholder } from '../../lib/schema';
+import Container from '../ui/Container.astro';
+import Placeholder from '../ui/Placeholder.astro';
+import Price from '../ui/Price.astro';
+
+const variant = activeVariant();
+const anchors = [...new Set(home.hero.variants.map((v) => v.anchor_product))];
+const anchorProducts = await Promise.all(anchors.map(async (slug) => ({ slug, product: (await getProduct(slug))! })));
+const anchorLabel = (slug: string) => home.hero.variants.find((v) => v.anchor_product === slug)!.anchor_label;
+const variantsFor = (slug: string) => home.hero.variants.filter((v) => v.anchor_product === slug).map((v) => v.id).join(' ');
+
+const levels = await Promise.all(
+  getLevels().map(async (level) => ({ level, from: levelFromPrice(await getProductsBy({ level: level.key })) })),
+);
+const { phone, telegram, viber } = structure.contacts;
+const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v) => [v.id, v])));
+---
+<section class="hero" data-surface="night" aria-labelledby="hero-title" data-home-block="hero">
+  <Container class="hero__inner">
+    <div class="hero__text">
+      <p class="hero__overline" data-hero-field="overline">{variant.overline}</p>
+      <h1 id="hero-title" class="hero__title" data-hero-field="h1">{variant.h1}</h1>
+      <p class="hero__subtitle" data-hero-field="subtitle">{variant.subtitle}</p>
+      <div class="hero__ctas">
+        <a class="hero__cta hero__cta--primary" href="#potuzhnist" data-hero-cta="primary" data-hero-field="primary_cta">{variant.primary_cta}</a>
+        <a class="hero__cta hero__cta--secondary" href={routes.quote} data-hero-cta="secondary" data-hero-field="secondary_cta">{variant.secondary_cta}</a>
+      </div>
+      {
+        anchorProducts.map(({ slug, product }) => (
+          <div class="hero__anchor" data-anchor-for={variantsFor(slug)} hidden={!variantsFor(slug).split(' ').includes(variant.id)}>
+            <p class="hero__anchor-label">{anchorLabel(slug)}</p>
+            <Price product={product} />
+          </div>
+        ))
+      }
+    </div>
+    <div class="hero__photo" aria-hidden="true">
+      <Placeholder label="[ФОТО СТАНЦІЇ НА ОБʼЄКТІ]" />
+    </div>
+    <ul role="list" class="hero__tiles" aria-label="Рівні каталогу">
+      {
+        levels.map(({ level, from }) => (
+          <li>
+            <a class="hero__tile" href={routes.level(level.slug)} data-level-tile={level.key}>
+              <span class="hero__tile-name">{level.name}</span>
+              <span class="hero__tile-price num">{from}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="hero__trust">
+      <ul role="list" class="hero__trust-list" aria-label="Чому ETS GRID">
+        {
+          home.trust.map((t) => (
+            <li>
+              <Placeholder label={t} />
+            </li>
+          ))
+        }
+      </ul>
+      <p class="hero__contact">
+        <span class="hero__contact-label">Звʼязатися:</span>
+        {[phone, telegram, viber].map((c) => (isPlaceholder(c) ? <Placeholder label={c} /> : <span>{c}</span>))}
+      </p>
+    </div>
+  </Container>
+  <script type="application/json" id="hero-variants" set:html={variantsJson} />
+</section>
+
+<style>
+  .hero {
+    padding-block: var(--space-l) var(--space-m);
+  }
+  /* Одна сітка: desktop — текст | фото, нижче плитки й довіра; mobile — текст, плитки, довіра, фото (D-031: фото не ховаємо). */
+  .hero :global(.hero__inner) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    grid-template-areas:
+      'text photo'
+      'tiles tiles'
+      'trust trust';
+    column-gap: var(--space-xl);
+    align-items: center;
+  }
+  .hero__text {
+    grid-area: text;
+  }
+  .hero__photo {
+    grid-area: photo;
+  }
+  .hero__tiles {
+    grid-area: tiles;
+  }
+  .hero__trust {
+    grid-area: trust;
+  }
+  .hero__overline {
+    margin-bottom: var(--space-xs);
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+    letter-spacing: 0.02em;
+  }
+  .hero__title {
+    font-size: var(--step-5);
+    line-height: 1.05;
+    margin-bottom: var(--space-s);
+    max-width: 16ch;
+  }
+  .hero__subtitle {
+    font-size: var(--step-1);
+    color: var(--color-ink-muted);
+    max-width: 46ch;
+  }
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-block: var(--space-m);
+  }
+  .hero__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding: 0 var(--space-l);
+    border-radius: var(--radius-m);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .hero__cta--primary {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .hero__cta--secondary {
+    border: 2px solid var(--color-ink);
+    color: var(--color-ink);
+  }
+  .hero__anchor {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-s);
+  }
+  .hero__anchor[hidden] {
+    display: none;
+  }
+  .hero__anchor-label {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+  .hero__photo {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+  .hero__tiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-xs);
+    margin-top: var(--space-l);
+  }
+  .hero__tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    height: 100%;
+    padding: var(--space-s) var(--space-m);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    text-decoration: none;
+  }
+  .hero__tile:hover .hero__tile-name {
+    text-decoration: underline;
+  }
+  .hero__tile-name {
+    font-weight: 700;
+  }
+  .hero__tile-price {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .hero__trust {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-l);
+    margin-top: var(--space-s);
+    font-size: var(--step--1);
+  }
+  .hero__trust-list,
+  .hero__contact {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin: 0;
+  }
+  .hero__contact-label {
+    color: var(--color-ink-muted);
+  }
+
+  @media (max-width: 959.98px) {
+    .hero {
+      padding-top: var(--space-m);
+    }
+    .hero :global(.hero__inner) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'text'
+        'tiles'
+        'trust'
+        'photo';
+    }
+    .hero__title {
+      font-size: var(--step-4);
+    }
+    .hero__subtitle {
+      font-size: var(--step-0);
+    }
+    .hero__ctas {
+      margin-block: var(--space-s);
+    }
+    .hero__cta {
+      flex: 1 1 100%;
+    }
+    .hero__photo {
+      margin-top: var(--space-m);
+      aspect-ratio: 16 / 9;
+    }
+    /* Плитки — горизонтальна стрічка. */
+    .hero__tiles {
+      display: flex;
+      overflow-x: auto;
+      gap: var(--space-xs);
+      margin-top: var(--space-s);
+      padding-bottom: var(--space-3xs);
+      scroll-snap-type: x mandatory;
+    }
+    .hero__tiles li {
+      flex: 0 0 70%;
+      scroll-snap-align: start;
+    }
+  }
+</style>

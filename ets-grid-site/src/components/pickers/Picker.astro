@@ -17,8 +17,10 @@ import ScenarioTable from './ScenarioTable.astro';
 
 interface Props {
   kind: 'charging' | 'power' | 'solar' | 'battery' | 'carport';
+  /** mini — лише головне питання (Carport на головній, SPEC-006). */
+  mode?: 'full' | 'mini';
 }
-const { kind } = Astro.props;
+const { kind, mode = 'full' } = Astro.props;
 
 const levelKey = kind === 'power' ? 'charging' : kind;
 const products = await getProductsBy({ level: levelKey });
@@ -35,7 +37,7 @@ const connectors = (Array.isArray(connectorFacet?.values) ? connectorFacet.value
     {kind === 'power' && <PowerCheck client:visible stations={products} info={info} calc={calc} />}
     {kind === 'solar' && <SolarPicker client:visible kits={products.filter((p) => p.type === 'kit')} calc={calc} />}
     {kind === 'battery' && <BatteryPicker client:visible batteries={products} info={info} calc={calc} />}
-    {kind === 'carport' && <CarportConfigurator client:visible carports={products} info={info} calc={calc} />}
+    {kind === 'carport' && <CarportConfigurator client:visible carports={products} info={info} calc={calc} mode={mode} />}
   </div>
   <div class="picker__static no-js-only">
     <ScenarioTable kind={kind} products={products} />
