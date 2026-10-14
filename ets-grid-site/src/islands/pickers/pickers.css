@@ -152,12 +152,10 @@
   border-radius: 50%;
   vertical-align: 0.12em;
   background: var(--color-status-ok);
-  box-shadow: 0 0 0 0.2em color-mix(in srgb, var(--color-status-ok) 22%, transparent);
 }
 
 .pk-led--warn {
   background: var(--color-status-wait);
-  box-shadow: 0 0 0 0.2em color-mix(in srgb, var(--color-status-wait) 22%, transparent);
 }
 
 .pk-result__title {

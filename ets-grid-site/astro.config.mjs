@@ -13,6 +13,8 @@ export default defineConfig({
   trailingSlash: 'always',
   build: {
     format: 'directory',
+    // CSS — у HTML: без блокуючих запитів на першому екрані (SPEC-010 AC-10, трасування mobile).
+    inlineStylesheets: 'always',
   },
   integrations: [preact(), sitemap({ filter: (page) => !NOINDEX.some((p) => new URL(page).pathname === p) && !page.includes('404') })],
 });
