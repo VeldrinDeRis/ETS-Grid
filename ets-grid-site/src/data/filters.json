@@ -1,0 +1,134 @@
+{
+  "_note": "Конфіг фільтрів (SPEC-002 §3.1, D-027). Джерело: 03_struktura_i_filtry.md §2 + ТЗ §9.2–9.5. Діапазон: від < x ≤ до.",
+  "labels": {
+    "scenarios": {
+      "home": "Для дому",
+      "business": "Для бізнесу",
+      "highway": "Траса",
+      "fleet": "Автопарк",
+      "backup": "Резерв",
+      "solar_night": "Сонце вночі",
+      "peak_shaving": "Зрізання піків",
+      "arbitrage": "Арбітраж тарифів",
+      "dc_support": "Під DC-станцію"
+    },
+    "badges": {
+      "dc_battery": "З накопичувачем",
+      "gbt": "GB/T"
+    }
+  },
+  "levels": {
+    "charging": {
+      "primary": {
+        "key": "type", "label": "Тип станції", "ui": "visual-chips", "field": "type",
+        "values": [["wall_ac", "Настінна AC"], ["pedestal_ac", "Стійка AC"], ["dc", "Швидка DC"], ["split_dc", "Split DC"], ["portable", "Портативна"], ["dc_battery", "З накопичувачем"], ["cable", "Кабель / адаптер"]]
+      },
+      "facets": [
+        {"key": "scenarios", "label": "Сценарій", "ui": "chips", "field": "scenarios",
+         "values": [["home", "Дім"], ["business", "Бізнес / паркінг"], ["highway", "АЗС / траса"], ["fleet", "Автопарк"]]},
+        {"key": "current", "label": "Тип струму", "ui": "toggle", "field": "attrs.current",
+         "values": [["AC", "AC"], ["DC", "DC"]]},
+        {"key": "power_kw", "label": "Потужність", "ui": "ranges", "field": "attrs.power_kw", "unit": "кВт",
+         "ranges": [[0, 3.7], [3.7, 7], [7, 11], [11, 22], [22, 60], [60, 160], [160, 240]]},
+        {"key": "connectors", "label": "Розʼєм", "ui": "checkbox-icons", "field": "attrs.connectors",
+         "values": [["type2", "Type 2"], ["ccs2", "CCS2"], ["gbt_ac", "GB/T AC"], ["gbt_dc", "GB/T DC"], ["chademo", "CHAdeMO"]]},
+        {"key": "car", "label": "Підбір за авто", "ui": "search-select", "field": "car"},
+        {"key": "phases", "label": "Живлення", "ui": "toggle", "field": "attrs.phases",
+         "values": [["1", "1 фаза"], ["3", "3 фази"]]},
+        {"key": "ports", "label": "Кількість портів", "ui": "chips", "field": "attrs.ports",
+         "ranges": [[0, 1, "1"], [1, 2, "2"], [2, 4, "3–4"]]},
+        {"key": "cable", "label": "Кабель", "ui": "checkbox", "field": "attrs.cable",
+         "values": [["tethered", "Вбудований"], ["socket", "Розетка (без кабелю)"]]},
+        {"key": "control", "label": "Керування", "ui": "checkbox", "field": "attrs.control",
+         "values": [["app", "Wi-Fi / додаток"], ["rfid", "RFID"], ["ocpp", "OCPP 1.6 / 2.0.1"], ["balancing", "Балансування навантаження"]]},
+        {"key": "ip", "label": "Захист", "ui": "checkbox", "field": "attrs.ip",
+         "values": [["IP54", "IP54"], ["IP55", "IP55"], ["IP65", "IP65"]]},
+        {"key": "brand", "label": "Бренд", "ui": "checkbox-search", "field": "brand", "values": "auto"},
+        {"key": "country", "label": "Країна виробника", "ui": "checkbox", "field": "country", "values": "auto"},
+        {"key": "price", "label": "Ціна", "ui": "range-slider", "field": "price", "unit": "₴"},
+        {"key": "stock", "label": "Наявність", "ui": "toggle", "field": "stock",
+         "values": [["in_stock", "В наявності"], ["preorder", "Під замовлення"]]}
+      ]
+    },
+    "solar": {
+      "primary": {
+        "key": "type", "label": "Тип", "ui": "visual-chips", "field": "type",
+        "values": [["panel", "Панелі"], ["inverter", "Інвертори"], ["mounting", "Кріплення"], ["kit", "Готові СЕС"]]
+      },
+      "facets": [
+        {"key": "panel_w", "label": "Потужність панелі", "ui": "ranges", "field": "attrs.panel_w", "unit": "Вт",
+         "ranges": [[0, 450], [450, 550], [550, 650], [650, null]]},
+        {"key": "technology", "label": "Технологія", "ui": "chips", "field": "attrs.technology",
+         "values": [["Mono PERC", "Mono PERC"], ["TOPCon", "TOPCon"], ["HJT", "HJT"], ["bifacial", "Двосторонні (bifacial)"]]},
+        {"key": "inverter_kind", "label": "Тип інвертора", "ui": "chips", "field": "attrs.inverter_kind",
+         "values": [["hybrid", "Гібридний"], ["grid", "Мережевий"], ["offgrid", "Автономний"]]},
+        {"key": "phases", "label": "Фази", "ui": "toggle", "field": "attrs.phases",
+         "values": [["1", "1 фаза"], ["3", "3 фази"]]},
+        {"key": "power_kw", "label": "Потужність інвертора", "ui": "ranges", "field": "attrs.power_kw", "unit": "кВт",
+         "ranges": [[0, 5], [5, 10], [10, 30], [30, null]]},
+        {"key": "battery_voltage", "label": "Сумісність з батареєю", "ui": "chips", "field": "attrs.battery_voltage",
+         "values": [["low", "Низьковольтна"], ["high", "Високовольтна"]]},
+        {"key": "purpose", "label": "Призначення", "ui": "chips", "field": "attrs.purpose",
+         "values": [["home", "Дім"], ["business", "Бізнес"]]},
+        {"key": "kwp", "label": "Потужність СЕС", "ui": "ranges", "field": "attrs.kwp", "unit": "kWp",
+         "ranges": [[0, 10], [10, 30], [30, 100], [100, null]]},
+        {"key": "with_battery", "label": "Батарея", "ui": "toggle", "field": "attrs.with_battery",
+         "values": [["true", "З батареєю"], ["false", "Без батареї"]]},
+        {"key": "brand", "label": "Бренд", "ui": "checkbox-search", "field": "brand", "values": "auto"},
+        {"key": "price", "label": "Ціна", "ui": "range-slider", "field": "price", "unit": "₴"},
+        {"key": "price_per_w", "label": "Ціна за Вт", "ui": "range-slider", "field": "price_per_w", "unit": "₴/Вт"},
+        {"key": "stock", "label": "Наявність", "ui": "toggle", "field": "stock",
+         "values": [["in_stock", "В наявності"], ["preorder", "Під замовлення"]]}
+      ]
+    },
+    "battery": {
+      "primary": {
+        "key": "type", "label": "Тип", "ui": "visual-chips", "field": "type",
+        "values": [["home_wall", "Домашня настінна"], ["home_rack", "Домашня стійкова"], ["commercial", "Комерційна шафа"], ["industrial", "Промисловий контейнер"], ["portable", "Портативна станція"]]
+      },
+      "facets": [
+        {"key": "capacity_kwh", "label": "Ємність", "ui": "ranges", "field": "attrs.capacity_kwh", "unit": "кВт·год",
+         "ranges": [[0, 10], [10, 20], [20, 50], [50, 215], [215, null]]},
+        {"key": "voltage", "label": "Напруга", "ui": "chips", "field": "attrs.voltage",
+         "values": [["low", "Низьковольтна (48 В)"], ["high", "Високовольтна"]]},
+        {"key": "chemistry", "label": "Хімія", "ui": "chips", "field": "attrs.chemistry", "values": "auto"},
+        {"key": "max_expand_kwh", "label": "Масштабування", "ui": "ranges", "field": "attrs.max_expand_kwh", "unit": "кВт·год",
+         "ranges": [[0, 20], [20, 50], [50, null]]},
+        {"key": "inverters", "label": "Сумісні інвертори", "ui": "checkbox", "field": "attrs.inverters", "values": "auto"},
+        {"key": "scenarios", "label": "Сценарій", "ui": "chips", "field": "scenarios",
+         "values": [["backup", "Резерв при відключеннях"], ["solar_night", "Сонце вночі"], ["peak_shaving", "Зрізання пікових навантажень"], ["arbitrage", "Арбітраж тарифів"], ["dc_support", "Під DC-станцію"]]},
+        {"key": "brand", "label": "Бренд", "ui": "checkbox-search", "field": "brand", "values": "auto"},
+        {"key": "warranty", "label": "Гарантія", "ui": "checkbox", "field": "warranty", "values": "auto"},
+        {"key": "price", "label": "Ціна", "ui": "range-slider", "field": "price", "unit": "₴"},
+        {"key": "stock", "label": "Наявність", "ui": "toggle", "field": "stock",
+         "values": [["in_stock", "В наявності"], ["preorder", "Під замовлення"]]}
+      ]
+    },
+    "carport": {
+      "primary": {
+        "key": "type", "label": "Тип конструкції", "ui": "visual-chips", "field": "type",
+        "values": [["single", "Односторонній"], ["double", "Двосторонній"], ["y", "Y-подібний"], ["row", "Модульний ряд"]]
+      },
+      "facets": [
+        {"key": "places", "label": "Машиномісць", "ui": "ranges", "field": "attrs.places",
+         "ranges": [[0, 2, "1–2"], [2, 6, "4–6"], [6, 20, "8–20"], [20, null, "понад 20"]]},
+        {"key": "kwp", "label": "Потужність", "ui": "ranges", "field": "attrs.kwp", "unit": "kWp",
+         "ranges": [[0, 10], [10, 30], [30, 100], [100, null]]},
+        {"key": "bundle", "label": "Комплектація", "ui": "checkbox", "field": "attrs.bundle",
+         "values": [["canopy", "Лише навіс"], ["ac", "+ AC-зарядки"], ["dc", "+ DC-зарядки"], ["battery", "+ накопичувач"]]},
+        {"key": "material", "label": "Матеріал", "ui": "chips", "field": "attrs.material",
+         "values": [["steel", "Сталь оцинкована"], ["aluminum", "Алюміній"]]},
+        {"key": "roof", "label": "Покрівля", "ui": "chips", "field": "attrs.roof",
+         "values": [["waterproof", "Водонепроникна"], ["semi_transparent", "Напівпрозора"]]}
+      ]
+    }
+  },
+  "presets": [
+    {"level": "charging", "category": "dlya-domu", "slug": "gbt", "filters": {"connectors": ["gbt_ac"]}, "h1": "Зарядні станції GB/T для дому", "description": "Домашні зарядні станції з розʼємом GB/T AC для авто китайського ринку. Ціни з монтажем, доставка по Україні."},
+    {"level": "charging", "category": "dlya-domu", "slug": "22-kvt", "filters": {"power_kw": ["11-22"]}, "h1": "Зарядні станції 22 кВт для дому", "description": "Домашні зарядні станції 22 кВт на три фази. Ціни з монтажем, доставка по Україні."},
+    {"level": "charging", "category": "dc", "slug": "120-kvt", "filters": {"power_kw": ["60-160"]}, "h1": "Швидкі DC-станції 120 кВт", "description": "Швидкі DC-станції 120 кВт для трас, АЗС і автопарків. Розрахунок під ваш ввід."},
+    {"level": "charging", "category": "dc", "slug": "z-nakopychuvachem", "filters": {"type": ["dc_battery"]}, "h1": "DC-станції з накопичувачем", "description": "DC-станції з вбудованим накопичувачем для слабкого вводу. Розрахунок під ключ."},
+    {"level": "battery", "category": "dlya-domu", "slug": "10-kvt-god", "filters": {"capacity_kwh": ["10-20"]}, "h1": "Домашні батареї 10 кВт·год", "description": "Домашні батареї ємністю 10–20 кВт·год для резерву під час відключень. Ціни з монтажем."},
+    {"level": "solar", "category": "invertory", "slug": "hibrydni", "filters": {"inverter_kind": ["hybrid"]}, "h1": "Гібридні інвертори", "description": "Гібридні інвертори для СЕС з батареєю. Підбір під вашу систему, доставка по Україні."}
+  ]
+}

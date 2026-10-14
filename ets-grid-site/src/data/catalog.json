@@ -35,7 +35,7 @@
     {"slug": "ets-dc-120-battery", "level": 1, "category": "dc", "type": "dc_battery", "name": "ETS DC-120 Battery", "brand": "[БРЕНД]", "country": "[КРАЇНА]",
      "attrs": {"current": "DC", "power_kw": 120, "phases": 3, "input_min_kw": 30, "connectors": ["ccs2", "ccs2"], "ports": 2, "cable": "tethered", "control": ["rfid", "ocpp"], "ip": "IP55", "battery_kwh": "[ЄМНІСТЬ]"},
      "scenarios": ["highway", "business"], "sale_mode": "quote", "price_equipment": null, "price_turnkey_from": null, "demo": true, "stock": "preorder", "delivery_days": 45, "warranty": "[N] роки", "images": [], "cross_level": []},
-    {"slug": "cable-gbt-type2", "level": 1, "category": "kabeli-adaptery", "type": "portable", "name": "Адаптер Type 2 → GB/T AC", "brand": "[БРЕНД]", "country": "[КРАЇНА]",
+    {"slug": "cable-gbt-type2", "level": 1, "category": "kabeli-adaptery", "type": "cable", "name": "Адаптер Type 2 → GB/T AC", "brand": "[БРЕНД]", "country": "[КРАЇНА]",
      "attrs": {"current": "AC", "power_kw": 7, "connectors": ["type2", "gbt_ac"]},
      "scenarios": ["home"], "sale_mode": "cart", "price_equipment": 3900, "price_turnkey_from": null, "demo": true, "stock": "in_stock", "delivery_days": 1, "warranty": "[N] рік", "images": [], "cross_level": []},
 
