@@ -1,6 +1,7 @@
 ---
 // Блоки 6, 7, 8, 10, 11 головної (SPEC-006 §4.2). Один компонент — частини за `part`.
 import { home } from '../../lib/home';
+import { ILLUSTRATION_LABEL, type PhotoKey } from '../../lib/photos';
 import { routes } from '../../lib/routes';
 import LeadForm from '../forms/LeadForm.astro';
 import Picker from '../pickers/Picker.astro';
@@ -11,6 +12,12 @@ interface Props {
   part: 'carport' | 'steps' | 'faq' | 'cases' | 'financing' | 'final';
 }
 const { part } = Astro.props;
+// Блок 9 до реальних кейсів (D-058): фото прототипу з міткою «Ілюстративне фото», підписи — плейсхолдери.
+const CASE_SAMPLES: { photo: PhotoKey; title: string; meta: string }[] = [
+  { photo: 'carport-below', title: '[Обʼєкт: паркінг із навісом]', meta: '[N] місць · [N] kWp' },
+  { photo: 'roof-solar', title: '[Обʼєкт: дім із СЕС і батареєю]', meta: '[N] kWp · [N] кВт·год' },
+  { photo: 'bess-container', title: '[Обʼєкт: накопичувач для бізнесу]', meta: '[N] кВт·год · [N] кВт' },
+];
 ---
 {
   part === 'carport' && (
@@ -67,6 +74,23 @@ const { part } = Astro.props;
     <div class="cases">
       <h2>Обʼєкти</h2>
       <p class="cases-plate">Тут будуть реальні обʼєкти ETS GRID</p>
+      {/* Індикативні картки (D-058): фото прототипу з міткою, підписи — плейсхолдери; реальні кейси — від замовника. */}
+      <ul role="list" class="cases__list">
+        {CASE_SAMPLES.map((c) => (
+          <li class="case">
+            <div class="case__photo">
+              <Photo photo={c.photo} sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 959px) 50vw, 24rem" />
+              <span class="photo-note">{ILLUSTRATION_LABEL}</span>
+            </div>
+            <p class="case__title">
+              <Placeholder label={c.title} />
+            </p>
+            <p class="case__meta">
+              <Placeholder label="[місто]" /> · <Placeholder label={c.meta} />
+            </p>
+          </li>
+        ))}
+      </ul>
       <p>
         <a class="carport__more" href={routes.cases}>Сторінка обʼєктів</a>
       </p>
@@ -213,12 +237,41 @@ const { part } = Astro.props;
   }
   .cases-plate {
     max-width: none;
-    padding: var(--space-xl) var(--space-m);
+    padding: var(--space-s) var(--space-m);
     border: 1px dashed var(--color-placeholder);
-    border-radius: var(--radius-l);
+    border-radius: var(--radius-m);
     color: var(--color-placeholder);
-    font-size: var(--step-1);
     text-align: center;
+  }
+  .cases__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-s);
+    margin: var(--space-m) 0 var(--space-s);
+    padding: 0;
+    list-style: none;
+  }
+  .case__photo {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+  }
+  .case__title {
+    margin: var(--space-xs) 0 var(--space-3xs);
+    font-weight: 700;
+  }
+  .case__meta {
+    margin: 0;
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  @media (max-width: 959.98px) {
+    .cases__list {
+      grid-template-columns: 1fr;
+    }
   }
   @media (max-width: 959.98px) {
     .carport__grid {
