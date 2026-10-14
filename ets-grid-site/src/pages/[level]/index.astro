@@ -7,6 +7,7 @@ import CategoryTiles from '../../components/catalog/CategoryTiles.astro';
 import LevelGuide from '../../components/catalog/LevelGuide.astro';
 import LevelHero from '../../components/catalog/LevelHero.astro';
 import StubNotice from '../../components/layout/StubNotice.astro';
+import Picker from '../../components/pickers/Picker.astro';
 import Section from '../../components/ui/Section.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCategories, getLevels, getProductsBy } from '../../lib/catalog';
@@ -43,7 +44,7 @@ const products = await getProductsBy({ level: level.key });
   <Section id="pidbir" label="Підбір за 3 питання" surface="night">
     <div data-level-block="picker">
       <h2>Підбір за 3 питання</h2>
-      <StubNotice spec="SPEC-004" note="Тут буде підбірник рівня: 3 питання і рекомендація на цьому ж екрані." />
+      <Picker kind={level.key as 'charging' | 'solar' | 'battery'} />
     </div>
   </Section>
 

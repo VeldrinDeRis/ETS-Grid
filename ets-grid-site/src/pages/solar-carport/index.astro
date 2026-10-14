@@ -1,36 +1,203 @@
 ---
-// Solar Carport — рівень-лендинг із конфігуратором; наповнює SPEC-004.
+// Лендинг Solar Carport (SPEC-004 §3.4, ТЗ §6.6).
+import filtersJson from '../../data/filters.json';
+import LevelHero from '../../components/catalog/LevelHero.astro';
 import StubNotice from '../../components/layout/StubNotice.astro';
+import Picker from '../../components/pickers/Picker.astro';
+import Placeholder from '../../components/ui/Placeholder.astro';
 import Section from '../../components/ui/Section.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCategories, getLevel } from '../../lib/catalog';
+import { getCategories, getLevel, getProductsBy } from '../../lib/catalog';
+import type { FiltersFile } from '../../lib/filters';
 import { routes } from '../../lib/routes';
 
 const level = getLevel('carport');
 const categories = getCategories('carport');
+const products = await getProductsBy({ level: 'carport' });
+const types = (filtersJson as unknown as FiltersFile).levels.carport.primary.values as [string, string][];
+const typeText: Record<string, string> = {
+  single: 'Опора з одного боку, проїзд вільний. Для приватних ділянок і вузьких паркінгів.',
+  double: 'Два ряди машиномісць під одним дахом. Для комерційних паркінгів.',
+  y: 'Центральна опора і два консольні дахи. Мінімум опор між авто.',
+  row: 'Модулі, що нарощуються секціями разом із паркінгом.',
+};
+const typeHref = (type: string) => {
+  const product = products.find((p) => p.type === type);
+  return product ? routes.category(level.slug, product.category) : routes.quote;
+};
+const functions = [
+  { title: 'Тінь', text: 'Авто захищене від сонця, дощу й снігу.' },
+  { title: 'Генерація', text: 'Дах навісу — сонячна станція.' },
+  { title: 'Зарядка', text: 'Порти для авто прямо під навісом.' },
+  { title: 'Накопичення', text: 'Батарея тримає енергію на вечір і відключення.' },
+];
+const stages = ['Заявка', 'Обстеження', 'Проєкт', 'Монтаж', 'Запуск'];
 ---
-<BaseLayout title={level.name} description={`${level.name}: ${level.short}. Розрахунок навісу під вашу ділянку.`} crumbs={[{ label: level.name }]}>
+<BaseLayout
+  title="Solar Carport"
+  description="Solar Carport: навіс із сонячними панелями, зарядними станціями й накопичувачем. Конфігуратор і проєкт під ваш паркінг."
+  crumbs={[{ label: level.name }]}
+>
   <Section>
-    <h1>{level.name}</h1>
-    <p>{level.short}</p>
-    <StubNotice spec="SPEC-004" note="Тут будуть «4 функції в одній площі», конфігуратор навісу, типові конструкції й форма «Отримати проєкт» (ТЗ §6.6)." />
-    <ul role="list">
-      {
-        categories.map((c) => (
-          <li>
-            <a href={routes.category(level.slug, c.slug)}>{c.name}</a>
-          </li>
-        ))
-      }
-    </ul>
+    <div data-carport-block="hero">
+      <LevelHero title={level.name} value="Навіс, сонячна станція, зарядка й накопичувач в одній конструкції над паркінгом." pickerHref="#konfigurator" />
+    </div>
+  </Section>
+
+  <Section label="4 функції в одній площі">
+    <div data-carport-block="functions">
+      <h2>4 функції в одній площі</h2>
+      <ul role="list" class="functions">
+        {
+          functions.map((f) => (
+            <li>
+              <strong>{f.title}</strong>
+              <span>{f.text}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Section>
+
+  <Section id="konfigurator" label="Конфігуратор навісу" surface="night">
+    <div data-carport-block="configurator">
+      <h2>Конфігуратор навісу</h2>
+      <Picker kind="carport" />
+    </div>
+  </Section>
+
+  <Section label="Типові конструкції">
+    <div data-carport-block="types">
+      <h2>Типові конструкції</h2>
+      <ul role="list" class="types">
+        {
+          types.map(([value, label]) => (
+            <li>
+              <a href={typeHref(value)} data-type={value}>
+                <strong>{label}</strong>
+                <span>{typeText[value]}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Section>
+
+  <Section label="Конфігурації в каталозі">
+    <div data-carport-block="catalog">
+      <h2>Конфігурації в каталозі</h2>
+      <ul role="list" class="links">
+        {
+          categories.map((c) => (
+            <li>
+              <a href={routes.category(level.slug, c.slug)}>{c.name}</a>
+              {c.hint && <span>{c.hint}</span>}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </Section>
+
+  <Section label="Етапи і строки">
+    <div data-carport-block="stages">
+      <h2>Етапи і строки</h2>
+      <ol class="stages">
+        {
+          stages.map((s) => (
+            <li>
+              <strong>{s}</strong>
+              <Placeholder label="[N] тижнів" />
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </Section>
+
+  <Section label="Обʼєкти">
+    <div data-carport-block="cases">
+      <h2>Обʼєкти</h2>
+      <p class="cases-plate">Тут будуть реальні обʼєкти ETS GRID</p>
+    </div>
+  </Section>
+
+  <Section label="Додайте зарядні станції">
+    <div data-carport-block="cross">
+      <h2>Додайте зарядні станції</h2>
+      <p>Навіс із портами для авто заробляє на зарядці.</p>
+      <a class="cross-link" href={routes.level('zaryadni-stantsii')}>Зарядні станції</a>
+    </div>
+  </Section>
+
+  <Section label="Отримати проєкт навісу">
+    <div data-carport-block="form">
+      <h2>Отримати проєкт навісу</h2>
+      <StubNotice spec="SPEC-009" note="Тут буде форма «Отримати проєкт»." />
+    </div>
   </Section>
 </BaseLayout>
 
 <style>
-  li a {
+  .functions,
+  .types {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--space-s);
+  }
+  .functions li,
+  .types a {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    height: 100%;
+    padding: var(--space-m);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+    text-decoration: none;
+  }
+  .functions span,
+  .types span,
+  .links span {
+    color: var(--color-ink-muted);
+  }
+  .types a:hover strong {
+    text-decoration: underline;
+  }
+  .links li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs);
+  }
+  .links a,
+  .cross-link {
     display: inline-flex;
     align-items: center;
     min-height: var(--tap);
     font-weight: 600;
+  }
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-s);
+    padding-left: 1.4em;
+  }
+  .stages li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+  .cases-plate {
+    max-width: none;
+    padding: var(--space-xl) var(--space-m);
+    border: 1px dashed var(--color-placeholder);
+    border-radius: var(--radius-l);
+    color: var(--color-placeholder);
+    font-size: var(--step-1);
+    text-align: center;
   }
 </style>

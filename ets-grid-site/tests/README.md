@@ -90,3 +90,22 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-002/AC-26 события аналитики | functional | `functional/catalog.spec.ts` | ✅ |
 | SPEC-002/AC-27 axe-core | a11y | `a11y/catalog.spec.ts` | ✅ |
 | SPEC-002/AC-28 клавиатура | a11y | `a11y/catalog.spec.ts` | ✅ |
+| SPEC-004/AC-01 powerCheck | unit | `unit/calc.test.ts` | ✅ |
+| SPEC-004/AC-02 chargingPicker | unit | `unit/calc.test.ts` | ✅ |
+| SPEC-004/AC-03 батареи | unit | `unit/calc.test.ts` | ✅ |
+| SPEC-004/AC-04 solarSize | unit | `unit/calc.test.ts` | ✅ |
+| SPEC-004/AC-05 carportConfig | unit | `unit/calc.test.ts` | ✅ |
+| SPEC-004/AC-06 автономия и фасет | unit | `unit/calc.test.ts`, `unit/autonomy-facet.test.ts` | ✅ |
+| SPEC-004/AC-07 границы | unit | `unit/calc.test.ts` | ✅ |
+| SPEC-004/AC-08 calc.json | data | `data/calc.test.ts` | ✅ |
+| SPEC-004/AC-09 подборщики и таблицы без JS | build | `build/pickers.test.ts` | ✅ |
+| SPEC-004/AC-10 лендинг Carport | build | `build/pickers.test.ts` | ✅ |
+| SPEC-004/AC-11 JS ≤ 150 КБ | build | `build/budget.test.ts` | ✅ |
+| SPEC-004/AC-12 реакция подборщиков | functional | `functional/pickers.spec.ts` | ✅ |
+| SPEC-004/AC-13 «Чи вистачить потужності?» | functional | `functional/pickers.spec.ts` | ✅ |
+| SPEC-004/AC-14 CTA с параметрами, picker_complete | functional | `functional/pickers.spec.ts` | ✅ |
+| SPEC-004/AC-15 ползунок и поле, границы | functional | `functional/pickers.spec.ts` | ✅ |
+| SPEC-004/AC-16 фасет автономии в браузере | functional | `functional/pickers.spec.ts` | ✅ |
+| SPEC-004/AC-17 axe-core | a11y | `a11y/pickers.spec.ts` | ✅ |
+| SPEC-004/AC-18 клавиатура и подписи | a11y | `a11y/pickers.spec.ts` | ✅ |
+| SPEC-004/AC-19 reduced-motion | a11y | `a11y/pickers.spec.ts` | ✅ |

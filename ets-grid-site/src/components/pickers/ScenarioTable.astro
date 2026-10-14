@@ -1,0 +1,175 @@
+---
+// Таблиця типових сценаріїв — те, що бачить браузер без JS і пошуковик (SPEC-004 §3.6).
+// Рахується на сервері тими самими формулами, що й острови.
+import { batteryHours, calc, carportConfig, loadWatts, powerCheck, solarSize } from '../../lib/calc';
+import { formatNumber, formatPrice, formatUnit } from '../../lib/format';
+import type { Product } from '../../lib/schema';
+import { DISCLAIMER } from '../../islands/pickers/shared';
+
+interface Props {
+  kind: 'charging' | 'power' | 'solar' | 'battery' | 'carport';
+  products: Product[];
+}
+const { kind, products } = Astro.props;
+const kw = (n: number) => formatUnit(Math.round(n * 10) / 10, 'кВт');
+
+function powerOutcome(need: number, grid: number): string {
+  const r = powerCheck({ needKw: need, gridKw: grid }, products, calc);
+  if (r.outcome === 'ok') return `вистачає, запас ${kw(r.reserveKw!)}`;
+  if (r.outcome === 'ac_deficit') return `бракує ${kw(r.deficit)}: ${r.smallerKw ? `${kw(r.smallerKw)} з балансуванням` : 'техумови'}`;
+  if (r.outcome === 'dc_deficit') return `бракує ${kw(r.deficit)}: накопичувач ≈ ${formatUnit(r.batteryKwh!, 'кВт·год')}`;
+  return 'індивідуально';
+}
+
+const homeBattery = products.find((p) => p.level === 3 && p.category === 'dlya-domu' && typeof p.attrs.capacity_kwh === 'number');
+const loadSets = [
+  { label: 'Базові потреби: світло, інтернет, холодильник', ids: ['light_internet', 'fridge'] },
+  { label: '+ котел і насос', ids: ['light_internet', 'fridge', 'boiler_pump'] },
+];
+---
+<div class="scenarios__scroll" tabindex="0" role="region" aria-label="Типові сценарії">
+<table class="scenarios" data-scenarios={kind}>
+  {
+    (kind === 'charging' || kind === 'power') && (
+      <>
+        <caption>Чи вистачить потужності: типові випадки</caption>
+        <thead>
+          <tr>
+            <th scope="col">Потрібна зарядка</th>
+            {[15, 50, 100].map((g) => (
+              <th scope="col">Ввід {kw(g)}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {[7, 22, 60, 120].map((need) => (
+            <tr>
+              <th scope="row">{kw(need)}</th>
+              {[15, 50, 100].map((g) => (
+                <td>{powerOutcome(need, g)}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </>
+    )
+  }
+  {
+    kind === 'battery' && homeBattery && (
+      <>
+        <caption>Скільки годин світла дає {homeBattery.name}</caption>
+        <thead>
+          <tr>
+            <th scope="col">Що працює</th>
+            <th scope="col">Навантаження</th>
+            <th scope="col">Годин світла</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loadSets.map((s) => {
+            const w = loadWatts(s.ids, calc);
+            return (
+              <tr>
+                <th scope="row">{s.label}</th>
+                <td>{formatUnit(w, 'Вт')}</td>
+                <td>≈ {formatNumber(Math.round(batteryHours(w, Number(homeBattery.attrs.capacity_kwh), calc)))}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </>
+    )
+  }
+  {
+    kind === 'solar' && (
+      <>
+        <caption>Яка СЕС потрібна: типові випадки</caption>
+        <thead>
+          <tr>
+            <th scope="col">Споживання на місяць</th>
+            <th scope="col">Потужність</th>
+            <th scope="col">Панелей по {formatUnit(calc.solar.panel_w, 'Вт')}</th>
+            <th scope="col">Площа</th>
+            <th scope="col">Орієнтир ціни</th>
+          </tr>
+        </thead>
+        <tbody>
+          {[200, 400, 800].map((m) => {
+            const r = solarSize({ monthlyKwh: m, purpose: 'home', mount: 'roof' }, products.filter((p) => p.type === 'kit'), calc);
+            return (
+              <tr>
+                <th scope="row">{formatUnit(m, 'кВт·год')}</th>
+                <td>{formatUnit(r.kwp, 'kWp')}</td>
+                <td>{r.panels}</td>
+                <td>{formatUnit(r.areaM2, 'м²')}</td>
+                <td>{r.priceFrom ? `≈ ${formatPrice(r.priceFrom)}${r.priceDemo ? ' (демо-ціна)' : ''}` : 'за розрахунком'}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </>
+    )
+  }
+  {
+    kind === 'carport' && (
+      <>
+        <caption>Solar Carport: типові конфігурації із зарядками й накопичувачем</caption>
+        <thead>
+          <tr>
+            <th scope="col">Машиномісць</th>
+            <th scope="col">Потужність</th>
+            <th scope="col">Панелей</th>
+            <th scope="col">Портів</th>
+            <th scope="col">Накопичувач</th>
+          </tr>
+        </thead>
+        <tbody>
+          {[2, 8, 20].map((n) => {
+            const r = carportConfig({ places: n, chargers: true, storage: true }, products, calc);
+            return (
+              <tr>
+                <th scope="row">{n}</th>
+                <td>{formatUnit(r.kwp, 'kWp')}</td>
+                <td>{r.panels}</td>
+                <td>{r.evPorts}</td>
+                <td>{formatUnit(r.storageKwh, 'кВт·год')}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </>
+    )
+  }
+</table>
+</div>
+<p class="scenarios__note">{DISCLAIMER}</p>
+
+<style>
+  .scenarios__scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .scenarios {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+  }
+  .scenarios caption {
+    margin-bottom: var(--space-xs);
+    font-weight: 700;
+    text-align: left;
+  }
+  .scenarios th,
+  .scenarios td {
+    padding: var(--space-2xs) var(--space-xs);
+    border-bottom: 1px solid var(--color-line);
+    text-align: left;
+    vertical-align: top;
+  }
+  .scenarios__note {
+    margin-top: var(--space-xs);
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+</style>

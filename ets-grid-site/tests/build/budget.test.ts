@@ -36,8 +36,9 @@ function pageJsGz(p: ReturnType<typeof pages>[number]): number {
   return total;
 }
 
-/** Сторінки каталогу (рівень, лістинг, ЧПУ) мають бюджет 150 КБ — на них острів фільтрів (SPEC-002 AC-18). */
-const isCatalogPage = (p: ReturnType<typeof pages>[number]) => p.html.includes('CatalogFilters');
+/** Сторінки каталогу й підбірників мають бюджет 150 КБ (SPEC-002 AC-18, SPEC-004 AC-11). */
+const isCatalogPage = (p: ReturnType<typeof pages>[number]) =>
+  p.html.includes('CatalogFilters') || p.html.includes('data-picker-kind');
 
 describe('SPEC-001/AC-20, SPEC-002/AC-18 бюджети JS і шрифтів', () => {
   test.each(pages().map((p) => [p.url, p] as const))('%s: JS ≤ 100/150 КБ gz', (_url, p) => {

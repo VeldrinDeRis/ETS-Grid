@@ -1,0 +1,49 @@
+---
+// Підбірник рівня + таблиця типових сценаріїв без JS (SPEC-004 §3.3, §3.6).
+import carsJson from '../../data/cars.json';
+import filtersJson from '../../data/filters.json';
+import BatteryPicker from '../../islands/pickers/BatteryPicker';
+import CarportConfigurator from '../../islands/pickers/CarportConfigurator';
+import ChargingPicker from '../../islands/pickers/ChargingPicker';
+import PowerCheck from '../../islands/pickers/PowerCheck';
+import SolarPicker from '../../islands/pickers/SolarPicker';
+import { calc } from '../../lib/calc';
+import { getProductsBy } from '../../lib/catalog';
+import type { Car, FiltersFile } from '../../lib/filters';
+import { priceView } from '../../lib/price';
+import { routes } from '../../lib/routes';
+import type { Product } from '../../lib/schema';
+import ScenarioTable from './ScenarioTable.astro';
+
+interface Props {
+  kind: 'charging' | 'power' | 'solar' | 'battery' | 'carport';
+}
+const { kind } = Astro.props;
+
+const levelKey = kind === 'power' ? 'charging' : kind;
+const products = await getProductsBy({ level: levelKey });
+const info = Object.fromEntries(
+  products.map((p: Product) => [p.slug, { slug: p.slug, name: p.name, url: routes.product(p.slug), price: priceView(p).primary }]),
+);
+const cars = carsJson as Car[];
+const connectorFacet = (filtersJson as unknown as FiltersFile).levels.charging.facets.find((f) => f.key === 'connectors');
+const connectors = (Array.isArray(connectorFacet?.values) ? connectorFacet.values : []) as [string, string][];
+---
+<div class="picker" data-picker-kind={kind}>
+  <div class="picker__live js-only">
+    {kind === 'charging' && <ChargingPicker client:visible stations={products} info={info} cars={cars} connectors={connectors} calc={calc} />}
+    {kind === 'power' && <PowerCheck client:visible stations={products} info={info} calc={calc} />}
+    {kind === 'solar' && <SolarPicker client:visible kits={products.filter((p) => p.type === 'kit')} calc={calc} />}
+    {kind === 'battery' && <BatteryPicker client:visible batteries={products} info={info} calc={calc} />}
+    {kind === 'carport' && <CarportConfigurator client:visible carports={products} info={info} calc={calc} />}
+  </div>
+  <div class="picker__static no-js-only">
+    <ScenarioTable kind={kind} products={products} />
+  </div>
+</div>
+
+<style>
+  :global(html.js) .no-js-only {
+    display: none;
+  }
+</style>

@@ -1,6 +1,7 @@
 ---
 // Головна — заглушка; наповнює SPEC-006 після раунду дизайну.
 import StubNotice from '../components/layout/StubNotice.astro';
+import Picker from '../components/pickers/Picker.astro';
 import Section from '../components/ui/Section.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getLevels } from '../lib/catalog';
@@ -27,6 +28,12 @@ const levels = getLevels();
         ))
       }
     </ul>
+  </Section>
+
+  <Section id="potuzhnist" label="Чи вистачить потужності?" surface="night">
+    <!-- SPEC-004 §3.3: тимчасово на заглушці; SPEC-006 переставить у блок 3 головної (D-029 п. 6). -->
+    <h2>Чи вистачить потужності?</h2>
+    <Picker kind="power" />
   </Section>
 </BaseLayout>
 
