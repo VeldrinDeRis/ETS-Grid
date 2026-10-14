@@ -30,6 +30,8 @@
 
 ## Инструменты
 - Дизайн: `impeccable` (основной), `frontend-design`, `design:*` (critique, ux-copy, accessibility-review), `design-motion-principles`, `/motion`.
+- Тексты: `marketing:draft-content` (крупные блоки), `design:ux-copy` (микротексты), `marketing:competitive-brief` (конкуренты → `research/`).
+- Документация свежих версий (Astro 7, TS 6): MCP `context7` — сверяться перед кодом.
 - Проверка: Playwright MCP, Chrome DevTools MCP (`lighthouse_audit`), встроенный браузер.
 - Windows: PowerShell с `ExecutionPolicy RemoteSigned` (CurrentUser) — `npx`/`npm` работают.
 
