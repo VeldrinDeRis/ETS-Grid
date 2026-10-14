@@ -10,7 +10,7 @@ import SkipLink from '../components/layout/SkipLink.astro';
 import { structure } from '../lib/catalog';
 import { routes } from '../lib/routes';
 import { breadcrumbList, fitDescription, fitTitle, organization } from '../lib/seo';
-import { KEYS } from '../lib/storage';
+import { KEYS, PALETTE_B_FONTS } from '../lib/storage';
 
 interface Props {
   title: string;
@@ -43,6 +43,7 @@ const schema = [
   ...jsonLd,
 ];
 const paletteKey = KEYS.palette;
+const paletteBFonts = PALETTE_B_FONTS;
 ---
 <!doctype html>
 <html lang="uk" data-palette="a">
@@ -69,18 +70,22 @@ const paletteKey = KEYS.palette;
     <meta property="og:url" content={canonicalUrl} />
     {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site).href} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <!-- SPEC-010, раунд вибору: шрифти обох напрямів; після вибору — self-host. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Geologica:wght@400..800&family=Wix+Madefor+Text:wght@400..700&family=Fira+Sans+Extra+Condensed:wght@700;800&family=Commissioner:wght@400..700&display=swap"
-    />
-    <script is:inline define:vars={{ paletteKey }}>
+    <!-- Шрифти напряму А — свої, 2 файли-сабсети (SPEC-010, D-039). -->
+    <link rel="preload" href="/fonts/geologica.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/wix-madefor-text.woff2" as="font" type="font/woff2" crossorigin />
+    <script is:inline define:vars={{ paletteKey, paletteBFonts }}>
       document.documentElement.classList.add('js');
       try {
         var saved = JSON.parse(localStorage.getItem(paletteKey));
         if (saved === 'a' || saved === 'b') document.documentElement.dataset.palette = saved;
+        // Запасний напрям Б — шрифти з Google Fonts лише тоді, коли його увімкнули.
+        if (saved === 'b') {
+          var l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.href = paletteBFonts;
+          l.dataset.paletteFonts = 'b';
+          document.head.appendChild(l);
+        }
       } catch (e) {}
     </script>
     {schema.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}

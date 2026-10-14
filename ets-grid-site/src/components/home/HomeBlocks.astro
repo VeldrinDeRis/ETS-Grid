@@ -4,6 +4,7 @@ import { home } from '../../lib/home';
 import { routes } from '../../lib/routes';
 import LeadForm from '../forms/LeadForm.astro';
 import Picker from '../pickers/Picker.astro';
+import Photo from '../ui/Photo.astro';
 import Placeholder from '../ui/Placeholder.astro';
 
 interface Props {
@@ -20,8 +21,8 @@ const { part } = Astro.props;
           <p class="manifesto__big" aria-hidden="true">4×</p>
           <p class="manifesto__text">Навіс. Генерація. Зарядка. Накопичення. Одна конструкція над вашим паркінгом.</p>
         </aside>
-        <div class="carport__photo" aria-hidden="true">
-          <Placeholder label="[ФОТО НАВІСУ]" />
+        <div class="carport__photo">
+          <Photo photo="carport-charging" sizes="(max-width: 959px) calc(100vw - 2rem), 45vw" />
         </div>
       </div>
       <div class="carport__config">
@@ -130,9 +131,8 @@ const { part } = Astro.props;
     font-weight: 600;
   }
   .carport__photo {
-    display: grid;
-    place-items: center;
     min-height: 14rem;
+    overflow: hidden;
     border-radius: var(--radius-l);
     background: var(--color-surface);
   }

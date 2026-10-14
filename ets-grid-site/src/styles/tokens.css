@@ -142,10 +142,35 @@
   }
 }
 
+/* ---------- Шрифти напряму А: власний хостинг, по одному сабсету на сімейство (українська + латиниця, змінна насиченість) ---------- */
+@font-face {
+  font-family: "Geologica";
+  src: url("/fonts/geologica.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Wix Madefor Text";
+  src: url("/fonts/wix-madefor-text.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* У Wix Madefor Text немає українського апострофа ʼ (U+02BC) — беремо гліф із нашого ж файлу Geologica. */
+@font-face {
+  font-family: "Wix Madefor Text";
+  src: url("/fonts/geologica.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+02BC;
+}
+
 /* ---------- Напрями SPEC-010 (раунд вибору, гілка wip/spec-010-directions) ----------
    Кожна палітра несе свій світ: шрифти, форму, глибину. Імена токенів — ті самі (SPEC-001 §3.6);
    нові лише --display-weight, --display-tracking, --display-scale, --font-fallback.
-   Шрифти поки з Google Fonts; після вибору — self-host, сабсет, ≤ 2 файли на перший екран. */
+   Основний напрям — А (D-039): шрифти свої. Б — запасний, його шрифти з Google Fonts підвантажуються лише при виборі Б. */
 :root {
   --font-fallback: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --display-weight: 700;

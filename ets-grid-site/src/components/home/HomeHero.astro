@@ -7,6 +7,7 @@ import { routes } from '../../lib/routes';
 import { isPlaceholder } from '../../lib/schema';
 import Container from '../ui/Container.astro';
 import Placeholder from '../ui/Placeholder.astro';
+import Photo from '../ui/Photo.astro';
 import Price from '../ui/Price.astro';
 
 const variant = activeVariant();
@@ -40,8 +41,8 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
         ))
       }
     </div>
-    <div class="hero__photo" aria-hidden="true">
-      <Placeholder label="[ФОТО СТАНЦІЇ НА ОБʼЄКТІ]" />
+    <div class="hero__photo">
+      <Photo photo="hero-dc-night" sizes="(max-width: 959px) calc(100vw - 2rem), 38vw" priority />
     </div>
     <ul role="list" class="hero__tiles" aria-label="Рівні каталогу">
       {
@@ -156,9 +157,8 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     color: var(--color-ink-muted);
   }
   .hero__photo {
-    display: grid;
-    place-items: center;
     aspect-ratio: 4 / 3;
+    overflow: hidden;
     border-radius: var(--radius-l);
     background: var(--color-surface);
   }

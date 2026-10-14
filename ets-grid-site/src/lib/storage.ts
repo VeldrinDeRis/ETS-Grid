@@ -8,6 +8,10 @@ export const KEYS = {
   recent: 'etsgrid:recent:v1',
 } as const;
 
+/** Шрифти запасного напряму Б «Сигнал» — підвантажуються лише при його виборі (SPEC-010, D-039). */
+export const PALETTE_B_FONTS =
+  'https://fonts.googleapis.com/css2?family=Fira+Sans+Extra+Condensed:wght@700;800&family=Commissioner:wght@400..700&display=swap';
+
 /** Модуль кошика надсилає цю подію на window після кожної зміни. */
 export const CART_CHANGE_EVENT = 'etsgrid:cart-change';
 

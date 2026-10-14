@@ -1,0 +1,41 @@
+---
+// Фото 4:3 у <picture>: AVIF, WebP, явні розміри (ТЗ §8.3, §11). Ключі й підписи — src/lib/photos.ts.
+import { photoSrc, PHOTOS, srcset, type PhotoKey } from '../../lib/photos';
+
+interface Props {
+  photo: PhotoKey;
+  sizes: string;
+  /** Перший екран — eager і високий пріоритет; решта — lazy. */
+  priority?: boolean;
+  class?: string;
+}
+const { photo, sizes, priority = false, class: className } = Astro.props;
+const info = PHOTOS[photo];
+const fallback = info.widths.includes(1280) ? 1280 : info.widths[0];
+---
+<picture class:list={['photo', className]} data-photo={photo}>
+  <source type="image/avif" srcset={srcset(photo, 'avif')} sizes={sizes} />
+  <img
+    src={photoSrc(photo, fallback, 'webp')}
+    srcset={srcset(photo, 'webp')}
+    sizes={sizes}
+    alt={info.alt}
+    width="1280"
+    height="960"
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : undefined}
+    decoding="async"
+  />
+</picture>
+
+<style>
+  .photo,
+  .photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .photo img {
+    object-fit: cover;
+  }
+</style>

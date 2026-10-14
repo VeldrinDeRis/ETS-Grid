@@ -49,10 +49,11 @@ describe('SPEC-001/AC-20, SPEC-002/AC-18 бюджети JS і шрифтів', (
     expect(pages().filter(isCatalogPage).length).toBeGreaterThanOrEqual(20);
   });
 
-  test('файлів шрифтів ≤ 2 (до раунду дизайну — 0)', () => {
+  test('SPEC-010/AC-05 файлів шрифтів ≤ 2, на кожній сторінці ≤ 2 preload', () => {
     const fontFiles = distFiles().filter((f) => /\.(woff2?|ttf|otf)$/i.test(f));
     expect(fontFiles.length).toBeLessThanOrEqual(2);
-    const preloads = pages().flatMap((p) => [...p.document.querySelectorAll('link[rel="preload"][as="font"]')]);
-    expect(preloads.length).toBeLessThanOrEqual(2);
+    for (const p of pages()) {
+      expect(p.document.querySelectorAll('link[rel="preload"][as="font"]').length, p.url).toBeLessThanOrEqual(2);
+    }
   });
 });

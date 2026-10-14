@@ -12,7 +12,11 @@ import Section from '../../components/ui/Section.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCategories, getLevels, getProductsBy } from '../../lib/catalog';
 import type { LevelContent } from '../../lib/level-content';
+import type { PhotoKey } from '../../lib/photos';
 import type { StructureLevel } from '../../lib/schema';
+
+/** Фото для макета на героях рівнів (SPEC-010 §5, кадри 2–4 зі списку 04). */
+const LEVEL_PHOTO: Record<string, PhotoKey> = { charging: 'home-ac-wallbox', solar: 'roof-solar', battery: 'home-battery' };
 import { faqPage, ld, seoTitle } from '../../lib/seo';
 
 export const getStaticPaths = (() =>
@@ -37,7 +41,7 @@ const products = await getProductsBy({ level: level.key });
 >
   <Section>
     <div data-level-block="hero">
-      <LevelHero title={level.name} value={text.value} pickerHref="#pidbir" />
+      <LevelHero title={level.name} value={text.value} pickerHref="#pidbir" photo={LEVEL_PHOTO[level.key]} />
     </div>
   </Section>
 

@@ -17,9 +17,9 @@ describe('SPEC-006/AC-04 блоки 1–11 у порядку ТЗ §6.1', () => 
     expect(cases.querySelector('a[href="/obiekty/"]')).not.toBeNull();
   });
 
-  test('рамки фото — видимі плейсхолдери в героі та блоці Carport', () => {
-    expect(doc().querySelector('.hero__photo')?.textContent).toContain('[ФОТО');
-    expect(doc().querySelector('.carport__photo')?.textContent).toContain('[ФОТО');
+  test('фото героя і блоку Carport — на своїх місцях (SPEC-010 §5)', () => {
+    expect(doc().querySelector('.hero__photo picture[data-photo="hero-dc-night"]')).not.toBeNull();
+    expect(doc().querySelector('.carport__photo picture[data-photo="carport-charging"]')).not.toBeNull();
   });
 
   test('блок 3 — «Чи вистачить потужності?» з #potuzhnist, блок 11 — форма final у #zayavka', () => {

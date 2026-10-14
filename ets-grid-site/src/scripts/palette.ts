@@ -1,6 +1,6 @@
 // Перемикання палітри А/Б одним атрибутом data-palette на <html> (SPEC-001 §3.6).
 // Збережений вибір застосовує вбудований скрипт у <head> ще до відмальовки.
-import { KEYS, type Palette, write } from '../lib/storage';
+import { KEYS, PALETTE_B_FONTS, type Palette, write } from '../lib/storage';
 
 const root = document.documentElement;
 const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-palette-set]')];
@@ -15,6 +15,11 @@ for (const button of buttons) {
     const palette = button.dataset.paletteSet as Palette;
     root.dataset.palette = palette;
     write(KEYS.palette, palette);
+    if (palette === 'b' && !document.querySelector('link[data-palette-fonts]')) {
+      const link = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: PALETTE_B_FONTS });
+      link.dataset.paletteFonts = 'b';
+      document.head.append(link);
+    }
     render();
   });
 }

@@ -1,13 +1,16 @@
 ---
-// Міні-герой рівня (SPEC-002 §3.4 п. 1). Фото — після Q-6, до того — видимий плейсхолдер.
+// Міні-герой рівня (SPEC-002 §3.4 п. 1). Фото для макета — SPEC-010 §5; без фото — видимий плейсхолдер (D-031).
+import type { PhotoKey } from '../../lib/photos';
+import Photo from '../ui/Photo.astro';
 import Placeholder from '../ui/Placeholder.astro';
 
 interface Props {
   title: string;
   value: string;
   pickerHref: string;
+  photo?: PhotoKey;
 }
-const { title, value, pickerHref } = Astro.props;
+const { title, value, pickerHref, photo } = Astro.props;
 ---
 <div class="level-hero">
   <div class="level-hero__text">
@@ -15,9 +18,17 @@ const { title, value, pickerHref } = Astro.props;
     <p class="level-hero__value">{value}</p>
     <a class="level-hero__cta" href={pickerHref}>Підібрати за 3 питання</a>
   </div>
-  <div class="level-hero__photo" aria-hidden="true">
-    <Placeholder label="[ФОТО]" />
-  </div>
+  {
+    photo ? (
+      <div class="level-hero__photo">
+        <Photo photo={photo} sizes="(max-width: 959px) calc(100vw - 2rem), 40vw" priority />
+      </div>
+    ) : (
+      <div class="level-hero__photo level-hero__photo--empty" aria-hidden="true">
+        <Placeholder label="[ФОТО]" />
+      </div>
+    )
+  }
 </div>
 
 <style>
@@ -43,11 +54,14 @@ const { title, value, pickerHref } = Astro.props;
     text-decoration: none;
   }
   .level-hero__photo {
-    display: grid;
-    place-items: center;
+    overflow: hidden;
     aspect-ratio: 4 / 3;
     border-radius: var(--radius-l);
     background: var(--color-surface);
+  }
+  .level-hero__photo--empty {
+    display: grid;
+    place-items: center;
   }
   @media (max-width: 959.98px) {
     .level-hero {
