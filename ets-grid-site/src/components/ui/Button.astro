@@ -1,5 +1,5 @@
 ---
-// Кнопка або посилання. primary — єдина акцентна на екрані (ТЗ §8.1).
+// Кнопка або посилання. primary — єдина акцентна на екрані (ТЗ §8.1). Стилі — src/styles/buttons.css.
 interface Props {
   variant?: 'primary' | 'secondary' | 'ghost';
   size?: 'm' | 'l';
@@ -23,51 +23,3 @@ const className = ['btn', `btn--${variant}`, `btn--${size}`, extra].filter(Boole
   )
 }
 
-<style>
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2xs);
-    min-height: var(--tap);
-    padding: 0 var(--space-m);
-    border: 2px solid transparent;
-    border-radius: var(--radius-m);
-    font-weight: 600;
-    line-height: 1.2;
-    text-decoration: none;
-    cursor: pointer;
-    transition:
-      background-color var(--dur-fast) var(--ease-out),
-      color var(--dur-fast) var(--ease-out),
-      border-color var(--dur-fast) var(--ease-out);
-  }
-  .btn--l {
-    min-height: 3.25rem;
-    padding: 0 var(--space-l);
-    font-size: var(--step-1);
-  }
-  .btn--primary {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-  }
-  .btn--primary:hover {
-    background: color-mix(in srgb, var(--color-accent) 88%, var(--color-ink));
-  }
-  .btn--secondary {
-    border-color: currentColor;
-    background: transparent;
-    color: var(--color-ink);
-  }
-  .btn--secondary:hover {
-    background: color-mix(in srgb, var(--color-ink) 8%, transparent);
-  }
-  .btn--ghost {
-    background: transparent;
-    color: var(--color-ink);
-    padding: 0 var(--space-xs);
-  }
-  .btn--ghost:hover {
-    text-decoration: underline;
-  }
-</style>

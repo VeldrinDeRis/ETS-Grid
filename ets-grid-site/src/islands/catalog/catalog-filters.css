@@ -335,10 +335,4 @@
 
 .cf-show {
   flex: 1;
-  justify-content: center;
-  border-color: var(--color-accent);
-  border-radius: var(--radius-m);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  font-weight: 700;
 }

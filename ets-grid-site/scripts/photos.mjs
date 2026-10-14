@@ -14,7 +14,7 @@ export const PHOTOS = [
   { key: 'hero-dc-night', crop: [0, 0.06, 0.78, 0.88] },
   { key: 'home-ac-wallbox', crop: [0.08, 0, 0.67, 1] },
   { key: 'roof-solar', crop: [0, 0, 1, 1] },
-  { key: 'home-battery', crop: [0.44, 0.37, 0.56, 0.63] },
+  { key: 'bess-container', crop: [0, 0.24, 1, 0.5625] },
   { key: 'carport-charging', crop: [0, 0, 1, 1] },
   { key: 'carport-below', crop: [0, 0.18, 1, 0.56] },
 ];

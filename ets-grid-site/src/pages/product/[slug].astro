@@ -56,11 +56,11 @@ const faq = (levelContentJson as Partial<LevelContent>)[level.key as keyof Level
     <span class="sticky__price num" data-sticky-price>{stickyPrice}</span>
     {
       product.sale_mode === 'cart' ? (
-        <button type="button" class="sticky__cta" data-add-to-cart={product.slug} data-turnkey={hasToggle(product) ? 'true' : 'false'} data-source="sticky">
+        <button type="button" class="btn btn--primary sticky__cta" data-add-to-cart={product.slug} data-turnkey={hasToggle(product) ? 'true' : 'false'} data-source="sticky">
           До кошика
         </button>
       ) : (
-        <a class="sticky__cta" href={routes.quoteFor(product.slug)}>
+        <a class="btn btn--primary sticky__cta" href={routes.quoteFor(product.slug)}>
           Розрахувати
         </a>
       )
@@ -91,18 +91,7 @@ const faq = (levelContentJson as Partial<LevelContent>)[level.key as keyof Level
     font-size: var(--step-1);
   }
   .sticky__cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: var(--tap);
-    padding: 0 var(--space-l);
-    border: 0;
-    border-radius: var(--radius-m);
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
+    padding-inline: var(--space-l);
   }
   /* Липка панель — лише на mobile; з атрибутом hidden прихована, поки блок ціни у полі зору. */
   @media (max-width: 959.98px) {

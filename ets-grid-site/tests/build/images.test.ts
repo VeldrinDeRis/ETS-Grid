@@ -39,7 +39,7 @@ describe('SPEC-010 §5 фото на сторінках', () => {
     ['/', 'carport-charging'],
     ['/zaryadni-stantsii/', 'home-ac-wallbox'],
     ['/sonyachni-paneli/', 'roof-solar'],
-    ['/batarei/', 'home-battery'],
+    ['/batarei/', 'bess-container'],
     ['/solar-carport/', 'carport-below'],
   ])('%s → %s: <picture> з AVIF, alt і розмірами', (url, key) => {
     const pic = page(url).document.querySelector(`picture[data-photo="${key}"]`)!;

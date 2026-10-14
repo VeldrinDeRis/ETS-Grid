@@ -45,8 +45,9 @@ const last = items.length - 1;
     display: inline-flex;
     align-items: center;
   }
-  .crumbs__item + .crumbs__item::before {
-    content: '›';
+  /* Роздільник — у кінці ланки, тож при переносі він не повисає сам на початку рядка. */
+  .crumbs__item:not(:last-child)::after {
+    content: '›' / '';
     padding-inline: var(--space-2xs);
     color: var(--color-ink-muted);
   }

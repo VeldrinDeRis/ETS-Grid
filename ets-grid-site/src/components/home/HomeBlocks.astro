@@ -143,16 +143,51 @@ const { part } = Astro.props;
     min-height: var(--tap);
     font-weight: 600;
   }
+  /* Кроки — послідовність на лінії мнемосхеми: номер у лампі, лінія до наступного кроку. */
   .steps__list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: var(--space-s);
-    padding-left: 1.4em;
+    gap: var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
   }
   .steps__list li {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--space-3xs);
+    align-items: flex-start;
+    gap: var(--space-2xs);
+    counter-increment: step;
+  }
+  .steps__list li::before {
+    content: counter(step);
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 2px solid var(--color-ink);
+    border-radius: 50%;
+    position: relative;
+    z-index: 1;
+    background: var(--color-bg);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .steps__list li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 1.125rem;
+    left: 2.25rem;
+    right: calc(-1 * var(--space-m));
+    height: 2px;
+    background: var(--color-line);
+  }
+  @media (max-width: 959.98px) {
+    .steps__list li:not(:last-child)::after {
+      display: none;
+    }
   }
   .faq {
     max-width: 52rem;

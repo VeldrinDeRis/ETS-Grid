@@ -18,4 +18,9 @@ const { surface = 'day', width = 'default', id, label } = Astro.props;
   .section {
     padding-block: var(--section-y);
   }
+  /* Дві секції однієї поверхні поспіль — один проміжок між ними, а не подвійний (DESIGN.md → Layout). */
+  .section[data-surface='day'] + .section[data-surface='day'],
+  .section[data-surface='night'] + .section[data-surface='night'] {
+    padding-top: 0;
+  }
 </style>

@@ -16,7 +16,7 @@ const { title, value, pickerHref, photo } = Astro.props;
   <div class="level-hero__text">
     <h1>{title}</h1>
     <p class="level-hero__value">{value}</p>
-    <a class="level-hero__cta" href={pickerHref}>Підібрати за 3 питання</a>
+    <a class="btn btn--primary level-hero__cta" href={pickerHref}>Підібрати за 3 питання</a>
   </div>
   {
     photo ? (
@@ -43,15 +43,7 @@ const { title, value, pickerHref, photo } = Astro.props;
     color: var(--color-ink-muted);
   }
   .level-hero__cta {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--tap);
-    padding: 0 var(--space-l);
-    border-radius: var(--radius-m);
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-    font-weight: 700;
-    text-decoration: none;
+    padding-inline: var(--space-l);
   }
   .level-hero__photo {
     overflow: hidden;

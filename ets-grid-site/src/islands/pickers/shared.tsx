@@ -164,13 +164,13 @@ export function Cta(props: { label: string; picker: string; params: Record<strin
   const href = routes.quoteWith({ picker: props.picker, ...props.params });
   if (props.disabled) {
     return (
-      <span class="pk-cta" aria-disabled="true">
+      <span class="btn pk-cta" aria-disabled="true">
         {props.label}
       </span>
     );
   }
   return (
-    <a class="pk-cta" href={href} onClick={() => track('picker_complete', { picker: props.picker, ...props.params, via: 'cta' })}>
+    <a class="btn btn--primary pk-cta" href={href} onClick={() => track('picker_complete', { picker: props.picker, ...props.params, via: 'cta' })}>
       {props.label}
     </a>
   );

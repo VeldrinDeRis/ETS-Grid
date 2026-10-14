@@ -67,21 +67,28 @@ document.addEventListener('click', (e) => {
   if (tile) track('level_tile_click', { level: tile.dataset.levelTile, source: 'hero' });
 });
 
-/* ---------- лінії енергії (блок 5): лише transform/opacity, вимкнено при reduced-motion ---------- */
+/* ---------- схема енергії (блок 5): «світло вмикається» один раз, лише transform/opacity ----------
+   У спокої схема горить (без JS і при reduced-motion так і лишається). Коли схема в кадрі — лампи
+   загоряються по черзі, лінія до наступної лампи заповнюється; без циклів (DESIGN.md → Рух). */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const flow = document.querySelector<HTMLElement>('[data-energy-flow]');
 if (flow && !reduce) {
-  inView(flow, () => {
-    const vertical = matchMedia('(max-width: 959.98px)').matches;
-    const controls = [...flow.querySelectorAll<HTMLElement>('[data-flow-pulse]')].map((pulse, i) =>
-      animate(
-        pulse,
-        vertical
-          ? { transform: ['translateY(-100%)', 'translateY(250%)'], opacity: [0, 1, 0] }
-          : { transform: ['translateX(-100%)', 'translateX(250%)'], opacity: [0, 1, 0] },
-        { duration: 2.4, delay: i * 0.45, repeat: Infinity, ease: 'linear' },
-      ),
-    );
-    return () => controls.forEach((c) => c.stop());
-  });
+  const dots = [...flow.querySelectorAll<HTMLElement>('[data-flow-dot]')];
+  const fills = [...flow.querySelectorAll<HTMLElement>('[data-flow-pulse]')];
+  const vertical = matchMedia('(max-width: 959.98px)').matches;
+  const off = vertical ? 'scaleY(0)' : 'scaleX(0)';
+  const on = vertical ? 'scaleY(1)' : 'scaleX(1)';
+  const ease = [0.16, 1, 0.3, 1] as const;
+  const STEP = 0.32;
+  // Приглушений старт ставимо одразу, щоб на вході в кадр схема не блимала «увімкнена → вимкнена».
+  for (const dot of dots) Object.assign(dot.style, { opacity: '0.25', transform: 'scale(0.7)' });
+  for (const fill of fills) fill.style.transform = off;
+  inView(
+    flow,
+    () => {
+      dots.forEach((dot, i) => animate(dot, { opacity: [0.25, 1], transform: ['scale(0.7)', 'scale(1)'] }, { duration: 0.45, delay: i * STEP, ease }));
+      fills.forEach((fill, i) => animate(fill, { transform: [off, on] }, { duration: 0.4, delay: i * STEP + 0.18, ease }));
+    },
+    { amount: 0.4 },
+  );
 }

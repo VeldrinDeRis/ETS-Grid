@@ -7,6 +7,7 @@ import { hasToggle, installPrice, keyRows } from '../../lib/product';
 import { routes } from '../../lib/routes';
 import type { Product } from '../../lib/schema';
 import DemoBadge from '../ui/DemoBadge.astro';
+import Icon, { type IconName } from '../layout/Icon.astro';
 import Placeholder from '../ui/Placeholder.astro';
 import Price from '../ui/Price.astro';
 
@@ -23,6 +24,19 @@ const compositionKey = product.type === 'kit' ? 'kit' : levelKey;
 const composition = (productContent.composition as Record<string, string[]>)[compositionKey] ?? [];
 const inStock = product.stock === 'in_stock';
 const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
+
+/** Значок характеристики (DESIGN.md → Іконки); без відповідника — рядок без значка. */
+const CONNECTOR_ICON: Record<string, IconName> = { type2: 'type2', ccs2: 'ccs2', gbt_ac: 'gbt', gbt_dc: 'gbt', chademo: 'chademo' };
+const ROW_ICON: Record<string, IconName> = {
+  power_kw: 'power', pcs_kw: 'power', panel_w: 'power', kwp: 'sun',
+  phases: 'phases', ip: 'ip', cable: 'cable', capacity_kwh: 'battery', max_expand_kwh: 'battery', places: 'carport',
+};
+const firstConnector = Array.isArray(product.attrs.connectors) ? String(product.attrs.connectors[0]) : '';
+function rowIcon(row: { key?: string; label: string }): IconName | undefined {
+  if (row.key === 'connectors') return CONNECTOR_ICON[firstConnector];
+  if (row.label === 'Гарантія') return 'warranty';
+  return row.key ? ROW_ICON[row.key] : undefined;
+}
 ---
 <div class="ptop">
   <div class="ptop__gallery" data-product-block="gallery">
@@ -116,7 +130,7 @@ const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
           product.sale_mode === 'cart' ? (
             <button
               type="button"
-              class="pprice__cta js-only"
+              class="btn btn--primary btn--l pprice__cta js-only"
               data-add-to-cart={product.slug}
               data-turnkey={toggle ? 'true' : 'false'}
               data-source="product"
@@ -125,7 +139,7 @@ const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
               До кошика
             </button>
           ) : (
-            <a class="pprice__cta" href={routes.quoteFor(product.slug)} data-main-cta>
+            <a class="btn btn--primary btn--l pprice__cta" href={routes.quoteFor(product.slug)} data-main-cta>
               Розрахувати
             </a>
           )
@@ -146,7 +160,10 @@ const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
         {
           keyRows(product).map((row) => (
             <div>
-              <dt>{row.label}</dt>
+              <dt>
+                {rowIcon(row) && <Icon name={rowIcon(row)!} size={18} />}
+                {row.label}
+              </dt>
               <dd>{row.value === null ? <Placeholder label="[ДАНІ]" /> : isPlaceholder(row.value) ? <Placeholder label={row.value} /> : row.value}</dd>
             </div>
           ))
@@ -207,7 +224,8 @@ const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
     background: var(--day-surface);
   }
   .zoom::backdrop {
-    background: rgb(0 0 0 / 0.6);
+    /* Ночь палітри А (#0D1424) з прозорістю; ::backdrop не всюди успадковує змінні, тому літерал. */
+    background: rgb(13 20 36 / 0.75);
   }
   .zoom :global(img) {
     max-height: 80vh;
@@ -324,19 +342,7 @@ const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
     gap: var(--space-2xs);
   }
   .pprice__cta {
-    display: inline-flex;
     flex: 1;
-    align-items: center;
-    justify-content: center;
-    min-height: 3.25rem;
-    padding: 0 var(--space-l);
-    border: 0;
-    border-radius: var(--radius-m);
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
   }
   .pprice__compare {
     min-height: 3.25rem;
@@ -369,6 +375,9 @@ const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
     margin: 0;
   }
   .pchars__list dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
     color: var(--color-ink-muted);
     font-size: var(--step--1);
   }
@@ -389,6 +398,16 @@ const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
     .ptop {
       grid-template-columns: minmax(0, 1fr);
       gap: var(--space-l);
+    }
+    /* Телефон: головне фото 4:3 і рядок малих мініатюр — ціна й кнопка ближче до першого екрана. */
+    .gallery {
+      grid-template-columns: repeat(auto-fill, 4.5rem);
+    }
+    .gallery__item--main {
+      aspect-ratio: 4 / 3;
+    }
+    .gallery__item:not(.gallery__item--main) :global(.placeholder) {
+      font-size: 0.7rem;
     }
   }
 </style>

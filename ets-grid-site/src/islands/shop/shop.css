@@ -99,10 +99,9 @@
   border-radius: var(--radius-m);
   background: var(--day-bg);
   color: var(--day-ink-muted);
-  font-size: 0.7rem;
-  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+  line-height: 1.3;
   text-align: center;
-  text-transform: uppercase;
 }
 .shop-thumb img {
   width: 100%;

@@ -16,7 +16,7 @@ import type { PhotoKey } from '../../lib/photos';
 import type { StructureLevel } from '../../lib/schema';
 
 /** Фото для макета на героях рівнів (SPEC-010 §5, кадри 2–4 зі списку 04). */
-const LEVEL_PHOTO: Record<string, PhotoKey> = { charging: 'home-ac-wallbox', solar: 'roof-solar', battery: 'home-battery' };
+const LEVEL_PHOTO: Record<string, PhotoKey> = { charging: 'home-ac-wallbox', solar: 'roof-solar', battery: 'bess-container' };
 import { faqPage, ld, seoTitle } from '../../lib/seo';
 
 export const getStaticPaths = (() =>
@@ -87,3 +87,10 @@ const products = await getProductsBy({ level: level.key });
     </div>
   </Section>
 </BaseLayout>
+
+<style>
+  /* Форма рівня — окремий блок після FAQ, з повітрям між ними. */
+  [data-level-block='form'] {
+    margin-top: var(--space-3xl);
+  }
+</style>

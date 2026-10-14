@@ -11,7 +11,7 @@ import { home } from '../../lib/home';
       home.flow.map((node, i) => (
         <li class="flow__node">
           <a class="flow__link" href={node.href}>
-            <span class="flow__dot" aria-hidden="true" />
+            <span class="flow__dot" aria-hidden="true" data-flow-dot />
             <span class="flow__label">{node.label}</span>
             <span class="flow__text">{node.text}</span>
           </a>
@@ -81,12 +81,12 @@ import { home } from '../../lib/home';
     overflow: hidden;
     background: color-mix(in srgb, var(--color-accent) 30%, transparent);
   }
+  /* Заповнення лінії: у спокої лінія горить; скрипт один раз «вмикає» її від лампи до лампи. */
   .flow__pulse {
     position: absolute;
     inset: 0;
-    width: 40%;
-    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
-    opacity: 0;
+    background: var(--color-accent);
+    transform-origin: left center;
   }
 
   @media (max-width: 959.98px) {
@@ -111,9 +111,7 @@ import { home } from '../../lib/home';
       height: auto;
     }
     .flow__pulse {
-      width: 100%;
-      height: 40%;
-      background: linear-gradient(180deg, transparent, var(--color-accent), transparent);
+      transform-origin: center top;
     }
   }
 </style>

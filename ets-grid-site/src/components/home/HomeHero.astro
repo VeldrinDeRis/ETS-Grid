@@ -7,6 +7,8 @@ import { routes } from '../../lib/routes';
 import { isPlaceholder } from '../../lib/schema';
 import Container from '../ui/Container.astro';
 import Placeholder from '../ui/Placeholder.astro';
+import { LEVEL_ICON } from '../../lib/level-icons';
+import Icon from '../layout/Icon.astro';
 import Photo from '../ui/Photo.astro';
 import Price from '../ui/Price.astro';
 
@@ -29,8 +31,8 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
       <h1 id="hero-title" class="hero__title" data-hero-field="h1">{variant.h1}</h1>
       <p class="hero__subtitle" data-hero-field="subtitle">{variant.subtitle}</p>
       <div class="hero__ctas">
-        <a class="hero__cta hero__cta--primary" href="#potuzhnist" data-hero-cta="primary" data-hero-field="primary_cta">{variant.primary_cta}</a>
-        <a class="hero__cta hero__cta--secondary" href={routes.quote} data-hero-cta="secondary" data-hero-field="secondary_cta">{variant.secondary_cta}</a>
+        <a class="btn btn--primary btn--l hero__cta hero__cta--primary" href="#potuzhnist" data-hero-cta="primary" data-hero-field="primary_cta">{variant.primary_cta}</a>
+        <a class="btn btn--secondary btn--l hero__cta hero__cta--secondary" href={routes.quote} data-hero-cta="secondary" data-hero-field="secondary_cta">{variant.secondary_cta}</a>
       </div>
       {
         anchorProducts.map(({ slug, product }) => (
@@ -49,6 +51,7 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
         levels.map(({ level, from }) => (
           <li>
             <a class="hero__tile" href={routes.level(level.slug)} data-level-tile={level.key}>
+              <Icon name={LEVEL_ICON[level.key]} size={28} />
               <span class="hero__tile-name">{level.name}</span>
               <span class="hero__tile-price num">{from}</span>
             </a>
@@ -125,24 +128,6 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     gap: var(--space-xs);
     margin-block: var(--space-m);
   }
-  .hero__cta {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 3.25rem;
-    padding: 0 var(--space-l);
-    border-radius: var(--radius-m);
-    font-weight: 700;
-    text-decoration: none;
-  }
-  .hero__cta--primary {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-  }
-  .hero__cta--secondary {
-    border: 2px solid var(--color-ink);
-    color: var(--color-ink);
-  }
   .hero__anchor {
     display: flex;
     flex-wrap: wrap;
@@ -177,6 +162,13 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     border: 1px solid var(--color-line);
     border-radius: var(--radius-m);
     text-decoration: none;
+  }
+  .hero__tile :global(.icon) {
+    margin-bottom: var(--space-2xs);
+    color: var(--color-ink-muted);
+  }
+  .hero__tile:hover {
+    border-color: var(--color-ink-muted);
   }
   .hero__tile:hover .hero__tile-name {
     text-decoration: underline;

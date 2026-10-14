@@ -350,7 +350,7 @@ export default function CatalogFilters(props: Props) {
                 Скинути все
               </button>
             )}
-            <button type="button" class="cf-show" onClick={() => closeSheet(true)}>
+            <button type="button" class="btn btn--primary cf-show" onClick={() => closeSheet(true)}>
               Показати {total} {plural(total, GOODS)}
             </button>
           </div>

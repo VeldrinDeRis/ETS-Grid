@@ -235,6 +235,10 @@ const composition = (productContent.composition as Record<string, string[]>)[com
   .pblock {
     margin-top: var(--space-2xl);
   }
+  /* Підзаголовок після сітки чи плашки — новий підблок, а не продовження попереднього. */
+  .pblock > :is(.grid, .plate) + h3 {
+    margin-top: var(--space-xl);
+  }
   .spec {
     width: 100%;
     max-width: 52rem;

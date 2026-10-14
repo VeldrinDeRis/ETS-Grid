@@ -172,7 +172,7 @@ const full = kind === 'quote' || kind === 'final';
     <label>Сайт <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
   </div>
 
-  <button type="submit" class="lead__submit" data-lead-submit>Надіслати заявку</button>
+  <button type="submit" class="btn btn--primary btn--l lead__submit" data-lead-submit>Надіслати заявку</button>
   <p class="lead__consent">
     Надсилаючи заявку, ви погоджуєтеся з <a href={routes.document('polityka-konfidentsiinosti')}>політикою конфіденційності</a>.
   </p>
@@ -322,18 +322,6 @@ const full = kind === 'quote' || kind === 'final';
   }
   .lead__submit {
     justify-self: start;
-    min-height: 3.25rem;
-    padding: 0 var(--space-l);
-    border: 0;
-    border-radius: var(--radius-m);
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .lead__submit:disabled {
-    opacity: 0.7;
-    cursor: progress;
   }
   .lead__consent {
     margin: 0;

@@ -1,0 +1,71 @@
+/* Кнопки ETS GRID (DESIGN.md → Components / Buttons, SPEC-010 доводка).
+   Одне джерело для Button.astro, островів і шаблонів: primary — єдина акцентна дія на екрані (ТЗ §8.1). */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  min-height: var(--tap);
+  padding: 0 var(--space-m);
+  border: 2px solid transparent;
+  border-radius: var(--radius-m);
+  background: transparent;
+  color: var(--color-ink);
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.btn:active:not(:disabled, [aria-disabled='true']) {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.btn--l {
+  min-height: 3.25rem;
+  padding: 0 var(--space-l);
+}
+
+.btn--primary {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.btn--primary:hover:not(:disabled, [aria-disabled='true']) {
+  border-color: color-mix(in srgb, var(--color-accent) 86%, var(--color-ink));
+  background: color-mix(in srgb, var(--color-accent) 86%, var(--color-ink));
+}
+
+.btn--secondary {
+  border-color: currentColor;
+}
+.btn--secondary:hover:not(:disabled, [aria-disabled='true']) {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.btn--ghost {
+  padding: 0 var(--space-xs);
+  font-weight: 600;
+}
+.btn--ghost:hover {
+  text-decoration: underline;
+}
+
+/* Неактивна дія з поясненням поруч (D-031): видна, але не кличе. */
+.btn[aria-disabled='true'] {
+  border: 1px dashed var(--color-ink-muted);
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: not-allowed;
+}

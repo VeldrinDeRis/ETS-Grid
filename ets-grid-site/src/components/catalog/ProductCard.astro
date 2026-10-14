@@ -5,6 +5,8 @@ import { cardBadge, keyChars } from '../../lib/filters';
 import { productImage } from '../../lib/images';
 import { routes } from '../../lib/routes';
 import type { Product } from '../../lib/schema';
+import { LEVEL_ICON } from '../../lib/level-icons';
+import Icon from '../layout/Icon.astro';
 import Price from '../ui/Price.astro';
 
 interface Props {
@@ -26,7 +28,10 @@ const inStock = product.stock === 'in_stock';
       image ? (
         <img src={image.src} alt={image.alt} width="400" height="400" loading="lazy" decoding="async" />
       ) : (
-        <span class="product-card__photo-label" aria-hidden="true">{level.name}</span>
+        <span class="product-card__photo-label" aria-hidden="true">
+          <Icon name={LEVEL_ICON[level.key]} size={36} />
+          <span>Фото надасть замовник</span>
+        </span>
       )
     }
     {badge && <span class="product-card__badge">{badge}</span>}
@@ -110,10 +115,15 @@ const inStock = product.stock === 'in_stock';
     height: 100%;
     object-fit: contain;
   }
+  /* Порожня рамка фото (D-031): значок рівня й підпис звичайним регістром. */
   .product-card__photo-label {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2xs);
+    padding-inline: var(--space-s);
+    color: var(--day-ink-muted);
     font-size: var(--step--1);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    text-align: center;
   }
   .product-card__badge {
     position: absolute;
