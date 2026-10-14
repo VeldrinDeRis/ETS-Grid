@@ -1,0 +1,32 @@
+# ETS GRID — сайт-магазин (прототип в коде)
+
+Рабочая папка проекта. Сессии открывать в корне `F:\Projects\ETS-GRID` — здесь лежат скилл `/motion`, агент `motion-reviewer` и MCP `motion` (`.mcp.json`).
+
+## Карта папки
+| Путь | Что | Правило |
+|---|---|---|
+| `brief/v1.0/` | пакет ТЗ от заказчика | только чтение; новая версия → `brief/v1.1/` рядом |
+| `ets-grid-site/` | код прототипа (Astro + Preact) | имя папки задано инструкцией 02 |
+| `sources/photos/raw/` | скачанные фото до оптимизации | в git не идут; в сайт — только оптимизированные в `ets-grid-site/public/img/` + `CREDITS.md` |
+| `research/` | скриншоты референсов, заметки | — |
+| `releases/` | архивы для заказчика `ets-grid-site-ГГГГ-ММ-ДД.zip` | zip в git не идут |
+
+## Порядок чтения ТЗ
+`brief/v1.0/02_INSTRUKTSIYA_dlya_agenta.md` → `01_TZ…md` (главный, побеждает при противоречиях) → `03_struktura_i_filtry.md` → `data/catalog-sample.json` → `04_FOTO_istochniki.md` → `refs/`.
+
+## Принятые решения (14.10.2026)
+- **Прототип в коде, не в Figma.** Figma — позже, через `figma:*` скиллы после авторизации коннектора.
+- **Стек:** Astro + TypeScript + CSS-токены; интерактив — острова Preact. Анимация — ванильный `motion` (`animate`, `inView`), не `motion/react`. Каждая анимация уважает `prefers-reduced-motion`.
+- **URL всех страниц — по `03_struktura_i_filtry.md`** (`/koshyk/`, `/oformlennya/`, `/dyakuyemo/`, `/porivnyannya/`, `/posluhy/…`), а не по именам файлов из §3 инструкции 02.
+- **Первый экран — акцент на бизнес** (паркинг, отель, ТЦ: заработок на зарядке, Solar Carport, работа в блэкаут). Дом и АЗС — через плитки и вкладки ниже.
+- **Материалов заказчика нет:** логотип, фото объектов, контакты, цифры — только видимые плейсхолдеры `[ТЕЛЕФОН]`, `[N об'єктів]`, `[ЦІНА]`. Ничего не выдумывать.
+- **География:** «Київ і вся Україна».
+- **Палитра:** направление А «Тёплый свет» (`#0D1424` / `#FFB547` / `#F4F6F8`), Б «Сигнал» — переключением токенов. Запрещено: лайм `#C8F03C`, Unbounded, JetBrains Mono.
+
+## Инструменты
+- Дизайн: `impeccable` (основной), `frontend-design`, `design:*` (critique, ux-copy, accessibility-review), `design-motion-principles`, `/motion`.
+- Проверка: Playwright MCP, Chrome DevTools MCP (`lighthouse_audit`), встроенный браузер.
+- Windows: PowerShell с `ExecutionPolicy RemoteSigned` (CurrentUser) — `npx`/`npm` работают.
+
+## Git
+Локальная идентичность задана в репозитории. Коммитить по логическим шагам; `brief/` не редактировать.
