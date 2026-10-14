@@ -1,0 +1,342 @@
+---
+// Форма заявки (SPEC-009 §3). Серверний HTML працює без JS (method="post");
+// src/scripts/lead-form.ts додає товар і параметри підбірника, перевірку, відправку-імітацію.
+import carsJson from '../../data/cars.json';
+import calcJson from '../../data/calc.json';
+import filtersJson from '../../data/filters.json';
+import { getLevels, getProductsBy } from '../../lib/catalog';
+import type { Car, FiltersFile } from '../../lib/filters';
+import { LIMITS, type LeadKind } from '../../lib/leads';
+import { priceView } from '../../lib/price';
+import { routes } from '../../lib/routes';
+import type { LevelKey } from '../../lib/schema';
+
+interface Props {
+  kind: LeadKind;
+  /** Рівень сторінки-джерела: відмічається в «Що цікавить». */
+  level?: LevelKey;
+  title?: string;
+  headingLevel?: 2 | 3;
+}
+const TITLES: Record<LeadKind, string> = {
+  quote: 'Розрахунок під ключ',
+  final: 'Назвіть майданчик — решта на нас',
+  level: 'Підберемо під ваш обʼєкт',
+  carport: 'Отримати проєкт навісу',
+};
+const { kind, level, title = TITLES[kind], headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+const id = `lead-${kind}`;
+const levels = getLevels();
+
+const products = await getProductsBy();
+const levelKeyById = new Map(levels.map((l) => [l.id, l.key]));
+const connectorFacet = (filtersJson as unknown as FiltersFile).levels.charging.facets.find((f) => f.key === 'connectors');
+const context = {
+  products: Object.fromEntries(products.map((p) => [p.slug, { name: p.name, level: levelKeyById.get(p.level), price: priceView(p).primary }])),
+  cars: Object.fromEntries((carsJson as Car[]).map((c) => [c.id, `${c.brand} ${c.model}`])),
+  loads: Object.fromEntries(calcJson.battery.loads.value.map((l) => [l.id, l.label])),
+  connectors: Object.fromEntries((Array.isArray(connectorFacet?.values) ? connectorFacet.values : []) as [string, string][]),
+};
+
+const objectTypes = [
+  ['home', 'Дім'],
+  ['business', 'Бізнес / паркінг'],
+  ['highway', 'АЗС / траса'],
+  ['fleet', 'Автопарк'],
+  ['other', 'Інше'],
+];
+const messengers = [
+  ['call', 'Дзвінок'],
+  ['telegram', 'Telegram'],
+  ['viber', 'Viber'],
+];
+const full = kind === 'quote' || kind === 'final';
+---
+<form
+  class="lead"
+  id={id}
+  method="post"
+  action="/dyakuyemo/?type=lead"
+  novalidate
+  data-lead-form
+  data-kind={kind}
+  data-level={level}
+  aria-labelledby={`${id}-title`}
+>
+  <Heading class="lead__title" id={`${id}-title`}>{title}</Heading>
+
+  <div class="lead__summary" role="alert" tabindex="-1" data-lead-summary hidden>
+    <p>Перевірте, будь ласка:</p>
+    <ul data-lead-summary-list></ul>
+  </div>
+
+  <div class="lead__context" data-lead-product hidden>
+    <p class="lead__context-label">Товар</p>
+    <p class="lead__context-text" data-lead-product-text></p>
+  </div>
+  <div class="lead__context" data-lead-picker hidden>
+    <p class="lead__context-label">Ваші параметри</p>
+    <p class="lead__context-text" data-lead-picker-text></p>
+    <button type="button" class="lead__link" data-lead-picker-remove>Прибрати</button>
+  </div>
+
+  <div class="lead__field">
+    <label for={`${id}-name`}>Імʼя</label>
+    <input id={`${id}-name`} name="name" type="text" autocomplete="name" maxlength={LIMITS.name} aria-describedby={`${id}-name-error`} />
+    <p class="lead__error" id={`${id}-name-error`} data-error-for="name"></p>
+  </div>
+
+  <div class="lead__field">
+    <label for={`${id}-phone`}>Телефон <span class="lead__req">(обовʼязково)</span></label>
+    <input
+      id={`${id}-phone`}
+      name="phone"
+      type="tel"
+      inputmode="tel"
+      autocomplete="tel"
+      required
+      placeholder="+380 XX XXX XX XX"
+      aria-describedby={`${id}-phone-error`}
+    />
+    <p class="lead__error" id={`${id}-phone-error`} data-error-for="phone"></p>
+  </div>
+
+  {
+    kind === 'carport' && (
+      <div class="lead__field">
+        <label for={`${id}-city`}>Місто</label>
+        <input id={`${id}-city`} name="city" type="text" autocomplete="address-level2" maxlength={LIMITS.city} aria-describedby={`${id}-city-error`} />
+        <p class="lead__error" id={`${id}-city-error`} data-error-for="city" />
+      </div>
+    )
+  }
+
+  {
+    full && (
+      <fieldset class="lead__field lead__group">
+        <legend>Тип обʼєкта</legend>
+        <div class="lead__options">
+          {objectTypes.map(([value, label]) => (
+            <label class="lead__option">
+              <input type="radio" name="object_type" value={value} />
+              <span>{label}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    )
+  }
+
+  {
+    full && (
+      <fieldset class="lead__field lead__group">
+        <legend>Що цікавить</legend>
+        <div class="lead__options">
+          {levels.map((l) => (
+            <label class="lead__option">
+              <input type="checkbox" name="interests" value={l.key} checked={l.key === level} />
+              <span>{l.name}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    )
+  }
+  {!full && level && <input type="hidden" name="interests" value={level} />}
+  {kind === 'carport' && <input type="hidden" name="interests" value="carport" />}
+
+  <fieldset class="lead__field lead__group">
+    <legend>Як звʼязатися</legend>
+    <div class="lead__options">
+      {
+        messengers.map(([value, label], i) => (
+          <label class="lead__option">
+            <input type="radio" name="messenger" value={value} checked={i === 0} />
+            <span>{label}</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <details class="lead__more">
+    <summary>Додати коментар</summary>
+    <label for={`${id}-comment`} class="lead__sr">Коментар</label>
+    <textarea id={`${id}-comment`} name="comment" rows="3" maxlength={LIMITS.comment} aria-describedby={`${id}-comment-error`}></textarea>
+    <p class="lead__error" id={`${id}-comment-error`} data-error-for="comment"></p>
+  </details>
+
+  <div class="lead__hp" aria-hidden="true">
+    <label>Сайт <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
+  <button type="submit" class="lead__submit" data-lead-submit>Надіслати заявку</button>
+  <p class="lead__consent">
+    Надсилаючи заявку, ви погоджуєтеся з <a href={routes.document('polityka-konfidentsiinosti')}>політикою конфіденційності</a>.
+  </p>
+  <script type="application/json" data-lead-context set:html={JSON.stringify(context)} />
+</form>
+
+<script>
+  import '../../scripts/lead-form';
+</script>
+
+<style>
+  .lead {
+    display: grid;
+    gap: var(--space-m);
+    max-width: 40rem;
+  }
+  .lead__title {
+    margin: 0;
+  }
+  .lead__summary {
+    padding: var(--space-s) var(--space-m);
+    border: 2px solid var(--color-status-wait);
+    border-radius: var(--radius-m);
+  }
+  .lead__summary p {
+    margin: 0 0 var(--space-3xs);
+    font-weight: 600;
+  }
+  .lead__summary a {
+    display: inline-flex;
+    min-height: var(--tap);
+    align-items: center;
+  }
+  .lead__context {
+    display: grid;
+    gap: var(--space-3xs);
+    padding: var(--space-s) var(--space-m);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+  .lead__context[hidden],
+  .lead__summary[hidden] {
+    display: none;
+  }
+  .lead__context p {
+    margin: 0;
+  }
+  .lead__context-label {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .lead__link {
+    justify-self: start;
+    min-height: var(--tap);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-ink);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .lead__field {
+    display: grid;
+    gap: var(--space-3xs);
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+  .lead__field > label,
+  .lead__group legend {
+    padding: 0;
+    font-weight: 600;
+  }
+  .lead__req {
+    color: var(--color-ink-muted);
+    font-weight: 400;
+    font-size: var(--step--1);
+  }
+  .lead input[type='text'],
+  .lead input[type='tel'],
+  .lead textarea {
+    width: 100%;
+    min-height: var(--tap);
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  .lead [aria-invalid='true'] {
+    border-color: var(--color-status-wait);
+    box-shadow: inset 0 0 0 1px var(--color-status-wait);
+  }
+  .lead__error {
+    margin: 0;
+    min-height: 0;
+    color: var(--color-status-wait);
+    font-size: var(--step--1);
+  }
+  .lead__error:empty {
+    display: none;
+  }
+  .lead__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-top: var(--space-3xs);
+  }
+  .lead__option {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: var(--tap);
+    padding: 0 var(--space-s);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+  }
+  .lead__option:has(input:checked) {
+    border-color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+  }
+  .lead__option:has(input:focus-visible) {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .lead__option input {
+    accent-color: var(--color-ink);
+  }
+  .lead__more summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .lead__sr,
+  .lead__hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .lead__submit {
+    justify-self: start;
+    min-height: 3.25rem;
+    padding: 0 var(--space-l);
+    border: 0;
+    border-radius: var(--radius-m);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .lead__submit:disabled {
+    opacity: 0.7;
+    cursor: progress;
+  }
+  .lead__consent {
+    margin: 0;
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+</style>

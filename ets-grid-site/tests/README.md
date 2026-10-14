@@ -109,3 +109,16 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-004/AC-17 axe-core | a11y | `a11y/pickers.spec.ts` | ✅ |
 | SPEC-004/AC-18 клавиатура и подписи | a11y | `a11y/pickers.spec.ts` | ✅ |
 | SPEC-004/AC-19 reduced-motion | a11y | `a11y/pickers.spec.ts` | ✅ |
+| SPEC-009/AC-01 телефон | unit | `unit/leads.test.ts` | ✅ |
+| SPEC-009/AC-02 проверка полей | unit | `unit/leads.test.ts` | ✅ |
+| SPEC-009/AC-03 сводка подборщика | unit | `unit/leads.test.ts` | ✅ |
+| SPEC-009/AC-04 формы на местах, без JS | build | `build/forms.test.ts` | ✅ |
+| SPEC-009/AC-05 ≤ 5 полей, подписи | build | `build/forms.test.ts` | ✅ |
+| SPEC-009/AC-06 товар из ?product= | functional | `functional/forms.spec.ts` | ✅ |
+| SPEC-009/AC-07 параметры подборщика | functional | `functional/forms.spec.ts` | ✅ |
+| SPEC-009/AC-08 ошибки | functional | `functional/forms.spec.ts` | ✅ |
+| SPEC-009/AC-09 успешная заявка | functional | `functional/forms.spec.ts` | ✅ |
+| SPEC-009/AC-10 антиспам | functional | `functional/forms.spec.ts` | ✅ |
+| SPEC-009/AC-11 UTM | functional | `functional/forms.spec.ts` | ✅ |
+| SPEC-009/AC-12 axe-core | a11y | `a11y/forms.spec.ts` | ✅ |
+| SPEC-009/AC-13 клавиатура | a11y | `a11y/forms.spec.ts` | ✅ |

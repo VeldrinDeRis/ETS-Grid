@@ -43,6 +43,7 @@ interface Props {
 }
 
 const GOODS = ['товар', 'товари', 'товарів'] as const;
+const LEVEL_KEYS: Record<number, string> = { 1: 'charging', 2: 'solar', 3: 'battery', 4: 'carport' };
 const METRIC_FACETS = ['power_kw', 'panel_w', 'capacity_kwh', 'kwp'];
 
 function withToken(state: FilterState, key: string, token: string, on: boolean): FilterState {
@@ -314,7 +315,9 @@ export default function CatalogFilters(props: Props) {
                   </li>
                 ))}
               </ul>
-              <p class="cf-empty__form">Тут буде форма підбору · SPEC-009</p>
+              <a class="cf-empty__form" href={`/kontakty/?interest=${LEVEL_KEYS[levelId] ?? ''}#rozrakhunok`}>
+                Залишити заявку на підбір
+              </a>
             </section>
           )}
         </div>

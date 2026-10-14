@@ -1,6 +1,6 @@
 ---
 // Порожня видача на сервері (SPEC-002 §4, Q-2 → D-027): текст, 3 найближчі товари, місце для форми.
-import StubNotice from '../layout/StubNotice.astro';
+import LeadForm from '../forms/LeadForm.astro';
 import { getProductsBy, getLevelById } from '../../lib/catalog';
 import { nearestProducts } from '../../lib/filters';
 import ProductCard from './ProductCard.astro';
@@ -19,7 +19,9 @@ const subject = levelId === 1 ? 'Таких станцій немає.' : 'Та�
   <div class="empty__list">
     {nearest.map((p) => <ProductCard product={p} variant="compact" />)}
   </div>
-  <StubNotice spec="SPEC-009" note="Тут буде форма підбору." />
+  <div class="empty__form">
+    <LeadForm kind="level" level={level.key} headingLevel={3} />
+  </div>
 </section>
 
 <style>
@@ -33,6 +35,9 @@ const subject = levelId === 1 ? 'Таких станцій немає.' : 'Та�
   }
   .empty__lead {
     color: var(--color-ink-muted);
+  }
+  .empty__form {
+    margin-top: var(--space-l);
   }
   .empty__list {
     display: grid;

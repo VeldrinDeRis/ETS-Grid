@@ -2,7 +2,7 @@
 // Лендинг Solar Carport (SPEC-004 §3.4, ТЗ §6.6).
 import filtersJson from '../../data/filters.json';
 import LevelHero from '../../components/catalog/LevelHero.astro';
-import StubNotice from '../../components/layout/StubNotice.astro';
+import LeadForm from '../../components/forms/LeadForm.astro';
 import Picker from '../../components/pickers/Picker.astro';
 import Placeholder from '../../components/ui/Placeholder.astro';
 import Section from '../../components/ui/Section.astro';
@@ -134,8 +134,7 @@ const stages = ['Заявка', 'Обстеження', 'Проєкт', 'Мон�
 
   <Section label="Отримати проєкт навісу">
     <div data-carport-block="form">
-      <h2>Отримати проєкт навісу</h2>
-      <StubNotice spec="SPEC-009" note="Тут буде форма «Отримати проєкт»." />
+      <LeadForm kind="carport" />
     </div>
   </Section>
 </BaseLayout>

@@ -6,7 +6,7 @@ import Catalog from '../../components/catalog/Catalog.astro';
 import CategoryTiles from '../../components/catalog/CategoryTiles.astro';
 import LevelGuide from '../../components/catalog/LevelGuide.astro';
 import LevelHero from '../../components/catalog/LevelHero.astro';
-import StubNotice from '../../components/layout/StubNotice.astro';
+import LeadForm from '../../components/forms/LeadForm.astro';
 import Picker from '../../components/pickers/Picker.astro';
 import Section from '../../components/ui/Section.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -72,7 +72,7 @@ const products = await getProductsBy({ level: level.key });
       <LevelGuide part="faq" text={text} levelName={level.name} />
     </div>
     <div data-level-block="form">
-      <StubNotice spec="SPEC-009" note="Тут буде форма заявки." />
+      <LeadForm kind="level" level={level.key} />
     </div>
   </Section>
 </BaseLayout>

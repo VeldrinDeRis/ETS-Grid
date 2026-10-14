@@ -1,4 +1,5 @@
 ---
+import LeadForm from '../components/forms/LeadForm.astro';
 import StubPage from '../layouts/StubPage.astro';
 ---
 <StubPage
@@ -7,8 +8,14 @@ import StubPage from '../layouts/StubPage.astro';
   spec="SPEC-007"
   note="Контакти надає замовник."
 >
-  <section id="rozrakhunok" aria-labelledby="rozrakhunok-title">
-    <h2 id="rozrakhunok-title">Розрахунок під ключ</h2>
-    <p>Тут буде форма розрахунку — SPEC-009.</p>
+  <section id="rozrakhunok" class="contacts-form">
+    <LeadForm kind="quote" />
   </section>
 </StubPage>
+
+<style>
+  .contacts-form {
+    margin-top: var(--space-xl);
+    scroll-margin-top: var(--space-l);
+  }
+</style>

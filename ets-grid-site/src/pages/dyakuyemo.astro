@@ -1,10 +1,58 @@
 ---
+// «Дякуємо» — заглушка SPEC-005; текст для заявок (?type=lead&id=) — SPEC-009 ревізія 1.
+import Placeholder from '../components/ui/Placeholder.astro';
 import StubPage from '../layouts/StubPage.astro';
+import { routes } from '../lib/routes';
 ---
 <StubPage
-  title="Дякуємо за замовлення"
-  description="Замовлення прийнято. Наступні кроки."
+  title="Дякуємо"
+  description="Заявку чи замовлення прийнято. Наступні кроки."
   spec="SPEC-005"
-  note="Номер замовлення і наступні кроки (ТЗ §6.8)."
+  note="Сторінку для замовлень із кошика зробить SPEC-005."
   robots="noindex, follow"
-/>
+>
+  <div class="thanks" data-thanks-lead hidden>
+    <h2>Заявка № <span data-thanks-id></span> прийнята</h2>
+    <p>
+      Менеджер звʼяжеться з вами протягом <Placeholder label="[N] хвилин" /> у робочий час. Ми вже бачимо ваші параметри підбору, якщо ви
+      проходили підбірник.
+    </p>
+    <ol>
+      <li>Уточнимо обʼєкт і потужність вводу.</li>
+      <li>Підготуємо розрахунок під ключ.</li>
+      <li>Домовимося про обстеження або доставку.</li>
+    </ol>
+  </div>
+  <p class="thanks__demo">Демо: заявка нікуди не надсилається — у бойовій версії вона піде в CRM.</p>
+  <p><a href={routes.home}>На головну</a></p>
+</StubPage>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const id = params.get('id');
+  if (params.get('type') === 'lead' && id && /^L-\d{8}-[A-Z0-9]{4}$/.test(id)) {
+    const block = document.querySelector<HTMLElement>('[data-thanks-lead]');
+    const slot = document.querySelector<HTMLElement>('[data-thanks-id]');
+    if (block && slot) {
+      slot.textContent = id;
+      block.hidden = false;
+    }
+  }
+</script>
+
+<style>
+  .thanks[hidden] {
+    display: none;
+  }
+  .thanks ol {
+    padding-left: 1.4em;
+  }
+  .thanks__demo {
+    color: var(--color-placeholder);
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>
