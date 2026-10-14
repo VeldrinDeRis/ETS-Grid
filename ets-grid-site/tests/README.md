@@ -177,3 +177,10 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-007/AC-06 навигатор финансирования | unit, build, functional | `unit/content.test.ts`, `build/content.test.ts`, `functional/content.spec.ts` | ✅ |
 | SPEC-007/AC-07 axe-core | a11y | `a11y/content.spec.ts` | ✅ |
 | SPEC-007/AC-08 JS ≤ 100 КБ | build | `build/budget.test.ts` | ✅ |
+| SPEC-008/AC-01 title ≤ 60, description 120–160, уникальность, шаблоны | unit, build | `unit/seo.test.ts`, `build/seo.test.ts` | ✅ |
+| SPEC-008/AC-02 noindex и sitemap | unit, build | `unit/seo.test.ts`, `build/seo.test.ts` | ✅ |
+| SPEC-008/AC-03 JSON-LD без плейсхолдеров и AggregateRating | build | `build/seo.test.ts` | ✅ |
+| SPEC-008/AC-04 Product и Offer | unit, build | `unit/seo.test.ts`, `build/seo.test.ts` | ✅ |
+| SPEC-008/AC-05 FAQPage = FAQ в HTML | build | `build/seo.test.ts` | ✅ |
+| SPEC-008/AC-06 robots, sitemap, hreflang, Open Graph | build | `build/seo.test.ts` | ✅ |
+| SPEC-008/AC-07 Lighthouse SEO = 100 | вручную | `qa/README.md` | ✅ |

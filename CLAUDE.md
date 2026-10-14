@@ -12,6 +12,7 @@
 | `ets-grid-site/tests/` | библиотека тестов: `unit/` `data/` `build/` `functional/` `a11y/` `visual/` + `fixtures/` `helpers/`; индекс `README.md` | критерии приёмки → тесты (D-023, D-024) |
 | `sources/photos/raw/` | скачанные фото до оптимизации | в git не идут; в сайт — только оптимизированные в `ets-grid-site/public/img/` + `CREDITS.md` |
 | `research/` | скриншоты референсов, заметки | — |
+| `qa/` | ручные проверки: итоги Lighthouse и т. п. в `README.md` | сырые отчёты `qa/lighthouse/` в git не идут |
 | `releases/` | архивы для заказчика `ets-grid-site-ГГГГ-ММ-ДД.zip` | zip в git не идут |
 
 ## Порядок чтения ТЗ

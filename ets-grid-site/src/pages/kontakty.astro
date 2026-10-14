@@ -8,6 +8,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { structure } from '../lib/catalog';
 import { content } from '../lib/content';
 import { isPlaceholder } from '../lib/schema';
+import { ld, localBusiness } from '../lib/seo';
 import '../styles/content.css';
 
 const c = structure.contacts;
@@ -24,6 +25,7 @@ const rows: [string, string][] = [
   title="Контакти"
   description="Контакти ETS GRID: телефон, месенджери, адреса, графік роботи. Київ і вся Україна."
   crumbs={[{ label: 'Контакти' }]}
+  jsonLd={ld(localBusiness(Astro.site!, structure.contacts))}
 >
   <Section>
     <h1>Контакти</h1>

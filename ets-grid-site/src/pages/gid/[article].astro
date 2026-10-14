@@ -9,6 +9,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getLevel, getProductsBy } from '../../lib/catalog';
 import { content } from '../../lib/content';
 import { routes } from '../../lib/routes';
+import { article as articleLd, faqPage, ld } from '../../lib/seo';
 import '../../styles/content.css';
 
 type Article = (typeof content.guide.articles)[number];
@@ -28,6 +29,8 @@ const related = (await getProductsBy({ level: article.level })).filter((p) => p.
   title={article.title}
   description={`${article.title}: ввід, розʼєм, AC чи DC, OCPP і балансування. Гід ETS GRID.`}
   crumbs={[{ label: content.guide.title, href: routes.guide }, { label: article.title }]}
+  ogType="article"
+  jsonLd={ld(articleLd(Astro.site!, article.title, routes.guideArticle(article.slug), text.value), faqPage(text.faq))}
 >
   <Section width="narrow">
     <article>

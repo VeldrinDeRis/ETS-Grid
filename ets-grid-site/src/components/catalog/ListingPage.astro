@@ -3,6 +3,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import type { FilterPreset } from '../../lib/filters';
 import { routes } from '../../lib/routes';
+import { itemList, ld, seoTitle } from '../../lib/seo';
 import type { Category, Product, StructureLevel } from '../../lib/schema';
 import Section from '../ui/Section.astro';
 import Catalog from './Catalog.astro';
@@ -18,15 +19,16 @@ const { level, category, products, preset } = Astro.props;
 const categoryUrl = routes.category(level.slug, category.slug);
 const h1 = preset?.h1 ?? category.name;
 const title = preset ? preset.h1 : `${category.name} — ${level.name.toLowerCase()}`;
+const metaTitle = preset ? preset.h1 : seoTitle.listing(category.name, level.name);
 const description =
   preset?.description ??
-  `${level.name}, ${category.name.toLowerCase()}${category.hint ? `: ${category.hint}` : ''}. Ціни, наявність, монтаж під ключ.`;
+  `${level.name}, ${category.name.toLowerCase()}${category.hint ? `: ${category.hint}` : ''}. Ціни з монтажем, доставка по Україні.`;
 const crumbs = [
   { label: level.name, href: routes.level(level.slug) },
   ...(preset ? [{ label: category.name, href: categoryUrl }, { label: preset.h1 }] : [{ label: category.name }]),
 ];
 ---
-<BaseLayout title={title} description={description} crumbs={crumbs}>
+<BaseLayout title={title} metaTitle={metaTitle} description={description} crumbs={crumbs} jsonLd={ld(itemList(Astro.site!, products))}>
   <Section>
     <h1>{h1}</h1>
     {category.hint && !preset && <p class="listing__hint">{category.hint}</p>}

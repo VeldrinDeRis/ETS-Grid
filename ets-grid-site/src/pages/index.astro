@@ -8,12 +8,14 @@ import HomeSystems from '../components/home/HomeSystems.astro';
 import Picker from '../components/pickers/Picker.astro';
 import Section from '../components/ui/Section.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { activeVariant } from '../lib/home';
+import { activeVariant, home } from '../lib/home';
+import { faqPage, ld } from '../lib/seo';
 
 const variant = activeVariant();
 ---
 <BaseLayout
-  title={`ETS GRID — ${variant.h1}`}
+  title={variant.h1}
+  jsonLd={ld(faqPage(home.faq))}
   description="Зарядні станції, сонячні панелі, батареї та Solar Carport для бізнесу й дому: перевірка вводу, доставка, монтаж під ключ. Київ і вся Україна."
 >
   <HomeHero />

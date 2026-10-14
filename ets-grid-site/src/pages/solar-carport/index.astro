@@ -10,6 +10,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCategories, getLevel, getProductsBy } from '../../lib/catalog';
 import type { FiltersFile } from '../../lib/filters';
 import { routes } from '../../lib/routes';
+import { seoTitle } from '../../lib/seo';
 
 const level = getLevel('carport');
 const categories = getCategories('carport');
@@ -35,6 +36,7 @@ const stages = ['Заявка', 'Обстеження', 'Проєкт', 'Мон�
 ---
 <BaseLayout
   title="Solar Carport"
+  metaTitle={seoTitle.level('Solar Carport')}
   description="Solar Carport: навіс із сонячними панелями, зарядними станціями й накопичувачем. Конфігуратор і проєкт під ваш паркінг."
   crumbs={[{ label: level.name }]}
 >

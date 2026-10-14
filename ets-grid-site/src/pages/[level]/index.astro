@@ -13,6 +13,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCategories, getLevels, getProductsBy } from '../../lib/catalog';
 import type { LevelContent } from '../../lib/level-content';
 import type { StructureLevel } from '../../lib/schema';
+import { faqPage, ld, seoTitle } from '../../lib/seo';
 
 export const getStaticPaths = (() =>
   getLevels()
@@ -27,7 +28,13 @@ const text = (levelContentJson as LevelContent)[level.key as keyof LevelContent]
 const categories = getCategories(level.key);
 const products = await getProductsBy({ level: level.key });
 ---
-<BaseLayout title={level.name} description={`${level.name}: ${text.value}`} crumbs={[{ label: level.name }]}>
+<BaseLayout
+  title={level.name}
+  metaTitle={seoTitle.level(level.name)}
+  description={`${level.name}: ${text.value} Київ і вся Україна.`}
+  crumbs={[{ label: level.name }]}
+  jsonLd={ld(faqPage(text.faq))}
+>
   <Section>
     <div data-level-block="hero">
       <LevelHero title={level.name} value={text.value} pickerHref="#pidbir" />

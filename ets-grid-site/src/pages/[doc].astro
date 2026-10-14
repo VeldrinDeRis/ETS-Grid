@@ -17,7 +17,7 @@ interface Props {
 const { doc } = Astro.props;
 const d = content.documents;
 ---
-<BaseLayout title={doc.name} description={`${doc.name} ETS GRID.`} crumbs={[{ label: doc.name }]}>
+<BaseLayout title={doc.name} description={`${doc.name} ETS GRID — умови для покупців сайту-магазину зарядних станцій, сонячних панелей і батарей.`} crumbs={[{ label: doc.name }]}>
   <Section width="narrow">
     <h1>{doc.name}</h1>
     <p class="cp-card__muted" data-content-block="edition"><Text value={d.edition} /></p>

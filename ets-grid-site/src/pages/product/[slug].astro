@@ -10,6 +10,11 @@ import { formatPrice } from '../../lib/format';
 import { priceView } from '../../lib/price';
 import { hasToggle } from '../../lib/product';
 import { routes } from '../../lib/routes';
+import levelContentJson from '../../data/level-content.json';
+import { keyChars } from '../../lib/filters';
+import { productImage } from '../../lib/images';
+import type { LevelContent } from '../../lib/level-content';
+import { faqPage, ld, productLd, seoTitle } from '../../lib/seo';
 import type { Product } from '../../lib/schema';
 
 export const getStaticPaths = (async () =>
@@ -22,10 +27,18 @@ const { product } = Astro.props;
 const level = getLevelById(product.level);
 const category = getCategories(level.key).find((c) => c.slug === product.category)!;
 const stickyPrice = hasToggle(product) ? formatPrice(product.price_turnkey_from) : priceView(product).primary;
+const view = priceView(product);
+const image = productImage(product);
+const chars = keyChars(product).slice(0, 2);
+const faq = (levelContentJson as Partial<LevelContent>)[level.key as keyof LevelContent]?.faq ?? [];
 ---
 <BaseLayout
   title={product.name}
-  description={`${product.name}: ціна, характеристики, доставка й монтаж під ключ.`}
+  metaTitle={seoTitle.product(product.name, view.onRequest ? null : view.primary)}
+  description={`${product.name}${chars.length ? `: ${chars.join(', ')}` : ''}. Ціна з монтажем під ключ, характеристики, доставка.`}
+  ogType="product"
+  ogImage={image?.src}
+  jsonLd={ld(productLd(Astro.site!, product, image?.src ?? null), faqPage(faq))}
   crumbs={[
     { label: level.name, href: routes.level(level.slug) },
     { label: category.name, href: routes.category(level.slug, category.slug) },
