@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-14T12:00:00Z",
+  "title": "Design System: ETS GRID",
+  "extensions": {
+    "colorMeta": {
+      "night-bg": { "role": "neutral", "displayName": "Ночь блекаута", "canonical": "oklch(19.3% 0.034 265.4)", "tonalRamp": ["#050A1A", "#1D2536", "#394255", "#586175", "#788298", "#9BA5BB", "#BEC9E0", "#E7EFFE"] },
+      "night-surface": { "role": "neutral", "displayName": "Глубокая ночь", "canonical": "oklch(24.9% 0.052 266.8)", "tonalRamp": ["#030921", "#1A243E", "#35415E", "#54617F", "#7482A2", "#96A5C6", "#BAC9EC", "#E8EEFE"] },
+      "night-ink": { "role": "neutral", "displayName": "Свет из окна", "canonical": "oklch(97.2% 0.003 247.9)", "tonalRamp": ["#0A0B0D", "#242527", "#414244", "#606163", "#818284", "#A3A5A7", "#C7C9CB", "#EDEFF1"] },
+      "night-ink-muted": { "role": "neutral", "displayName": "Сумеречный серо-голубой", "canonical": "oklch(75.8% 0.027 261.1)", "tonalRamp": ["#050B16", "#1E2532", "#3A4251", "#596271", "#798393", "#9CA6B6", "#BFCADB", "#E6EFFE"] },
+      "night-line": { "role": "neutral", "displayName": "Ночная проводка", "canonical": "oklch(33.4% 0.049 264.9)", "tonalRamp": ["#03091F", "#19243D", "#35425C", "#54617E", "#7482A0", "#96A5C5", "#BAC9EA", "#E7EFFF"] },
+      "accent": { "role": "primary", "displayName": "Янтарный свет окна", "canonical": "oklch(82.4% 0.149 73.3)", "tonalRamp": ["#130900", "#352001", "#5B3A00", "#845600", "#B07402", "#DC9416", "#FEBA5A", "#FFEBD3"] },
+      "on-accent": { "role": "neutral", "displayName": "Текст на янтаре", "canonical": "oklch(19.3% 0.034 265.4)", "tonalRamp": ["#050A1A", "#1D2536", "#394255", "#586175", "#788298", "#9BA5BB", "#BEC9E0", "#E7EFFE"] },
+      "day-bg": { "role": "neutral", "displayName": "Дневной бетон", "canonical": "oklch(97.2% 0.003 247.9)", "tonalRamp": ["#0A0B0D", "#242527", "#414244", "#606163", "#818284", "#A3A5A7", "#C7C9CB", "#EDEFF1"] },
+      "day-surface": { "role": "neutral", "displayName": "Белое окно", "canonical": "oklch(100% 0 0)", "tonalRamp": ["#0B0B0B", "#252525", "#424242", "#616161", "#828282", "#A5A5A5", "#C9C9C9", "#EEEEEE"] },
+      "day-ink": { "role": "neutral", "displayName": "Ночной синий текст", "canonical": "oklch(19.3% 0.034 265.4)", "tonalRamp": ["#050A1A", "#1D2536", "#394255", "#586175", "#788298", "#9BA5BB", "#BEC9E0", "#E7EFFE"] },
+      "day-ink-muted": { "role": "neutral", "displayName": "Графит", "canonical": "oklch(44.7% 0.034 261.3)", "tonalRamp": ["#040B19", "#1C2536", "#384255", "#566275", "#778397", "#99A6BB", "#BDCAE0", "#E6EFFE"] },
+      "day-line": { "role": "neutral", "displayName": "Дневная линия", "canonical": "oklch(89.9% 0.011 256.7)", "tonalRamp": ["#080B10", "#22252A", "#3E4248", "#5D6268", "#7E8389", "#A1A5AC", "#C5CAD0", "#EAEFF6"] },
+      "status-ok-day": { "role": "status", "displayName": "Зелёная лампа (день)", "canonical": "oklch(47.7% 0.109 153.2)", "tonalRamp": ["#001004", "#002E14", "#035028", "#217342", "#479563", "#6BB984", "#90DEA8", "#C6FFD6"] },
+      "status-wait-day": { "role": "status", "displayName": "Жёлтая лампа ожидания (день)", "canonical": "oklch(49.4% 0.109 66.9)", "tonalRamp": ["#140800", "#371F01", "#5F3801", "#895304", "#AE7431", "#D39756", "#F9BB7A", "#FEEBD8"] },
+      "placeholder-day": { "role": "status", "displayName": "Фиолетовый плейсхолдер (день)", "canonical": "oklch(46.9% 0.152 301.7)", "tonalRamp": ["#120026", "#33005C", "#522383", "#7246A8", "#9469CD", "#B78CF4", "#D4BBFE", "#F2EAFF"] },
+      "status-ok-night": { "role": "status", "displayName": "Зелёная лампа (ночь)", "canonical": "oklch(75.1% 0.143 157.5)", "tonalRamp": ["#000F06", "#012E19", "#01502F", "#047446", "#029B5F", "#44BF81", "#6DE5A4", "#C4FFDB"] },
+      "status-wait-night": { "role": "status", "displayName": "Жёлтая лампа ожидания (ночь)", "canonical": "oklch(83.5% 0.142 83.4)", "tonalRamp": ["#110A00", "#312200", "#563D00", "#7C5B04", "#A67A04", "#CF9C1C", "#F5C04E", "#FFECC9"] },
+      "placeholder-night": { "role": "status", "displayName": "Фиолетовый плейсхолдер (ночь)", "canonical": "oklch(79.9% 0.115 296.2)", "tonalRamp": ["#100029", "#2C1055", "#493177", "#68519A", "#8973BF", "#AC96E5", "#CEBDFE", "#F0EBFF"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "H1 первого экрана, ≤ 16ch; на мобиле — шаг headline." },
+      "headline": { "displayName": "Headline", "purpose": "H1 остальных страниц." },
+      "headline-sm": { "displayName": "Headline small", "purpose": "H2 секций." },
+      "title": { "displayName": "Title", "purpose": "H3, заголовок карточки товара, узлы мнемосхемы." },
+      "numeral": { "displayName": "Numeral", "purpose": "Только крупная цифра плашки-манифеста." },
+      "body": { "displayName": "Body", "purpose": "Основной текст, ≤ 68ch." },
+      "body-lg": { "displayName": "Body large", "purpose": "Подзаголовок героя (≤ 46ch), лиды." },
+      "price": { "displayName": "Price", "purpose": "Основная цена, табличные цифры." },
+      "label": { "displayName": "Label", "purpose": "Подписи, теги характеристик, наличие, плейсхолдеры." },
+      "button": { "displayName": "Button", "purpose": "Кнопки и чипы; CTA героя и уровня — 700." }
+    },
+    "fonts": [
+      { "family": "Geologica", "file": "/fonts/geologica.woff2", "weights": "400 800", "display": "swap", "license": "SIL OFL 1.1", "subset": "українська + базова латиниця" },
+      { "family": "Wix Madefor Text", "file": "/fonts/wix-madefor-text.woff2", "weights": "400 700", "display": "swap", "license": "SIL OFL 1.1", "subset": "українська + базова латиниця" },
+      { "family": "Wix Madefor Text", "file": "/fonts/geologica.woff2", "unicodeRange": "U+02BC", "purpose": "В Wix Madefor Text нет ʼ — глиф берётся из уже загруженного файла Geologica." }
+    ],
+    "shadows": [
+      { "name": "shadow-1", "value": "0 1px 2px rgb(13 20 36 / 0.06), 0 6px 20px rgb(13 20 36 / 0.07)", "purpose": "Свет из окна: карточки товара и категорий, бейдж на фото, карточки подборщика и корзины." },
+      { "name": "shadow-2", "value": "0 14px 40px rgb(13 20 36 / 0.2)", "purpose": "Над комнатой: мегаменю каталога, подсказки поиска." },
+      { "name": "status-stripe", "value": "var(--shadow-1), inset 4px 0 0 var(--color-status-ok | --color-status-wait)", "purpose": "Результат подборщика: хватит / на грани." },
+      { "name": "lamp-halo", "value": "0 0 0 6px color-mix(in srgb, var(--color-accent) 18%, transparent)", "purpose": "Только точки-лампы мнемосхемы." },
+      { "name": "header-rule", "value": "inset 0 -1px 0 var(--color-line)", "purpose": "Нижняя граница шапки." }
+    ],
+    "motion": [
+      { "name": "dur-fast", "value": "200ms", "purpose": "Смена цвета кнопок и чипов." },
+      { "name": "dur", "value": "320ms", "purpose": "Стандартное появление." },
+      { "name": "dur-slow", "value": "600ms", "purpose": "Верхняя граница «світло вмикається»." },
+      { "name": "ease-out", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "Переходы состояний." },
+      { "name": "ease-spring", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Имя из контракта SPEC-001; экспоненциальное затухание без перелёта." },
+      { "name": "window-light", "value": "opacity, 450ms easeOut, stagger 60ms", "purpose": "Окна дома в подборщике батареи загораются." },
+      { "name": "energy-pulse", "value": "translateX/Y(-100% → 250%) + opacity 0→1→0, 2.4s linear, repeat, delay 0.45s/сегмент, inView", "purpose": "Блик по линиям мнемосхемы." },
+      { "name": "reduced-motion", "value": "все dur = 0s; импульсы не запускаются", "purpose": "prefers-reduced-motion: reduce — всё статично." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "960px" },
+      { "name": "sm", "value": "640px" },
+      { "name": "xs", "value": "600px" }
+    ],
+    "alternatePalette": {
+      "name": "Б «Сигнал»",
+      "switch": "data-palette=\"b\" на <html>",
+      "status": "запасной (D-039); шрифты с Google Fonts только при выборе Б",
+      "fonts": { "display": "Fira Sans Extra Condensed 700/800", "text": "Commissioner 400–700" },
+      "day": { "bg": "#ECEBE4", "surface": "#F8F7F2", "ink": "#11110F", "ink-muted": "#57554D", "line": "#D2D0C6", "accent": "#FF4D00", "on-accent": "#11110F", "focus": "#11110F", "status-ok": "#1E6B3A", "status-wait": "#8A4A00", "placeholder": "#6A3FB0" },
+      "night": { "bg": "#11110F", "surface": "#1D1D1A", "ink": "#ECEBE4", "ink-muted": "#A6A399", "line": "#34332E", "accent": "#FF4D00", "on-accent": "#11110F", "focus": "#FF4D00", "status-ok": "#5CC98A", "status-wait": "#F2A54E", "placeholder": "#C3A8FF" },
+      "shape": { "radius-s": "0", "radius-m": "2px", "radius-l": "3px", "radius-pill": "2px", "shadow-1": "0 0 0 1px var(--color-line)", "shadow-2": "0 10px 28px rgb(17 17 15 / 0.24), 0 0 0 1px var(--color-line)", "display-weight": "800", "display-tracking": "0", "display-scale": "1.15" }
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Единственная янтарная кнопка экрана.",
+      "html": "<a class=\"ds-btn ds-btn-primary\" href=\"#\">Підібрати станцію</a>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1.5rem; border: 2px solid transparent; border-radius: var(--radius-m, 10px); font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); font-weight: 600; line-height: 1.2; text-decoration: none; cursor: pointer; transition: background-color 200ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn-primary { background: var(--color-accent, #FFB547); color: var(--color-on-accent, #0D1424); } .ds-btn-primary:hover { background: color-mix(in srgb, var(--color-accent, #FFB547) 88%, var(--color-ink, #0D1424)); } .ds-btn:focus-visible { outline: 3px solid var(--color-focus, #0D1424); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Контурная кнопка второго действия; на ночи — светлая рамка.",
+      "html": "<a class=\"ds-btn2\" href=\"#\">Отримати розрахунок</a>",
+      "css": ".ds-btn2 { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0 1.5rem; border: 2px solid currentColor; border-radius: var(--radius-m, 10px); background: transparent; color: var(--color-ink, #0D1424); font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); font-weight: 600; text-decoration: none; transition: background-color 200ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-btn2:hover { background: color-mix(in srgb, var(--color-ink, #0D1424) 8%, transparent); } .ds-btn2:focus-visible { outline: 3px solid var(--color-focus, #0D1424); outline-offset: 2px; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip-filter",
+      "description": "Пилюля фильтра; выбранная — инверсия ink/bg.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"true\">Усі</button><button class=\"ds-chip\" aria-pressed=\"false\">Для дому</button><button class=\"ds-chip\" aria-pressed=\"false\">Для бізнесу</button></div>",
+      "css": ".ds-chips { display: flex; gap: 0.5rem; flex-wrap: wrap; } .ds-chip { min-height: 2.75rem; padding: 0 1.5rem; border: 1px solid var(--color-ink-muted, #4A5568); border-radius: 999px; background: transparent; color: var(--color-ink, #0D1424); font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); font-weight: 600; cursor: pointer; transition: background-color 200ms cubic-bezier(0.22, 1, 0.36, 1); } .ds-chip[aria-pressed='true'] { border-color: var(--color-ink, #0D1424); background: var(--color-ink, #0D1424); color: var(--color-bg, #F4F6F8); } .ds-chip:focus-visible { outline: 3px solid var(--color-focus, #0D1424); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Поле формы заявки и оформления; ошибка — цвет ожидания.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field__label\">Телефон</span><input class=\"ds-input\" type=\"tel\" placeholder=\"+380\" /></label>",
+      "css": ".ds-field { display: grid; gap: 0.25rem; font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); color: var(--color-ink, #0D1424); } .ds-field__label { font-weight: 600; } .ds-input { width: 100%; min-height: 2.75rem; padding: 0.5rem 0.75rem; border: 1px solid var(--color-ink-muted, #4A5568); border-radius: var(--radius-m, 10px); background: var(--color-surface, #FFFFFF); color: var(--color-ink, #0D1424); font: inherit; } .ds-input:focus-visible { outline: 3px solid var(--color-focus, #0D1424); outline-offset: 2px; } .ds-input[aria-invalid='true'] { border-color: var(--color-status-wait, #8A5300); box-shadow: inset 0 0 0 1px var(--color-status-wait, #8A5300); }"
+    },
+    {
+      "name": "Product Card",
+      "kind": "card",
+      "refersTo": "card-product",
+      "description": "Белое окно: фото на дневном бетоне, теги характеристик, лампа наличия, контурное действие.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card__photo\">[ФОТО]</div><div class=\"ds-card__body\"><h3 class=\"ds-card__title\">Зарядна станція AC 22 кВт</h3><ul class=\"ds-card__chars\"><li>22 кВт</li><li>Type 2</li><li>3 фази</li></ul><p class=\"ds-card__price\">[ЦІНА] <span class=\"ds-demo\">демо-ціна</span></p><p class=\"ds-card__stock\"><span class=\"ds-led\"></span>В наявності</p><a class=\"ds-card__cta\" href=\"#\">До кошика</a></div></article>",
+      "css": ".ds-card { display: flex; flex-direction: column; max-width: 18rem; border-radius: var(--radius-l, 18px); background: var(--color-surface, #FFFFFF); color: var(--color-ink, #0D1424); box-shadow: 0 1px 2px rgb(13 20 36 / 0.06), 0 6px 20px rgb(13 20 36 / 0.07); overflow: hidden; font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); } .ds-card__photo { display: grid; place-items: center; aspect-ratio: 1; background: #F4F6F8; color: #4A5568; font-size: 0.875rem; } .ds-card__body { display: flex; flex-direction: column; gap: 0.75rem; padding: 1.5rem; } .ds-card__title { margin: 0; font-family: var(--font-display, Geologica, system-ui, sans-serif); font-weight: 700; letter-spacing: -0.025em; font-size: 1.3rem; line-height: 1.25; } .ds-card__chars { display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0; padding: 0; list-style: none; } .ds-card__chars li { padding: 0.1em 0.55em; border: 1px solid var(--color-line, #D9DEE5); border-radius: var(--radius-s, 6px); font-size: 0.875rem; font-variant-numeric: tabular-nums; } .ds-card__price { margin: 0; font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; display: flex; gap: 0.5rem; align-items: baseline; } .ds-demo { padding: 0.1em 0.5em; border: 1px solid var(--color-placeholder, #6B3FA0); border-radius: var(--radius-s, 6px); color: var(--color-placeholder, #6B3FA0); font-size: 0.875rem; font-weight: 400; } .ds-card__stock { display: flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 0.875rem; color: var(--color-status-ok, #1B6E3E); } .ds-led { width: 0.6em; height: 0.6em; border-radius: 50%; background: currentColor; } .ds-card__cta { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; border: 2px solid var(--color-ink, #0D1424); border-radius: var(--radius-m, 10px); color: var(--color-ink, #0D1424); font-weight: 600; text-decoration: none; } .ds-card__cta:hover { background: color-mix(in srgb, var(--color-ink, #0D1424) 8%, transparent); } .ds-card__cta:focus-visible { outline: 3px solid var(--color-focus, #0D1424); outline-offset: 2px; }"
+    },
+    {
+      "name": "Placeholder",
+      "kind": "custom",
+      "refersTo": "placeholder-day",
+      "description": "Видимая метка данных, которые даст заказчик (D-031): пунктир означает «данные позже».",
+      "html": "<p class=\"ds-ph-row\">Звʼязатися: <span class=\"ds-ph\" title=\"Дані надасть замовник\">[ТЕЛЕФОН]</span> <span class=\"ds-ph\" title=\"Дані надасть замовник\">[N обʼєктів]</span></p>",
+      "css": ".ds-ph-row { font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); color: var(--color-ink-muted, #4A5568); } .ds-ph { display: inline-block; padding: 0 0.35em; border: 1px dashed currentColor; border-radius: var(--radius-s, 6px); color: var(--color-placeholder, #6B3FA0); font-size: 0.92em; letter-spacing: 0.01em; white-space: nowrap; }"
+    },
+    {
+      "name": "Night Level Tile",
+      "kind": "card",
+      "refersTo": "level-tile-night",
+      "description": "Плитка уровня каталога на ночном первом экране, с иконкой из собственного набора.",
+      "html": "<div class=\"ds-night\"><a class=\"ds-tile\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 21V6a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v15M4 21h14M9 8h4M11 12l-1.5 2.5h3L11 17M16 9h2a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0\"/></svg><span class=\"ds-tile__name\">Зарядні станції</span><span class=\"ds-tile__price\">від [ЦІНА]</span></a></div>",
+      "css": ".ds-night { padding: 1.5rem; background: #0D1424; color: #F4F6F8; font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); } .ds-tile { display: flex; flex-direction: column; gap: 0.25rem; max-width: 14rem; padding: 1rem 1.5rem; border: 1px solid #2A3650; border-radius: var(--radius-m, 10px); color: #F4F6F8; text-decoration: none; } .ds-tile:hover .ds-tile__name { text-decoration: underline; } .ds-tile:focus-visible { outline: 3px solid #FFB547; outline-offset: 2px; } .ds-tile__name { font-weight: 700; } .ds-tile__price { color: #A7B1C2; font-size: 0.875rem; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Energy Flow (mnemonic)",
+      "kind": "custom",
+      "refersTo": "energy-flow",
+      "description": "Мнемосхема: точки-лампы, линии энергии с бегущим бликом; при reduced-motion блик не запускается.",
+      "html": "<div class=\"ds-night ds-flow-wrap\"><ol class=\"ds-flow\"><li class=\"ds-flow__node\"><a class=\"ds-flow__link\" href=\"#\"><span class=\"ds-flow__dot\"></span><span class=\"ds-flow__label\">Сонце</span><span class=\"ds-flow__text\">панелі на даху</span></a><span class=\"ds-flow__line\"><span class=\"ds-flow__pulse\"></span></span></li><li class=\"ds-flow__node\"><a class=\"ds-flow__link\" href=\"#\"><span class=\"ds-flow__dot\"></span><span class=\"ds-flow__label\">Батарея</span><span class=\"ds-flow__text\">запас на блекаут</span></a><span class=\"ds-flow__line\"><span class=\"ds-flow__pulse\"></span></span></li><li class=\"ds-flow__node\"><a class=\"ds-flow__link\" href=\"#\"><span class=\"ds-flow__dot\"></span><span class=\"ds-flow__label\">Авто</span><span class=\"ds-flow__text\">зарядна станція</span></a></li></ol></div>",
+      "css": ".ds-flow-wrap { padding: 1.5rem; background: #0D1424; color: #F4F6F8; font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); } .ds-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; } .ds-flow__node { position: relative; display: flex; } .ds-flow__link { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 0.25rem; width: 100%; padding: 1rem 0.75rem; color: inherit; text-decoration: none; } .ds-flow__link:hover .ds-flow__label { text-decoration: underline; } .ds-flow__link:focus-visible { outline: 3px solid #FFB547; outline-offset: 2px; } .ds-flow__dot { width: 1.25rem; height: 1.25rem; border-radius: 50%; background: #FFB547; box-shadow: 0 0 0 6px color-mix(in srgb, #FFB547 18%, transparent); } .ds-flow__label { font-family: var(--font-display, Geologica, system-ui, sans-serif); font-weight: 700; font-size: 1.3rem; } .ds-flow__text { color: #A7B1C2; font-size: 0.875rem; } .ds-flow__line { position: absolute; top: calc(1rem + 0.625rem - 1px); left: calc(0.75rem + 1.25rem + 8px); right: calc(-1 * (0.75rem - 8px)); height: 2px; overflow: hidden; background: color-mix(in srgb, #FFB547 30%, transparent); } .ds-flow__pulse { position: absolute; inset: 0; width: 40%; background: linear-gradient(90deg, transparent, #FFB547, transparent); animation: ds-pulse 2.4s linear infinite; } @keyframes ds-pulse { 0% { transform: translateX(-100%); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateX(250%); opacity: 0; } } @media (prefers-reduced-motion: reduce) { .ds-flow__pulse { animation: none; opacity: 0; } }"
+    },
+    {
+      "name": "Manifesto Plate",
+      "kind": "custom",
+      "refersTo": "manifesto-plate",
+      "description": "Одна янтарная плашка на страницу: крупная цифра + тезис.",
+      "html": "<div class=\"ds-manifesto\"><p class=\"ds-manifesto__big\">[N]</p><p class=\"ds-manifesto__text\">Навіс, що заробляє: сонце над паркінгом заряджає авто клієнтів.</p></div>",
+      "css": ".ds-manifesto { display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem; max-width: 22rem; padding: 2rem; border-radius: var(--radius-l, 18px); background: var(--color-accent, #FFB547); color: var(--color-on-accent, #0D1424); font-family: var(--font-text, 'Wix Madefor Text', system-ui, sans-serif); } .ds-manifesto__big { margin: 0; font-family: var(--font-display, Geologica, system-ui, sans-serif); font-size: clamp(4rem, 3rem + 6vw, 8rem); font-weight: 800; line-height: 0.9; } .ds-manifesto__text { margin: 0; font-size: 1.3rem; font-weight: 600; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Світле вікно",
+    "overview": "Сайт чередует ночные секции (тёмно-синяя ночь) и дневные (холодный светло-серый день), а единственный тёплый янтарный свет загорается только там, где есть энергия или действие: главная кнопка, линии энергии, индикаторы-«светодиоды», одна плашка-манифест. Энергосистема рисуется как мнемосхема — точки-лампы, соединённые линиями, по которым бежит импульс, — а не как декор. Тон — «спокойно, но с зарядом»: инженерная ясность, тёплые акценты, никакой неоновой «энергетики».\n\nПлотность средняя: крупный первый экран на ночной поверхности, дальше — сетки карточек и ровный вертикальный ритм секций. Карточки — белые «окна» с мягкими углами и тенью вниз, как свет изнутри. Отказ от категорийного шаблона «стоковый герой + неон» подтверждён направлением и ТЗ §8.",
+    "keyCharacteristics": [
+      "Две поверхности одним атрибутом `data-surface=\"day|night\"`; смысловые токены `--color-*` переключаются сами.",
+      "Один тёплый акцент на весь сайт; остальное — нейтрали и функциональные статусы.",
+      "Geologica для заголовков, Wix Madefor Text для текста, табличные цифры в ценах и характеристиках.",
+      "Мягкие углы 6 / 10 / 18 px, мягкие тени вниз с подтоном ночного синего.",
+      "Один линейный набор иконок, обводка 1,75, закруглённые концы.",
+      "Видимые плейсхолдеры `[…]` — часть дизайна, не дефект (D-031)."
+    ],
+    "rules": [
+      { "name": "The Static Night Rule", "body": "При `prefers-reduced-motion: reduce` все длительности — 0, импульсы не запускаются, окна сразу принимают конечное состояние. Ничего не мигает и не движется.", "section": "motion" },
+      { "name": "The One Lamp Rule", "body": "На экране горит один янтарный свет действия. Акцент не бывает фоном секции, рамкой карточки, цветом заголовка или иконки; если хочется подсветить что-то ещё, это должен быть статус или ничего.", "section": "colors" },
+      { "name": "The Night Is Ink Rule", "body": "Ночь сайта и текст дня — один цвет. Новые тёмные оттенки не вводятся; глубина ночью — только `night-surface` и `night-line`.", "section": "colors" },
+      { "name": "The Product Plate Rule", "body": "Фото товара всегда лежит на дневном бетоне, даже внутри ночной секции: товар показывается при дневном свете.", "section": "colors" },
+      { "name": "The Tabular Figures Rule", "body": "Цены, мощности, количества и характеристики набираются с `font-variant-numeric: tabular-nums` (класс `.num` или правило компонента). Цифры в колонке не пляшут.", "section": "typography" },
+      { "name": "The Two Files Rule", "body": "На первом экране — не больше двух файлов шрифтов; новое начертание или семейство требует нового решения в DECISIONS, а не ещё одного `@font-face`.", "section": "typography" },
+      { "name": "The Soft Downward Light Rule", "body": "Тени только мягкие и вниз, с тоном ночного синего; без резких смещённых теней, без цветного свечения, кроме ореола ламп. Выбранное состояние показывается заливкой или внутренней рамкой (`inset 0 0 0 1px`), а не тенью.", "section": "elevation" },
+      { "name": "The Dashed Means Missing Rule", "body": "Пунктирная рамка цвета `placeholder` — исключительно знак «данные дадут позже» (`[ТЕЛЕФОН]`, `[N обʼєктів]`, плашка будущих объектов). Пунктир нигде не используется как декор.", "section": "shapes" },
+      { "name": "The Own Objects Only Rule", "body": "В разделе «Обʼєкти» никогда не стоят чужие фото (D-005): до своих съёмок там пунктирная плашка-плейсхолдер.", "section": "components" }
+    ],
+    "dos": [
+      "**Do** переключать день/ночь только атрибутом `data-surface` и писать в компонентах `--color-*`, а не hex или `--day-*`/`--night-*` (исключение — фиксированная подложка фото товара).",
+      "**Do** держать одну янтарную кнопку на экран; остальные действия — secondary или ghost.",
+      "**Do** набирать цены и характеристики с `tabular-nums`.",
+      "**Do** показывать недостающие данные плейсхолдером `[…]` на месте (D-031).",
+      "**Do** анимировать только `opacity` и `transform`, 300–600 ms с экспоненциальным затуханием, и отключать всё при `prefers-reduced-motion`.",
+      "**Do** держать радиусы на шкале 6 / 10 / 18 px и пилюлю только для чипов, бейджей и переключателей.",
+      "**Do** новые токены добавлять, старые имена SPEC-001 не переименовывать."
+    ],
+    "donts": [
+      "**Don't** использовать лайм `#C8F03C`, шрифты Unbounded и JetBrains Mono, а также тройку Unbounded / Golos / JetBrains Mono.",
+      "**Don't** заливать акцентом фоны секций, рамки карточек, заголовки или иконки (The One Lamp Rule).",
+      "**Don't** использовать неон, размытое цветное свечение, фоновое видео, 3D на первом экране, скроллджекинг и параллакс на каждом блоке.",
+      "**Don't** ставить стоковый «героический» кадр или «человека с ноутбуком»; герой — реальная станция.",
+      "**Don't** использовать пунктир как декор — он означает только «данные дадут позже».",
+      "**Don't** подключать второй набор иконок или эмодзи вместо иконок.",
+      "**Don't** добавлять третий файл шрифта на первый экран или грузить шрифты Б для направления А.",
+      "**Don't** ставить чужие фото в «Обʼєкти»."
+    ]
+  }
+}
