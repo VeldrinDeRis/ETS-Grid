@@ -14,3 +14,7 @@ sources/photos/raw/
 # ОС
 Thumbs.db
 .DS_Store
+
+# тесты
+test-results/
+playwright-report/

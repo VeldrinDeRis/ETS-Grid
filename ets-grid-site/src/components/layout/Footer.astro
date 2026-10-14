@@ -1,0 +1,164 @@
+---
+// Підвал (SPEC-001 §3.4, ТЗ §6.1): контакти, карта рівнів, послуги, документи, реквізити, месенджери.
+import { getCategories, getLevels, structure } from '../../lib/catalog';
+import { routes } from '../../lib/routes';
+import { isPlaceholder } from '../../lib/schema';
+import Container from '../ui/Container.astro';
+import Placeholder from '../ui/Placeholder.astro';
+import PaletteSwitch from './PaletteSwitch.astro';
+
+const { contacts, services, documents, region } = structure;
+const levels = getLevels();
+const show = (value: string) => ({ placeholder: isPlaceholder(value), value });
+const year = new Date().getFullYear();
+---
+<footer class="site-footer" data-surface="night">
+  <Container>
+    <div class="site-footer__grid">
+      <section aria-labelledby="footer-contacts">
+        <h2 class="site-footer__heading" id="footer-contacts">Контакти</h2>
+        <p class="site-footer__region">{region}</p>
+        <ul role="list" class="site-footer__list">
+          {
+            [contacts.phone, contacts.email, contacts.address].map((v) => (
+              <li>{show(v).placeholder ? <Placeholder label={v} /> : v}</li>
+            ))
+          }
+        </ul>
+        <p class="site-footer__messengers">
+          Месенджери:
+          {
+            [contacts.telegram, contacts.viber].map((v) => (
+              <>{' '}{show(v).placeholder ? <Placeholder label={v} /> : v}</>
+            ))
+          }
+        </p>
+      </section>
+
+      <nav aria-label="Меню у підвалі" class="site-footer__nav">
+        {
+          levels.map((level) => (
+            <div>
+              <h2 class="site-footer__heading">
+                <a href={routes.level(level.slug)}>{level.name}</a>
+              </h2>
+              <ul role="list" class="site-footer__list">
+                {getCategories(level.key).map((c) => (
+                  <li>
+                    <a href={routes.category(level.slug, c.slug)}>{c.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+        <div>
+          <h2 class="site-footer__heading"><a href={routes.services}>Послуги</a></h2>
+          <ul role="list" class="site-footer__list">
+            {
+              services.map((s) => (
+                <li>
+                  <a href={routes.service(s.slug)}>{s.name}</a>
+                </li>
+              ))
+            }
+            <li><a href={routes.systems}>Готові системи</a></li>
+            <li><a href={routes.financing}>Фінансування</a></li>
+            <li><a href={routes.cases}>Обʼєкти</a></li>
+            <li><a href={routes.about}>Про компанію</a></li>
+            <li><a href={routes.contacts}>Контакти</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="site-footer__heading">Документи</h2>
+          <ul role="list" class="site-footer__list">
+            {
+              documents.map((d) => (
+                <li>
+                  <a href={routes.document(d.slug)}>{d.name}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p>© ETS GRID, {year} · Реквізити: {show(contacts.requisites).placeholder ? <Placeholder label={contacts.requisites} /> : contacts.requisites}</p>
+      <PaletteSwitch />
+    </div>
+  </Container>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: var(--space-2xl) var(--space-l);
+    font-size: var(--step--1);
+  }
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: minmax(14rem, 1fr) 3fr;
+    gap: var(--space-xl);
+  }
+  .site-footer__nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-l);
+  }
+  .site-footer__heading {
+    margin: 0 0 var(--space-2xs);
+    font-family: var(--font-text);
+    font-size: var(--step-0);
+  }
+  .site-footer__heading a {
+    text-decoration: none;
+  }
+  .site-footer__heading a:hover,
+  .site-footer__list a:hover {
+    text-decoration: underline;
+  }
+  .site-footer__region {
+    color: var(--color-ink-muted);
+  }
+  .site-footer__list li {
+    min-height: var(--tap);
+    display: flex;
+    align-items: center;
+  }
+  .site-footer__list a {
+    color: var(--color-ink-muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    margin-top: var(--space-xl);
+    padding-top: var(--space-m);
+    box-shadow: inset 0 1px 0 var(--color-line);
+    color: var(--color-ink-muted);
+  }
+  .site-footer__bottom p {
+    margin: 0;
+  }
+
+  @media (max-width: 959.98px) {
+    .site-footer__grid {
+      grid-template-columns: 1fr;
+    }
+    .site-footer__nav {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 599.98px) {
+    .site-footer__nav {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

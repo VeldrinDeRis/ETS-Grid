@@ -1,0 +1,459 @@
+---
+// Шапка (SPEC-001 §3.4). Без JS: рівні — звичайні посилання, мобільне меню — <details>.
+// З JS (src/scripts/header.ts): мега-меню за зразком WAI-ARIA disclosure, лічильник кошика.
+import { getLevels, getCategories, getProduct, structure } from '../../lib/catalog';
+import { routes } from '../../lib/routes';
+import { isPlaceholder } from '../../lib/schema';
+import Container from '../ui/Container.astro';
+import Price from '../ui/Price.astro';
+import Placeholder from '../ui/Placeholder.astro';
+import VisuallyHidden from '../ui/VisuallyHidden.astro';
+import Icon from './Icon.astro';
+
+const levels = await Promise.all(
+  getLevels().map(async (level) => ({
+    ...level,
+    categories: getCategories(level.key),
+    featuredProduct: level.featured ? await getProduct(level.featured) : undefined,
+  })),
+);
+const phone = structure.contacts.phone;
+---
+<header class="site-header" data-surface="day">
+  <Container class="site-header__top">
+    <a class="brand" href={routes.home} aria-label="ETS GRID — на головну">ETS&nbsp;GRID</a>
+
+    <form class="header-search" role="search" action={routes.search} method="get">
+      <label class="header-search__label" for="header-q">Пошук</label>
+      <input class="header-search__input" id="header-q" name="q" type="search" placeholder="Назва, артикул, розʼєм" />
+      <button class="header-search__submit" type="submit">
+        <Icon name="search" />
+        <VisuallyHidden>Знайти</VisuallyHidden>
+      </button>
+    </form>
+
+    <div class="header-actions">
+      <span class="header-phone">
+        {isPlaceholder(phone) ? <Placeholder label={phone} /> : <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a>}
+      </span>
+      <a class="header-quote" href={routes.quote}>Розрахувати</a>
+      <a class="cart-link" href={routes.cart}>
+        <Icon name="cart" />
+        <span class="cart-link__label">Кошик</span>
+        <span class="cart-count" data-cart-count hidden>
+          <VisuallyHidden>, товарів: </VisuallyHidden><span data-cart-count-value></span>
+        </span>
+      </a>
+
+      <details class="mobile-menu" data-mobile-menu>
+        <summary class="mobile-menu__toggle">
+          <Icon name="menu" />
+          <span>Меню</span>
+        </summary>
+        <div class="mobile-menu__panel" data-surface="day">
+          <nav aria-label="Меню розділів">
+            <ul role="list" class="mobile-menu__levels">
+              {
+                levels.map((level) => (
+                  <li>
+                    <a class="level-tile" href={routes.level(level.slug)}>
+                      <span class="level-tile__name">{level.name}</span>
+                      <span class="level-tile__short">{level.short}</span>
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+            <p class="mobile-menu__heading">Послуги</p>
+            <ul role="list" class="mobile-menu__list">
+              {
+                structure.services.map((s) => (
+                  <li>
+                    <a href={routes.service(s.slug)}>{s.name}</a>
+                  </li>
+                ))
+              }
+              <li><a href={routes.systems}>Готові системи</a></li>
+              <li><a href={routes.financing}>Фінансування</a></li>
+              <li><a href={routes.contacts}>Контакти</a></li>
+            </ul>
+          </nav>
+          <a class="mobile-menu__quote" href={routes.quote}>Розрахувати під ключ</a>
+          <p class="mobile-menu__phone">
+            {isPlaceholder(phone) ? <Placeholder label={phone} /> : <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a>}
+          </p>
+          <form class="mobile-menu__search" role="search" action={routes.search} method="get">
+            <label for="mobile-q">Пошук по каталогу</label>
+            <div class="mobile-menu__search-row">
+              <input id="mobile-q" name="q" type="search" placeholder="Назва, артикул, розʼєм" />
+              <button type="submit">Знайти</button>
+            </div>
+          </form>
+        </div>
+      </details>
+    </div>
+  </Container>
+
+  <nav class="main-nav" aria-label="Основне меню">
+    <Container>
+      <ul role="list" class="main-nav__list">
+        {
+          levels.map((level) => (
+            <li class="main-nav__item" data-megamenu>
+              <a class="main-nav__link" href={routes.level(level.slug)}>
+                {level.name}
+              </a>
+              <button
+                class="main-nav__toggle js-only"
+                type="button"
+                aria-expanded="false"
+                aria-controls={`megamenu-${level.key}`}
+                data-megamenu-toggle
+              >
+                <Icon name="chevron-down" size={18} />
+                <VisuallyHidden>Розділи: {level.name}</VisuallyHidden>
+              </button>
+              <div class="megamenu" id={`megamenu-${level.key}`} hidden data-megamenu-panel>
+                <ul role="list" class="megamenu__categories">
+                  {level.categories.map((c) => (
+                    <li>
+                      <a href={routes.category(level.slug, c.slug)}>
+                        <span class="megamenu__name">{c.name}</span>
+                        {c.hint && <span class="megamenu__hint">{c.hint}</span>}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                {level.featuredProduct && (
+                  <div class="megamenu__featured">
+                    <p class="megamenu__label">Рекомендуємо</p>
+                    <a class="megamenu__product" href={routes.product(level.featuredProduct.slug)}>
+                      {level.featuredProduct.name}
+                    </a>
+                    <Price product={level.featuredProduct} />
+                  </div>
+                )}
+                <a class="megamenu__picker" href={level.picker_href}>
+                  Підібрати: {level.name.toLowerCase()}
+                </a>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </Container>
+  </nav>
+</header>
+
+<script>
+  import '../../scripts/header';
+</script>
+
+<style>
+  .site-header {
+    position: relative;
+    z-index: 50;
+    box-shadow: inset 0 -1px 0 var(--color-line);
+  }
+  .site-header :global(.site-header__top) {
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+    height: var(--header-h);
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .header-search {
+    display: flex;
+    flex: 1;
+    max-width: 26rem;
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+  .header-search:focus-within {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .header-search__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .header-search__input {
+    flex: 1;
+    min-width: 0;
+    min-height: var(--tap);
+    padding: 0 var(--space-xs);
+    border: 0;
+    background: transparent;
+  }
+  .header-search__input:focus {
+    outline: none;
+  }
+  .header-search__submit {
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    margin-left: auto;
+  }
+  .header-quote,
+  .cart-link,
+  .mobile-menu__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: var(--tap);
+    padding: 0 var(--space-xs);
+    border: 2px solid currentColor;
+    border-radius: var(--radius-m);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .cart-link {
+    border-color: transparent;
+  }
+  .cart-count {
+    min-width: 1.5em;
+    padding: 0 0.4em;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: var(--color-bg);
+    font-size: var(--step--1);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- основне меню і мега-меню (desktop) --- */
+  .main-nav {
+    box-shadow: inset 0 1px 0 var(--color-line);
+  }
+  .main-nav__list {
+    display: flex;
+    gap: var(--space-l);
+  }
+  .main-nav__item {
+    display: flex;
+    align-items: center;
+  }
+  .main-nav__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .main-nav__link:hover {
+    text-decoration: underline;
+  }
+  .main-nav__toggle {
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    cursor: pointer;
+  }
+  .main-nav__toggle[aria-expanded='true'] :global(.icon) {
+    transform: rotate(180deg);
+  }
+  .main-nav__toggle :global(.icon) {
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .megamenu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-l) var(--space-xl);
+    padding: var(--space-l) max(var(--gutter), calc((100vw - var(--container)) / 2));
+    background: var(--color-surface);
+    box-shadow: var(--shadow-2);
+  }
+  .megamenu[hidden] {
+    display: none;
+  }
+  .megamenu__categories {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2xs) var(--space-l);
+  }
+  .megamenu__categories a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: var(--tap);
+    padding-block: var(--space-2xs);
+    text-decoration: none;
+  }
+  .megamenu__categories a:hover .megamenu__name {
+    text-decoration: underline;
+  }
+  .megamenu__name {
+    font-weight: 600;
+  }
+  .megamenu__hint,
+  .megamenu__label {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .megamenu__label {
+    margin: 0 0 var(--space-3xs);
+  }
+  .megamenu__product {
+    display: inline-block;
+    margin-bottom: var(--space-2xs);
+    font-weight: 600;
+  }
+  .megamenu__picker {
+    grid-column: 1 / -1;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+  }
+
+  /* --- мобільне меню --- */
+  .mobile-menu {
+    display: none;
+  }
+  .mobile-menu__toggle {
+    list-style: none;
+    cursor: pointer;
+  }
+  .mobile-menu__toggle::-webkit-details-marker {
+    display: none;
+  }
+  .mobile-menu__panel {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    overflow-y: auto;
+    padding: var(--space-m) var(--gutter) var(--space-xl);
+    box-shadow: inset 0 1px 0 var(--color-line);
+  }
+  .mobile-menu__levels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xs);
+    margin-bottom: var(--space-l);
+  }
+  .level-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    min-height: 6rem;
+    height: 100%;
+    padding: var(--space-s);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+    text-decoration: none;
+  }
+  .level-tile__name {
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .level-tile__short {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+    line-height: 1.35;
+  }
+  .mobile-menu__heading {
+    margin: 0 0 var(--space-2xs);
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .mobile-menu__list a {
+    display: flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+  .mobile-menu__quote {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap);
+    margin-block: var(--space-l) var(--space-s);
+    border: 2px solid currentColor;
+    border-radius: var(--radius-m);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .mobile-menu__search label {
+    display: block;
+    margin-bottom: var(--space-3xs);
+    font-size: var(--step--1);
+    color: var(--color-ink-muted);
+  }
+  .mobile-menu__search-row {
+    display: flex;
+    gap: var(--space-2xs);
+  }
+  .mobile-menu__search input {
+    flex: 1;
+    min-width: 0;
+    min-height: var(--tap);
+    padding: 0 var(--space-xs);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+  .mobile-menu__search button {
+    min-height: var(--tap);
+    padding: 0 var(--space-s);
+    border: 2px solid currentColor;
+    border-radius: var(--radius-m);
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media (max-width: 959.98px) {
+    .header-search,
+    .header-phone,
+    .header-quote,
+    .main-nav {
+      display: none;
+    }
+    /* Підпис «Кошик» лишається для екранних дикторів. */
+    .cart-link__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    .header-actions {
+      gap: var(--space-2xs);
+    }
+    .mobile-menu {
+      display: block;
+    }
+  }
+</style>

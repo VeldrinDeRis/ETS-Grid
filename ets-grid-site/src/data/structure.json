@@ -1,0 +1,46 @@
+{
+  "levels": [
+    {"id": 1, "key": "charging", "slug": "zaryadni-stantsii", "name": "Зарядні станції", "short": "AC і DC для дому, бізнесу й трас", "featured": "ets-home-7", "picker_href": "/zaryadni-stantsii/#pidbir"},
+    {"id": 2, "key": "solar", "slug": "sonyachni-paneli", "name": "Сонячні панелі та СЕС", "short": "Панелі, інвертори, готові СЕС", "featured": "ets-solar-home-5", "picker_href": "/sonyachni-paneli/#pidbir"},
+    {"id": 3, "key": "battery", "slug": "batarei", "name": "Батареї", "short": "Від домашніх до промислових BESS", "featured": "ets-battery-home-10", "picker_href": "/batarei/#pidbir"},
+    {"id": 4, "key": "carport", "slug": "solar-carport", "name": "Solar Carport", "short": "Навіс, сонце, зарядка й накопичувач", "featured": "carport-commercial-8", "picker_href": "/solar-carport/#konfigurator"}
+  ],
+  "categories": [
+    {"level": "charging", "slug": "dlya-domu", "name": "Для дому", "hint": "AC 3,7–22\u00a0кВт"},
+    {"level": "charging", "slug": "dlya-biznesu", "name": "Для бізнесу", "hint": "AC 22\u00a0кВт, 2\u00a0порти, OCPP"},
+    {"level": "charging", "slug": "dc", "name": "Швидкі DC", "hint": "30–240\u00a0кВт"},
+    {"level": "charging", "slug": "portatyvni", "name": "Портативні", "hint": null},
+    {"level": "charging", "slug": "kabeli-adaptery", "name": "Кабелі та адаптери", "hint": "Type 2, GB/T, CCS2"},
+    {"level": "solar", "slug": "paneli", "name": "Сонячні панелі", "hint": null},
+    {"level": "solar", "slug": "invertory", "name": "Інвертори", "hint": "гібридні, мережеві, автономні"},
+    {"level": "solar", "slug": "kriplennya", "name": "Кріплення та комплектуючі", "hint": null},
+    {"level": "solar", "slug": "ses-pid-klyuch", "name": "Готові СЕС під ключ", "hint": "для дому й бізнесу"},
+    {"level": "battery", "slug": "dlya-domu", "name": "Для дому", "hint": "5–30\u00a0кВт·год"},
+    {"level": "battery", "slug": "dlya-biznesu", "name": "Для бізнесу", "hint": "50–215\u00a0кВт·год"},
+    {"level": "battery", "slug": "promyslovi", "name": "Промислові BESS", "hint": "від 215\u00a0кВт·год"},
+    {"level": "carport", "slug": "pryvatnyi", "name": "Приватний", "hint": "1–2\u00a0місця"},
+    {"level": "carport", "slug": "komertsiinyi", "name": "Комерційний", "hint": "4–20\u00a0місць"},
+    {"level": "carport", "slug": "hab", "name": "Хаб: навіс + DC + накопичувач", "hint": "від 20\u00a0місць"}
+  ],
+  "services": [
+    {"slug": "dostavka", "name": "Доставка"},
+    {"slug": "montazh", "name": "Монтаж"},
+    {"slug": "proekt-tekhumovy", "name": "Проєкт і техумови"},
+    {"slug": "servis", "name": "Сервіс і гарантія"}
+  ],
+  "documents": [
+    {"slug": "oferta", "name": "Публічна оферта"},
+    {"slug": "polityka-konfidentsiinosti", "name": "Політика конфіденційності"},
+    {"slug": "polityka-cookies", "name": "Політика cookies"},
+    {"slug": "harantiya-ta-povernennya", "name": "Гарантія та повернення"}
+  ],
+  "contacts": {
+    "phone": "[ТЕЛЕФОН]",
+    "email": "[EMAIL]",
+    "address": "[АДРЕСА]",
+    "telegram": "[TELEGRAM]",
+    "viber": "[VIBER]",
+    "requisites": "[РЕКВІЗИТИ]"
+  },
+  "region": "Київ і вся Україна"
+}

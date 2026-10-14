@@ -1,0 +1,27 @@
+---
+import StubPage from '../../layouts/StubPage.astro';
+import { getSystems } from '../../lib/catalog';
+import { routes } from '../../lib/routes';
+
+const systems = await getSystems();
+---
+<StubPage title="Готові системи" description="Готові енергосистеми під ключ: дім без відключень, дім + авто, паркінг, що заробляє, АЗС на слабкому вводі." spec="SPEC-007">
+  <ul role="list">
+    {
+      systems.map((s) => (
+        <li>
+          <a href={routes.system(s.slug)}>{s.name}</a>
+        </li>
+      ))
+    }
+  </ul>
+</StubPage>
+
+<style>
+  li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+  }
+</style>

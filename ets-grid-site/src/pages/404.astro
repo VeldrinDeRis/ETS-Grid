@@ -1,0 +1,34 @@
+---
+import StubPage from '../layouts/StubPage.astro';
+import { getLevels } from '../lib/catalog';
+import { routes } from '../lib/routes';
+
+const levels = getLevels();
+---
+<StubPage
+  title="Сторінку не знайдено"
+  description="Такої сторінки немає. Перейдіть до каталогу або на головну."
+  spec="SPEC-007"
+  robots="noindex, follow"
+>
+  <p slot="lead">Можливо, адресу змінено. Почніть з одного з розділів:</p>
+  <ul role="list">
+    {
+      levels.map((level) => (
+        <li>
+          <a href={routes.level(level.slug)}>{level.name}</a>
+        </li>
+      ))
+    }
+    <li><a href={routes.home}>На головну</a></li>
+  </ul>
+</StubPage>
+
+<style>
+  li a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+  }
+</style>

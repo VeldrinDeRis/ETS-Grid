@@ -1,0 +1,41 @@
+---
+// Лістинг — заглушка; наповнює SPEC-002 (фільтри, лічильники, URL-стан, шторка).
+import type { GetStaticPaths } from 'astro';
+import ProductStubList from '../../../components/layout/ProductStubList.astro';
+import StubNotice from '../../../components/layout/StubNotice.astro';
+import Section from '../../../components/ui/Section.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCategories, getLevel, getProductsBy } from '../../../lib/catalog';
+import { routes } from '../../../lib/routes';
+import type { Category, Product, StructureLevel } from '../../../lib/schema';
+
+export const getStaticPaths = (async () => {
+  const paths = [];
+  for (const category of getCategories()) {
+    const level = getLevel(category.level);
+    const products = await getProductsBy({ level: category.level, category: category.slug });
+    paths.push({ params: { level: level.slug, category: category.slug }, props: { level, category, products } });
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+interface Props {
+  level: StructureLevel;
+  category: Category;
+  products: Product[];
+}
+const { level, category, products } = Astro.props;
+const title = `${category.name} — ${level.name.toLowerCase()}`;
+---
+<BaseLayout
+  title={title}
+  description={`${level.name}, ${category.name.toLowerCase()}${category.hint ? `: ${category.hint}` : ''}. Ціни, наявність, монтаж під ключ.`}
+  crumbs={[{ label: level.name, href: routes.level(level.slug) }, { label: category.name }]}
+>
+  <Section>
+    <h1>{category.name}</h1>
+    {category.hint && <p>{category.hint}</p>}
+    <StubNotice spec="SPEC-002" note="Тут будуть чипи головного фільтра, фасети з лічильниками, сортування й картки товарів (ТЗ §6.3, §9)." />
+    <ProductStubList products={products} />
+  </Section>
+</BaseLayout>

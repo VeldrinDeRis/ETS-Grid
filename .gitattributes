@@ -4,3 +4,4 @@
 *.jpg binary
 *.webp binary
 *.avif binary
+*.cmd text eol=crlf

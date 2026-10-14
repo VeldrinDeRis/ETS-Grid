@@ -1,0 +1,36 @@
+---
+// Сторінка товару — заглушка з назвою і ціною; наповнює SPEC-003.
+import type { GetStaticPaths } from 'astro';
+import StubNotice from '../../components/layout/StubNotice.astro';
+import Price from '../../components/ui/Price.astro';
+import Section from '../../components/ui/Section.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCategories, getLevelById, getProductsBy } from '../../lib/catalog';
+import { routes } from '../../lib/routes';
+import type { Product } from '../../lib/schema';
+
+export const getStaticPaths = (async () =>
+  (await getProductsBy()).map((product) => ({ params: { slug: product.slug }, props: { product } }))) satisfies GetStaticPaths;
+
+interface Props {
+  product: Product;
+}
+const { product } = Astro.props;
+const level = getLevelById(product.level);
+const category = getCategories(level.key).find((c) => c.slug === product.category)!;
+---
+<BaseLayout
+  title={product.name}
+  description={`${product.name}: ціна, характеристики, доставка й монтаж під ключ.`}
+  crumbs={[
+    { label: level.name, href: routes.level(level.slug) },
+    { label: category.name, href: routes.category(level.slug, category.slug) },
+    { label: product.name },
+  ]}
+>
+  <Section>
+    <h1>{product.name}</h1>
+    <Price product={product} />
+    <StubNotice spec="SPEC-003" note="Тут будуть галерея, перемикач «Тільки обладнання / З монтажем», характеристики, сумісність з авто й перехресні блоки (ТЗ §6.4)." />
+  </Section>
+</BaseLayout>

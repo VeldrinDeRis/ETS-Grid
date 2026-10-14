@@ -1,0 +1,36 @@
+---
+// Перемикач палітри А/Б — тільки в мокапі (D-026 п. 7). Без JS прихований.
+---
+<div class="palette-switch js-only" role="group" aria-label="Палітра (мокап)">
+  <span class="palette-switch__label">Палітра:</span>
+  <button type="button" data-palette-set="a" aria-pressed="true">А «Теплий світ»</button>
+  <button type="button" data-palette-set="b" aria-pressed="false">Б «Сигнал»</button>
+</div>
+
+<script>
+  import '../../scripts/palette';
+</script>
+
+<style>
+  .palette-switch {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .palette-switch button {
+    min-height: var(--tap);
+    padding: 0 var(--space-xs);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  .palette-switch button[aria-pressed='true'] {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,23 @@
+---
+// Обʼєкти: тільки реальні обʼєкти ETS GRID (D-005, ТЗ §8.3). До їх появи — плашка.
+import StubPage from '../layouts/StubPage.astro';
+---
+<StubPage
+  title="Обʼєкти"
+  description="Реальні обʼєкти ETS GRID: зарядні станції, СЕС, накопичувачі та Solar Carport."
+  spec="SPEC-007"
+>
+  <p class="cases-plate">Тут будуть реальні обʼєкти ETS GRID</p>
+</StubPage>
+
+<style>
+  .cases-plate {
+    max-width: none;
+    padding: var(--space-xl) var(--space-m);
+    border: 1px dashed var(--color-placeholder);
+    border-radius: var(--radius-l);
+    color: var(--color-placeholder);
+    font-size: var(--step-1);
+    text-align: center;
+  }
+</style>

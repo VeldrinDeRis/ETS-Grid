@@ -7,11 +7,24 @@
     "dev": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "serve": "node scripts/serve.mjs",
+    "release": "node scripts/release.mjs",
+    "test": "vitest run tests/unit tests/data",
+    "test:build": "vitest run tests/build",
+    "test:functional": "playwright test tests/functional",
+    "test:a11y": "playwright test tests/a11y",
+    "test:visual": "playwright test tests/visual --pass-with-no-tests",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:all": "npm run build && vitest run && playwright test --pass-with-no-tests"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "typescript": "^6.0.3"
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.64.0",
+    "linkedom": "^0.18.13",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.4"
   },
   "dependencies": {
     "@astrojs/preact": "^6.0.6",

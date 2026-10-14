@@ -1,0 +1,142 @@
+/*
+  Токени ETS GRID (SPEC-001 §3.6).
+  Імена — контракт. Опорні кольори палітр — з ТЗ §8.2; решта значень тимчасові до раунду дизайну.
+  Палітра перемикається одним атрибутом data-palette на <html>; поверхня — data-surface на секції.
+  Заборонено: #C8F03C, Unbounded, JetBrains Mono.
+*/
+
+/* ---------- Палітра А «Теплий світ» ---------- */
+[data-palette="a"] {
+  --day-bg: #F4F6F8;
+  --day-surface: #FFFFFF;
+  --day-ink: #0D1424;
+  --day-ink-muted: #4A5568;
+  --day-line: #D9DEE5;
+  --day-accent: #FFB547;
+  --day-on-accent: #0D1424;
+  --day-focus: #0D1424;
+  --day-status-ok: #1B6E3E;
+  --day-status-wait: #8A5300;
+  --day-placeholder: #6B3FA0;
+
+  --night-bg: #0D1424;
+  --night-surface: #16203A;
+  --night-ink: #F4F6F8;
+  --night-ink-muted: #A7B1C2;
+  --night-line: #2A3650;
+  --night-accent: #FFB547;
+  --night-on-accent: #0D1424;
+  --night-focus: #FFB547;
+  --night-status-ok: #4FC98A;
+  --night-status-wait: #F5C04E;
+  --night-placeholder: #C4AEFF;
+}
+
+/* ---------- Палітра Б «Сигнал» ---------- */
+[data-palette="b"] {
+  --day-bg: #ECEBE4;
+  --day-surface: #F8F7F2;
+  --day-ink: #11110F;
+  --day-ink-muted: #57554D;
+  --day-line: #D2D0C6;
+  --day-accent: #FF4D00;
+  --day-on-accent: #11110F;
+  --day-focus: #11110F;
+  --day-status-ok: #1E6B3A;
+  --day-status-wait: #8A4A00;
+  --day-placeholder: #6A3FB0;
+
+  --night-bg: #11110F;
+  --night-surface: #1D1D1A;
+  --night-ink: #ECEBE4;
+  --night-ink-muted: #A6A399;
+  --night-line: #34332E;
+  --night-accent: #FF4D00;
+  --night-on-accent: #11110F;
+  --night-focus: #FF4D00;
+  --night-status-ok: #5CC98A;
+  --night-status-wait: #F2A54E;
+  --night-placeholder: #C3A8FF;
+}
+
+/* ---------- Смислові кольори за поверхнею ---------- */
+:root,
+[data-surface="day"] {
+  --color-bg: var(--day-bg);
+  --color-surface: var(--day-surface);
+  --color-ink: var(--day-ink);
+  --color-ink-muted: var(--day-ink-muted);
+  --color-line: var(--day-line);
+  --color-accent: var(--day-accent);
+  --color-on-accent: var(--day-on-accent);
+  --color-focus: var(--day-focus);
+  --color-status-ok: var(--day-status-ok);
+  --color-status-wait: var(--day-status-wait);
+  --color-placeholder: var(--day-placeholder);
+}
+
+[data-surface="night"] {
+  --color-bg: var(--night-bg);
+  --color-surface: var(--night-surface);
+  --color-ink: var(--night-ink);
+  --color-ink-muted: var(--night-ink-muted);
+  --color-line: var(--night-line);
+  --color-accent: var(--night-accent);
+  --color-on-accent: var(--night-on-accent);
+  --color-focus: var(--night-focus);
+  --color-status-ok: var(--night-status-ok);
+  --color-status-wait: var(--night-status-wait);
+  --color-placeholder: var(--night-placeholder);
+}
+
+/* ---------- Типографіка, ритм, форма, рух ---------- */
+:root {
+  /* До раунду дизайну — системний стек, 0 файлів шрифтів (D-026 п. 8). */
+  --font-text: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-text);
+
+  --step--1: clamp(0.833rem, 0.8rem + 0.15vw, 0.9rem);
+  --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --step-1: clamp(1.2rem, 1.1rem + 0.45vw, 1.45rem);
+  --step-2: clamp(1.44rem, 1.25rem + 0.8vw, 1.9rem);
+  --step-3: clamp(1.73rem, 1.4rem + 1.4vw, 2.5rem);
+  --step-4: clamp(2.07rem, 1.5rem + 2.4vw, 3.3rem);
+  --step-5: clamp(2.5rem, 1.6rem + 3.8vw, 4.4rem);
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-s: 1rem;
+  --space-m: 1.5rem;
+  --space-l: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  /* ТЗ §8.1: 56–80 px на mobile, 96–140 px на desktop. */
+  --section-y: clamp(3.5rem, 2.2rem + 5.4vw, 7.5rem);
+  --container: 76rem;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --header-h: 4rem;
+  --tap: 2.75rem;
+
+  --radius-s: 4px;
+  --radius-m: 8px;
+  --radius-l: 16px;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.08), 0 2px 8px rgb(0 0 0 / 0.06);
+  --shadow-2: 0 8px 32px rgb(0 0 0 / 0.16);
+
+  --dur-fast: 200ms;
+  --dur: 320ms;
+  --dur-slow: 600ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0s;
+    --dur: 0s;
+    --dur-slow: 0s;
+  }
+}

@@ -1,0 +1,22 @@
+---
+// Перший елемент у порядку фокусу (SPEC-001 §5).
+---
+<a class="skip-link" href="#main">Перейти до змісту</a>
+
+<style>
+  .skip-link {
+    position: absolute;
+    top: var(--space-2xs);
+    left: var(--space-2xs);
+    z-index: 100;
+    padding: var(--space-2xs) var(--space-s);
+    border-radius: var(--radius-m);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 600;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+</style>

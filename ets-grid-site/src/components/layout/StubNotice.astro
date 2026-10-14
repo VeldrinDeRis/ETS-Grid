@@ -1,0 +1,33 @@
+---
+// Видима плашка «Сторінка в роботі» для сторінок, які наповнить інша специфікація (SPEC-001 §3.1).
+interface Props {
+  spec: string;
+  note?: string;
+}
+const { spec, note } = Astro.props;
+---
+<aside class="stub" aria-label="Статус сторінки">
+  <p class="stub__title"><strong>Сторінка в роботі</strong> · {spec}</p>
+  {note && <p class="stub__note">{note}</p>}
+</aside>
+
+<style>
+  .stub {
+    margin-block: var(--space-l);
+    padding: var(--space-s) var(--space-m);
+    border: 1px dashed var(--color-placeholder);
+    border-radius: var(--radius-m);
+    color: var(--color-ink);
+  }
+  .stub p {
+    margin: 0;
+  }
+  .stub__title {
+    color: var(--color-placeholder);
+  }
+  .stub__note {
+    margin-top: var(--space-3xs) !important;
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+</style>

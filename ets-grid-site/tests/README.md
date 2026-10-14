@@ -18,7 +18,7 @@
 Lighthouse — через MCP Chrome DevTools, отчёты и скриншоты для заказчика — в `../qa/`. Это отчёты, не тесты.
 
 ## Команды
-Появятся в SPEC-001.
+Сайт для `build/`, `functional/`, `a11y/`, `visual/` должен быть собран (`npm run build`); `test:all` собирает сам. Playwright поднимает `scripts/serve.mjs` на порту 4792. Браузер: `npx playwright install chromium` (один раз).
 
 | Команда | Что гоняет |
 |---|---|
@@ -38,4 +38,27 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 
 | Критерий | Категория | Файл | Статус |
 |---|---|---|---|
-| — | — | — | — |
+| SPEC-001/AC-01 сборка и типы | build | `npm run build` (`astro check`) | ✅ |
+| SPEC-001/AC-02 все адреса | build | `build/routes.test.ts` | ✅ |
+| SPEC-001/AC-03 каркас страницы | build | `build/layout.test.ts` | ✅ |
+| SPEC-001/AC-04 хлебные крошки | build | `build/layout.test.ts` | ✅ |
+| SPEC-001/AC-05 уровни в шапке | build | `build/layout.test.ts` | ✅ |
+| SPEC-001/AC-06 битые ссылки | build | `build/links.test.ts` | ✅ |
+| SPEC-001/AC-07 целостность данных | data | `data/catalog.test.ts` | ✅ |
+| SPEC-001/AC-08 форматирование | unit | `unit/format.test.ts` | ✅ |
+| SPEC-001/AC-09 показ цены | unit, build | `unit/price.test.ts`, `build/price.test.ts` | ✅ |
+| SPEC-001/AC-10 хранилище | unit | `unit/storage.test.ts` | ✅ |
+| SPEC-001/AC-11 контраст токенов | unit | `unit/contrast.test.ts` | ✅ |
+| SPEC-001/AC-12 палитра, запреты | build | `build/css.test.ts` | ✅ |
+| SPEC-001/AC-13 переключатель палитры | functional | `functional/foundation.spec.ts` | ✅ |
+| SPEC-001/AC-14 мега-меню с клавиатуры | functional | `functional/foundation.spec.ts` | ✅ |
+| SPEC-001/AC-15 мобильная шапка, 320 px | functional | `functional/foundation.spec.ts` | ✅ |
+| SPEC-001/AC-16 без JS | functional | `functional/foundation.spec.ts` | ✅ |
+| SPEC-001/AC-17 счётчик корзины | unit, functional | `unit/storage.test.ts`, `functional/foundation.spec.ts` | ✅ |
+| SPEC-001/AC-18 axe-core | a11y | `a11y/foundation.spec.ts` | ✅ |
+| SPEC-001/AC-19 reduced-motion | a11y | `a11y/foundation.spec.ts` | ✅ |
+| SPEC-001/AC-20 бюджеты JS и шрифтов | build | `build/budget.test.ts` | ✅ |
+| SPEC-001/AC-21 serve.mjs | build | `build/serve.test.ts` | ✅ |
+| SPEC-001/AC-22 zip для заказчика | build + вручную | `build/release.test.ts` | ✅ автотест; ⏳ двойной клик по `start.cmd` |
+| SPEC-001/AC-23 команды | вручную | — | ✅ |
+| `@smoke` главная → уровень → листинг → товар → кошик | functional | `functional/foundation.spec.ts` | ✅ |
