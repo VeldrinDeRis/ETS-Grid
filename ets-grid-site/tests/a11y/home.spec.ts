@@ -69,3 +69,12 @@ test.describe('SPEC-006/AC-33 reduced-motion: без блимання (D-056)', 
     await expect(flow.locator('[data-flow-spark][data-run]')).toHaveCount(0);
   });
 });
+
+test.describe('SPEC-006/AC-35 reduced-motion: доба не крутиться (D-059)', () => {
+  test.use({ reducedMotion: 'reduce' });
+  test('шари неба без анімації і невидимі — статична ніч', async ({ page }) => {
+    await page.goto('/');
+    const anims = await page.locator('[data-hero-sky]').evaluateAll((els) => els.map((el) => [getComputedStyle(el).animationName, getComputedStyle(el).opacity]));
+    expect(anims).toEqual([['none', '0'], ['none', '0'], ['none', '0']]);
+  });
+});

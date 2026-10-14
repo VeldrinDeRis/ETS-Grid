@@ -29,6 +29,10 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
   <div class="hero__photo">
     <Photo photo="hero-dc-night" sizes="100vw" priority />
   </div>
+  <!-- Небо над фото проходить добу по колу (D-059): три шари, анімується лише opacity; під тінню тексту майже не видно. -->
+  <div class="hero__sky hero__sky--predawn" aria-hidden="true" data-hero-sky="predawn"></div>
+  <div class="hero__sky hero__sky--dawn" aria-hidden="true" data-hero-sky="dawn"></div>
+  <div class="hero__sky hero__sky--day" aria-hidden="true" data-hero-sky="day"></div>
   <div class="hero__shade" aria-hidden="true"></div>
   <div class="hero__lamp" aria-hidden="true" data-hero-lamp></div>
   <!-- Вогники зарядки на стійках у кадрі (D-056): точки додає home.ts за HERO_LEDS, лише desktop із рухом. -->
@@ -102,6 +106,86 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
   }
   .hero__photo :global(img) {
     object-position: 72% 50%;
+  }
+  /* Доба по колу (D-059): передсвітанок (синь) → світанок (тепле світло зверху) → день (світліше, прохолодніше) →
+     сутінки → ніч; 48 с, лише opacity. Лежить під тінню, тому колонка тексту лишається ніччю. */
+  .hero__sky {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hero__sky--predawn {
+    background: linear-gradient(180deg, rgb(22 32 58 / 0.85), rgb(22 32 58 / 0.35) 55%, transparent);
+  }
+  .hero__sky--dawn {
+    background: linear-gradient(180deg, rgb(255 181 71 / 0.38), rgb(255 181 71 / 0.1) 45%, transparent 72%);
+    mix-blend-mode: screen;
+  }
+  .hero__sky--day {
+    background: linear-gradient(180deg, rgb(167 177 194 / 0.55), rgb(167 177 194 / 0.2) 55%, transparent 85%);
+    mix-blend-mode: screen;
+  }
+  :global(html[data-motion='on']) .hero__sky--predawn {
+    animation: sky-predawn 48s linear infinite;
+  }
+  :global(html[data-motion='on']) .hero__sky--dawn {
+    animation: sky-dawn 48s linear infinite;
+  }
+  :global(html[data-motion='on']) .hero__sky--day {
+    animation: sky-day 48s linear infinite;
+  }
+  @keyframes sky-predawn {
+    0%,
+    8% {
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    34%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes sky-dawn {
+    0%,
+    26% {
+      opacity: 0;
+    }
+    38% {
+      opacity: 1;
+    }
+    52% {
+      opacity: 0;
+    }
+    74% {
+      opacity: 0;
+    }
+    84% {
+      opacity: 0.6;
+    }
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes sky-day {
+    0%,
+    44% {
+      opacity: 0;
+    }
+    58% {
+      opacity: 1;
+    }
+    66% {
+      opacity: 1;
+    }
+    80%,
+    100% {
+      opacity: 0;
+    }
   }
   /* Ніч: зліва щільна під текст, праворуч фото видно; знизу темніє під плитки. */
   .hero__shade {

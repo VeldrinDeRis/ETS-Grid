@@ -293,3 +293,18 @@ test.describe('SPEC-006/AC-33 вогники зарядки (D-056)', () => {
     }
   });
 });
+
+test.describe('SPEC-006/AC-35 доба по колу в першому екрані (D-059)', () => {
+  test('три шари неба крутяться 48 с по колу; у фазі «день» контраст тексту героя не падає', async ({ page }) => {
+    await page.goto('/');
+    const layers = page.locator('[data-hero-sky]');
+    await expect(layers).toHaveCount(3);
+    const anims = await layers.evaluateAll((els) => els.map((el) => { const cs = getComputedStyle(el); return [cs.animationName, cs.animationDuration, cs.animationIterationCount]; }));
+    expect(anims).toEqual([['sky-predawn', '48s', 'infinite'], ['sky-dawn', '48s', 'infinite'], ['sky-day', '48s', 'infinite']]);
+    // Перемотуємо добу в «день» (60 % циклу) і дивимось: шар дня видимий, текст героя лишається на ночі.
+    const dayOpacity = await layers.nth(2).evaluate((el) => { for (const a of el.getAnimations()) a.currentTime = 48000 * 0.6; return getComputedStyle(el).opacity; });
+    expect(parseFloat(dayOpacity)).toBeGreaterThan(0.9);
+    const under = await page.locator('.hero__subtitle').evaluate((el) => { const r = el.getBoundingClientRect(); const probe = document.elementFromPoint(r.left + 4, r.top + 4); return probe?.closest('.hero__text') ? 'text' : probe?.className; });
+    expect(under).toBe('text');
+  });
+});
