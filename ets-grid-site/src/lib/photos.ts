@@ -42,6 +42,15 @@ export const srcset = (key: PhotoKey, format: 'avif' | 'webp') =>
  * Ілюстрації товарів до фото від замовника (D-042). Лише там, де стоковий кадр не суперечить товару:
  * портативна зарядка й адаптер Type 2 → GB/T — без ілюстрацій (на стоках інший розʼєм).
  */
+/** Вогники зарядки на фото героя (D-056): частки кадру `hero-dc-night` (x, y від 0 до 1), індикатори на зарядних стійках.
+ *  При заміні фото — задати заново; екранне положення рахує src/scripts/home.ts під object-fit: cover. */
+export const HERO_LEDS: { x: number; y: number }[] = [
+  { x: 0.3, y: 0.645 },
+  { x: 0.42, y: 0.645 },
+  { x: 0.675, y: 0.6 },
+  { x: 0.875, y: 0.585 },
+];
+
 export const PRODUCT_ILLUSTRATION: Record<string, PhotoKey> = {
   'ets-home-7': 'p-ac-wallbox',
   'ets-home-22': 'p-ac-wallbox',

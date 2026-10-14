@@ -43,11 +43,11 @@
   ],
   "hits": ["ets-duo-22-ocpp", "ets-dc-120-battery", "carport-commercial-8", "ets-bess-100", "ets-home-7", "ets-battery-home-10", "ets-solar-home-5", "inverter-hybrid-10"],
   "flow": [
-    {"label": "Сонце", "text": "Панелі виробляють енергію вдень.", "href": "/sonyachni-paneli/"},
-    {"label": "Інвертор", "text": "Перетворює й розподіляє енергію.", "href": "/sonyachni-paneli/invertory/"},
-    {"label": "Батарея", "text": "Зберігає енергію на вечір і відключення.", "href": "/batarei/"},
-    {"label": "Зарядна станція", "text": "Віддає енергію авто.", "href": "/zaryadni-stantsii/"},
-    {"label": "Авто й дім", "text": "Їздите й живете зі світлом.", "href": "/systems/dim-plus-avto/"}
+    {"label": "Сонце", "text": "Панелі виробляють енергію вдень.", "href": "/sonyachni-paneli/", "product": "ets-solar-home-5", "figure": {"attr": "kwp", "unit": "kWp", "digits": 0}},
+    {"label": "Інвертор", "text": "Перетворює й розподіляє енергію.", "href": "/sonyachni-paneli/invertory/", "product": "inverter-hybrid-10", "figure": {"attr": "power_kw", "unit": "кВт", "digits": 0}},
+    {"label": "Батарея", "text": "Зберігає енергію на вечір і відключення.", "href": "/batarei/", "product": "ets-battery-home-10", "figure": {"attr": "capacity_kwh", "unit": "кВт·год", "digits": 2}},
+    {"label": "Зарядна станція", "text": "Віддає енергію авто.", "href": "/zaryadni-stantsii/", "product": "ets-duo-22-ocpp", "figure": {"attr": "power_kw", "unit": "кВт", "digits": 0}},
+    {"label": "Авто й дім", "text": "Їздите й живете зі світлом.", "href": "/systems/dim-plus-avto/", "system": "dim-plus-avto", "figure": {"unit": "складові", "digits": 0}}
   ],
   "steps": [
     {"title": "Заявка", "term": "[N] днів"},

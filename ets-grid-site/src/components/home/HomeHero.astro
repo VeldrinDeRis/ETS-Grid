@@ -31,6 +31,8 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
   </div>
   <div class="hero__shade" aria-hidden="true"></div>
   <div class="hero__lamp" aria-hidden="true" data-hero-lamp></div>
+  <!-- Вогники зарядки на стійках у кадрі (D-056): точки додає home.ts за HERO_LEDS, лише desktop із рухом. -->
+  <div class="hero__leds" aria-hidden="true" data-hero-leds></div>
   <Container class="hero__inner">
     <div class="hero__text">
       <p class="hero__overline" data-hero-field="overline">{variant.overline}</p>
@@ -51,9 +53,9 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     </div>
     <ul role="list" class="hero__tiles" aria-label="Рівні каталогу">
       {
-        levels.map(({ level, from }) => (
+        levels.map(({ level, from }, i) => (
           <li>
-            <a class="hero__tile" href={routes.level(level.slug)} data-level-tile={level.key}>
+            <a class="hero__tile" href={routes.level(level.slug)} data-level-tile={level.key} style={`--i: ${i}`}>
               <Icon name={LEVEL_ICON[level.key]} size={28} />
               <span class="hero__tile-name">{level.name}</span>
               <span class="hero__tile-price num">{from}</span>
@@ -231,6 +233,72 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
   .hero__tile:focus-visible::after {
     opacity: 1;
     box-shadow: 0 0 0 5px rgb(255 181 71 / 0.18);
+  }
+  /* Вогники зарядки (D-056): після слів H1 загоряються по черзі, як індикатор зарядки, і лишаються тліти;
+     на наведенні — «дихають». Без руху — рівний вогник. */
+  :global(html[data-motion='on']) .hero__tile::after {
+    opacity: 0;
+    animation: tile-charge 0.7s var(--ease-out) both;
+    animation-delay: calc(1.3s + var(--i, 0) * 0.18s);
+  }
+  :global(html[data-motion='on']) .hero__tile:hover::after,
+  :global(html[data-motion='on']) .hero__tile:focus-visible::after {
+    animation: tile-breathe 1.6s ease-in-out infinite;
+  }
+  @keyframes tile-charge {
+    0% {
+      opacity: 0;
+    }
+    55% {
+      opacity: 1;
+      box-shadow: 0 0 0 6px rgb(255 181 71 / 0.22);
+    }
+    100% {
+      opacity: 0.35;
+      box-shadow: 0 0 0 0 rgb(255 181 71 / 0);
+    }
+  }
+  @keyframes tile-breathe {
+    0%,
+    100% {
+      opacity: 0.6;
+      box-shadow: 0 0 0 3px rgb(255 181 71 / 0.12);
+    }
+    50% {
+      opacity: 1;
+      box-shadow: 0 0 0 6px rgb(255 181 71 / 0.22);
+    }
+  }
+  /* Світлодіоди на стійках: позицію ставить скрипт (translate), тут — лише вигляд і миготіння. */
+  .hero__leds {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* Точки створює скрипт — без scoped-атрибута Astro, тому :global. */
+  .hero__leds :global(.hero__led) {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow:
+      0 0 0 3px rgb(255 181 71 / 0.25),
+      0 0 14px 4px rgb(255 181 71 / 0.45);
+    animation: led-charge 1.8s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.3s);
+  }
+  @keyframes led-charge {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
   }
   .hero__tile-name {
     font-family: var(--font-display);

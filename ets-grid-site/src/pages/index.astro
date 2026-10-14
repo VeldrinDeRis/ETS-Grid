@@ -20,8 +20,10 @@ const variant = activeVariant();
 >
   <HomeHero />
 
-  <Section label="Що вам потрібно?">
-    <div data-home-block="systems"><HomeSystems /></div>
+  <!-- Акт II «Система» (SPEC-006 §4.9, D-055): схема-сцена (блок 5) перед входом за сценарієм (блок 2), обидва на ночі. -->
+  <Section id="systema" label="Одна система" surface="night">
+    <div data-home-block="flow"><EnergyFlow /></div>
+    <div data-home-block="systems" class="systems-after-flow"><HomeSystems /></div>
   </Section>
 
   <Section id="potuzhnist" label="Чи вистачить потужності?" surface="night">
@@ -33,10 +35,6 @@ const variant = activeVariant();
 
   <Section label="Хіти каталогу">
     <div data-home-block="hits"><HomeHits /></div>
-  </Section>
-
-  <Section label="Не тільки розетка" surface="night">
-    <div data-home-block="flow"><EnergyFlow /></div>
   </Section>
 
   <Section label="Solar Carport">
@@ -67,3 +65,10 @@ const variant = activeVariant();
 <script>
   import '../scripts/home';
 </script>
+
+<style>
+  /* Вхід за сценарієм — під сценою схеми, тихіше за акт. */
+  .systems-after-flow {
+    margin-top: var(--space-2xl);
+  }
+</style>

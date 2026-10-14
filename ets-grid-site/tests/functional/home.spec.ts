@@ -177,8 +177,9 @@ test.describe('SPEC-006/AC-17 один акцентний елемент у пе
       hero.append(probe);
       const accent = getComputedStyle(probe).color;
       probe.remove();
+      // Дрібні індикатори (світлодіоди на стійках, D-056) — не в рахунок (SPEC-006 §5).
       return [...hero.querySelectorAll<HTMLElement>('*')]
-        .filter((el) => el.offsetParent !== null && getComputedStyle(el).backgroundColor === accent)
+        .filter((el) => el.offsetParent !== null && !el.hasAttribute('data-hero-led') && getComputedStyle(el).backgroundColor === accent)
         .map((el) => el.dataset.heroCta ?? el.className);
     });
     expect(accented).toEqual(['primary']);
@@ -235,5 +236,60 @@ test.describe('SPEC-006/AC-25 H1 без анімації', () => {
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
     await expect(page.locator('h1')).toHaveCSS('opacity', '1', { timeout: 1500 });
     await expect(page.locator('h1 .hero__word')).toHaveCount(0);
+  });
+});
+
+test.describe('SPEC-006/AC-30, AC-31 схема вмикається прокруткою (акт II)', () => {
+  test('desktop: до прокрутки вузли приглушені, наприкінці треку всі 5 увімкнені, числа докручені; mobile: вузол вмикається в кадрі', async ({ page }, info) => {
+    await page.goto('/');
+    const flow = page.locator('[data-energy-flow]');
+    const nodes = flow.locator('[data-node]');
+    await expect(nodes).toHaveCount(5);
+    if (isMobile(info)) {
+      await expect(nodes.nth(0)).not.toHaveAttribute('data-lit', '');
+      await nodes.nth(2).scrollIntoViewIfNeeded();
+      await expect(nodes.nth(2)).toHaveAttribute('data-lit', '', { timeout: 2000 });
+      return;
+    }
+    const box = (await flow.boundingBox())!;
+    expect(box.height).toBeGreaterThan(page.viewportSize()!.height * 2.5);
+    await page.evaluate((y) => window.scrollTo(0, y), box.y + 10);
+    await page.waitForTimeout(400);
+    await expect(nodes.nth(4)).not.toHaveAttribute('data-lit', '');
+    // Розряди AnimateNumber — aria-hidden, поточне значення — в його aria-label; статичне число приховане за [data-live].
+    const digits = nodes.nth(2).locator('.live-number [aria-label]');
+    await expect(digits).toHaveAttribute('aria-label', '0,00');
+    await expect(nodes.nth(2).locator('.flow__static')).toBeHidden();
+    await page.evaluate((y) => window.scrollTo(0, y), box.y + box.height - page.viewportSize()!.height - 2);
+    await page.waitForTimeout(900);
+    for (let i = 0; i < 5; i++) await expect(nodes.nth(i)).toHaveAttribute('data-lit', '');
+    await expect(digits).toHaveAttribute('aria-label', '10,24', { timeout: 3000 });
+    await expect(nodes.nth(2).locator('.flow__num .visually-hidden')).toHaveText('10,24');
+    await expect(flow.locator('[data-flow-spark][data-run]')).toHaveCount(4);
+  });
+});
+
+test.describe('SPEC-006/AC-33 вогники зарядки (D-056)', () => {
+  test('плитки: вогники загоряються по черзі (анімація з затримкою за --i); фото: світлодіоди на desktop у межах героя', async ({ page }, info) => {
+    await page.goto('/');
+    const delays = await page.locator('.hero__tile').evaluateAll((els) => els.map((el) => getComputedStyle(el, '::after').animationDelay));
+    expect(delays).toHaveLength(4);
+    expect(new Set(delays).size).toBe(4);
+    const leds = page.locator('[data-hero-led]:visible');
+    if (isMobile(info)) {
+      await expect(leds.first()).toBeHidden();
+      return;
+    }
+    // Позицію ставить скрипт після завантаження фото (translate); стійки під тінню колонки тексту приховані — видимих ≥ 2.
+    await expect(page.locator('[data-hero-led]').last()).toHaveAttribute('style', /translate\(/);
+    expect(await leds.count()).toBeGreaterThanOrEqual(2);
+    const hero = (await page.locator('[data-home-block="hero"]').boundingBox())!;
+    for (const led of await leds.all()) {
+      const b = (await led.boundingBox())!;
+      expect(b.x).toBeGreaterThan(hero.x);
+      expect(b.x + b.width).toBeLessThan(hero.x + hero.width);
+      expect(b.y).toBeGreaterThan(hero.y);
+      expect(b.y + b.height).toBeLessThan(hero.y + hero.height);
+    }
   });
 });

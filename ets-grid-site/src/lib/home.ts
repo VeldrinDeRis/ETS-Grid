@@ -22,7 +22,22 @@ export const homeContentSchema = z
     trust: z.array(z.string().min(1)).min(3).max(4),
     tabs: z.array(z.object({ segment: z.enum(['business', 'home', 'highway']), label: z.string().min(1), fallback_href: z.string().min(1) })).length(3),
     hits: z.array(z.string()).min(6).max(8),
-    flow: z.array(z.object({ label: z.string().min(1), text: z.string().min(1), href: z.string().startsWith('/') })).length(5),
+    // Вузол схеми (акт II, D-055): число — з характеристики товару (`attr`) або кількість складових системи; ціна — за правилом Price.
+    flow: z
+      .array(
+        z
+          .object({
+            label: z.string().min(1),
+            text: z.string().min(1),
+            href: z.string().startsWith('/'),
+            product: z.string().min(1).optional(),
+            system: z.string().min(1).optional(),
+            figure: z.object({ attr: z.string().min(1).optional(), unit: z.string().min(1), digits: z.number().int().min(0).max(2) }),
+          })
+          .refine((n) => (n.product ? 1 : 0) + (n.system ? 1 : 0) === 1, 'вузол схеми: рівно одне з product / system')
+          .refine((n) => !n.product || n.figure.attr, 'вузол із товаром потребує figure.attr'),
+      )
+      .length(5),
     steps: z.array(z.object({ title: z.string().min(1), term: z.string().min(1) })).length(5),
     faq: z.array(z.object({ q: z.string().min(1), a: z.string().min(1) })).min(4).max(6),
     financing: z.object({ title: z.string(), items: z.array(z.string()).min(1), checked: z.string(), cta: z.string() }),
@@ -31,6 +46,25 @@ export const homeContentSchema = z
   .refine((h) => h.hero.variants.some((v) => v.id === h.hero.active), 'hero.active має бути одним із варіантів');
 
 export type HomeContent = z.infer<typeof homeContentSchema>;
+export type FlowNode = HomeContent['flow'][number];
+
+export interface FlowFigure {
+  value: number;
+  unit: string;
+  digits: number;
+}
+
+/** Число вузла схеми: характеристика товару або кількість складових системи. Немає даних — null, вузол без числа (D-031: не вигадуємо). */
+export function flowFigure(node: FlowNode, products: Product[], systems: System[]): FlowFigure | null {
+  const { unit, digits } = node.figure;
+  if (node.product) {
+    const raw = products.find((p) => p.slug === node.product)?.attrs[node.figure.attr!];
+    const value = typeof raw === 'number' ? raw : Number(raw);
+    return Number.isFinite(value) ? { value, unit, digits } : null;
+  }
+  const system = systems.find((s) => s.slug === node.system);
+  return system ? { value: system.items.length, unit, digits } : null;
+}
 export type HeroVariant = HomeContent['hero']['variants'][number];
 
 export const home = homeJson as HomeContent;

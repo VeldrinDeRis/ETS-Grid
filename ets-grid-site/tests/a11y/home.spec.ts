@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { presetStorage } from '../helpers/viewports';
+import { heroSettled, presetStorage } from '../helpers/viewports';
 
 for (const palette of ['a', 'b'] as const) {
   test.describe(`SPEC-006/AC-18 axe-core, палітра ${palette.toUpperCase()}`, () => {
@@ -8,9 +8,8 @@ for (const palette of ['a', 'b'] as const) {
       await presetStorage(page, { 'etsgrid:palette': palette });
       await page.goto('/');
       await expect(page.locator('html')).toHaveAttribute('data-palette', palette);
-      // Контраст перевіряємо в кінцевому стані: слова H1 загоряються ≈ 1,3 с (SPEC-006 AC-24).
-      await expect(page.locator('h1 .hero__word')).toHaveCount(0, { timeout: 2500 });
-      await expect(page.locator('h1')).toHaveCSS('opacity', '1');
+      // Контраст перевіряємо в кінцевому стані: H1 загорівся, схема акту II увімкнена (helpers/viewports heroSettled).
+      await heroSettled(page);
       const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
       const serious = result.violations
         .filter((v) => v.impact === 'serious' || v.impact === 'critical')
@@ -52,5 +51,21 @@ test.describe('SPEC-006/AC-20 reduced-motion', () => {
       [...el.querySelectorAll<HTMLElement>('[data-flow-pulse]')].some((p) => p.style.transform !== '' || p.getAnimations().length > 0),
     );
     expect(animated).toBe(false);
+  });
+});
+
+test.describe('SPEC-006/AC-33 reduced-motion: без блимання (D-056)', () => {
+  test.use({ reducedMotion: 'reduce' });
+  test('світлодіодів нема, вогники плиток і блик лінії без анімацій, схема горить цілком', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('[data-hero-led]')).toHaveCount(0);
+    const tileAnims = await page.locator('.hero__tile').evaluateAll((els) => els.map((el) => getComputedStyle(el, '::after').animationName));
+    for (const a of tileAnims) expect(a).toBe('none');
+    const flow = page.locator('[data-energy-flow]');
+    await flow.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+    const dim = await flow.locator('.flow__body').evaluateAll((els) => els.filter((el) => parseFloat(getComputedStyle(el).opacity) < 1).length);
+    expect(dim).toBe(0);
+    await expect(flow.locator('[data-flow-spark][data-run]')).toHaveCount(0);
   });
 });

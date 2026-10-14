@@ -1,62 +1,118 @@
 ---
-// Блок 5 — «Не тільки розетка»: потік енергії від сонця до авто й дому (SPEC-006 §4.2, ревізія 1).
-// Список вузлів-посилань; лінії декоративні. Рух — лише transform/opacity, src/scripts/home.ts (motion + inView).
-import { home } from '../../lib/home';
+// Акт II «Система» (SPEC-006 §4.9, D-055): мнемосхема як сцена «Одна система. Одна гарантія.».
+// Desktop — сцена прилипає, прокрутка треку вмикає вузли й заповнює лінію (src/scripts/home.ts, scroll());
+// mobile — вузли вмикаються в кадрі (inView). Без JS і при reduced-motion схема горить цілком.
+// Число вузла — з характеристики товару або складу системи (lib/home.ts flowFigure), ціна — за правилом Price;
+// розряди докручує острів LiveNumber (AnimateNumber, React — D-044). Блик по лінії — D-056.
+import LiveNumber from '../../islands/react/LiveNumber';
+import { getProductsBy, getSystems } from '../../lib/catalog';
+import { formatNumber } from '../../lib/format';
+import { flowFigure, home, systemPrice } from '../../lib/home';
+import { priceView } from '../../lib/price';
+import DemoBadge from '../ui/DemoBadge.astro';
+
+const products = await getProductsBy();
+const systems = await getSystems();
+const nodes = home.flow.map((node) => {
+  const product = node.product ? products.find((p) => p.slug === node.product) : undefined;
+  const system = node.system ? systems.find((s) => s.slug === node.system) : undefined;
+  const price = product ? { text: priceView(product).primary, demo: priceView(product).demo } : system ? systemPrice(system, products) : null;
+  return { node, figure: flowFigure(node, products, systems), price };
+});
 ---
 <div class="flow" data-energy-flow>
-  <h2>Не тільки розетка</h2>
-  <p class="flow__lead">Одна система від однієї компанії: сонце заряджає батарею, батарея — авто й дім.</p>
-  <ol class="flow__list">
-    {
-      home.flow.map((node, i) => (
-        <li class="flow__node">
-          <a class="flow__link" href={node.href}>
-            <span class="flow__dot" aria-hidden="true" data-flow-dot />
-            <span class="flow__label">{node.label}</span>
-            <span class="flow__text">{node.text}</span>
-          </a>
-          {i < home.flow.length - 1 && (
-            <span class="flow__line" aria-hidden="true">
-              <span class="flow__pulse" data-flow-pulse />
-            </span>
-          )}
-        </li>
-      ))
-    }
-  </ol>
+  <div class="flow__stage">
+    <div class="flow__head">
+      <h2 id="flow-title">Одна система.<br />Одна гарантія.</h2>
+      <p class="flow__lead">Сонце заряджає батарею, батарея — авто й дім. Кожна ланка — з нашого каталогу, і вмикається по черзі.</p>
+    </div>
+    <ol class="flow__list" role="list">
+      {
+        nodes.map(({ node, figure, price }, i) => (
+          <li class="flow__node" data-node>
+            <a class="flow__link" href={node.href}>
+              <span class="flow__dot" aria-hidden="true" data-flow-dot />
+              <span class="flow__label">{node.label}</span>
+            </a>
+            {i < nodes.length - 1 && (
+              <span class="flow__line" aria-hidden="true">
+                <span class="flow__pulse" data-flow-pulse />
+                <span class="flow__spark" data-flow-spark />
+              </span>
+            )}
+            <div class="flow__body">
+              {figure && (
+                <p class="flow__num">
+                  <span class="flow__static" data-live-number={figure.value}>{formatNumber(Number(figure.value.toFixed(figure.digits)))}</span>
+                  <LiveNumber client:only="react" value={figure.value} digits={figure.digits} />
+                  <span class="flow__unit">{figure.unit}</span>
+                </p>
+              )}
+              <p class="flow__text">{node.text}</p>
+              {price && (
+                <p class="flow__price num">
+                  {price.text}
+                  {price.demo && <DemoBadge />}
+                </p>
+              )}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="flow__hint" aria-hidden="true">Гортайте — система вмикається</p>
+  </div>
 </div>
 
 <style>
+  /* Трек сцени: на desktop із рухом — 320vh, сцена прилипає; інакше — звичайний блок. */
+  .flow__stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(2rem, 6vh, 4rem);
+  }
+  .flow__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: var(--space-xl);
+    align-items: end;
+  }
+  .flow__head h2 {
+    font-size: calc(var(--step-5) * var(--display-scale));
+    line-height: 1.02;
+    margin: 0;
+  }
   .flow__lead {
+    font-size: var(--step-1);
     color: var(--color-ink-muted);
-    margin-bottom: var(--space-l);
+    max-width: 30rem;
+    margin: 0;
   }
   .flow__list {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 0;
     margin: 0;
     padding: 0;
     list-style: none;
   }
   .flow__node {
     position: relative;
-    display: flex;
+    padding-right: var(--space-m);
   }
   .flow__link {
     position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3xs);
-    width: 100%;
-    padding: var(--space-s) var(--space-xs);
+    display: block;
+    padding-top: 2.25rem;
     text-decoration: none;
   }
   .flow__link:hover .flow__label {
     text-decoration: underline;
   }
   .flow__dot {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 1.25rem;
     height: 1.25rem;
     border-radius: 50%;
@@ -64,54 +120,187 @@ import { home } from '../../lib/home';
     box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 18%, transparent);
   }
   .flow__label {
+    font-family: var(--font-display);
     font-weight: 700;
     font-size: var(--step-1);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
   }
-  .flow__text {
-    color: var(--color-ink-muted);
-    font-size: var(--step--1);
-  }
-  /* Лінія від точки цього вузла до точки наступного. */
+  /* Лінія від лампи цього вузла до лампи наступного; заповнення — прокруткою (desktop) або з вузлом (mobile). */
   .flow__line {
     position: absolute;
-    top: calc(var(--space-s) + 0.625rem - 1px);
-    left: calc(var(--space-xs) + 1.25rem + 8px);
-    right: calc(-1 * (var(--space-xs) - 8px));
+    top: calc(0.625rem - 1px);
+    left: calc(1.25rem + 8px);
+    right: 0;
     height: 2px;
     overflow: hidden;
-    background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 22%, transparent);
   }
-  /* Заповнення лінії: у спокої лінія горить; скрипт один раз «вмикає» її від лампи до лампи. */
   .flow__pulse {
     position: absolute;
     inset: 0;
     background: var(--color-accent);
     transform-origin: left center;
   }
+  /* Блик: біжить по ввімкненій лінії (D-056); лише з рухом, лише коли лінія ввімкнена. */
+  .flow__spark {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 22%;
+    background: linear-gradient(90deg, transparent, var(--color-ink), transparent);
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  :global(html[data-motion='on']) .flow__spark[data-run] {
+    opacity: 0.9;
+    animation: flow-spark 2.4s linear infinite;
+  }
+  @keyframes flow-spark {
+    to {
+      transform: translateX(560%);
+    }
+  }
+  .flow__body {
+    max-width: 15rem;
+    margin-top: var(--space-2xs);
+  }
+  .flow__num {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.35em;
+    margin: var(--space-2xs) 0 var(--space-xs);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.2rem, 1.5rem + 1.6vw, 3rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    min-height: 1em;
+  }
+  /* Статичне число — для без-JS і до гідратації; острів позначає вузол [data-live] і бере показ на себе. */
+  .flow__node[data-live] .flow__static {
+    display: none;
+  }
+  .flow__num :global(.visually-hidden) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .flow__unit {
+    font-family: var(--font-text);
+    font-weight: 600;
+    font-size: var(--step-0);
+    letter-spacing: 0;
+    color: var(--color-ink-muted);
+  }
+  .flow__text {
+    margin: 0 0 var(--space-2xs);
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .flow__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    margin: 0;
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+  .flow__hint {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-ink-muted);
+  }
+  .flow__hint::before {
+    content: '';
+    width: 2.5rem;
+    height: 2px;
+    background: color-mix(in srgb, var(--color-accent) 50%, transparent);
+  }
+  :global(html[data-motion='on']) .flow__hint::before {
+    animation: flow-hint 1.6s var(--ease-out) infinite alternate;
+  }
+  @keyframes flow-hint {
+    to {
+      width: 4.5rem;
+    }
+  }
+  :global(html:not([data-motion='on'])) .flow__hint {
+    display: none;
+  }
+  /* Усе ввімкнено — підказка гасне. */
+  .flow[data-done] .flow__hint {
+    opacity: 0;
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
+
+  @media (min-width: 960px) {
+    :global(html[data-motion='on']) .flow {
+      height: 320vh;
+    }
+    :global(html[data-motion='on']) .flow__stage {
+      position: sticky;
+      top: 0;
+      min-height: 100vh;
+    }
+  }
 
   @media (max-width: 959.98px) {
+    .flow__head {
+      grid-template-columns: 1fr;
+      gap: var(--space-s);
+    }
     .flow__list {
       grid-template-columns: 1fr;
+      padding-left: 2.25rem;
+    }
+    .flow__node {
+      padding: 0 0 var(--space-xl);
+    }
+    .flow__node:last-child {
+      padding-bottom: 0;
     }
     .flow__link {
-      display: grid;
-      grid-template-columns: 1.25rem 1fr;
-      column-gap: var(--space-s);
-      padding: var(--space-xs) 0;
+      position: static;
+      padding-top: 0;
     }
     .flow__dot {
-      grid-row: span 2;
+      top: 0.35rem;
+      left: -2.25rem;
     }
     .flow__line {
-      top: calc(var(--space-xs) + 1.25rem + 8px);
-      bottom: calc(-1 * (var(--space-xs) - 8px));
-      left: calc(0.625rem - 1px);
+      top: calc(0.35rem + 1.25rem + 8px);
+      bottom: 0;
+      left: calc(-2.25rem + 0.625rem - 1px);
       right: auto;
       width: 2px;
       height: auto;
     }
     .flow__pulse {
       transform-origin: center top;
+    }
+    .flow__spark {
+      inset: 0 0 auto 0;
+      width: auto;
+      height: 22%;
+      background: linear-gradient(180deg, transparent, var(--color-ink), transparent);
+      transform: translateY(-100%);
+    }
+    @keyframes flow-spark {
+      to {
+        transform: translateY(560%);
+      }
+    }
+    .flow__hint {
+      display: none;
     }
   }
 </style>
