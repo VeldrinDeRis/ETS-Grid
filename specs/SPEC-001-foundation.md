@@ -247,4 +247,5 @@
 | 2026-10-14 | Утверждена; переименована в `SPEC-001-foundation.md` | утверждение Дмитрия; D-025 |
 | 2026-10-14 | Готово: все 23 AC, start.cmd проверен Дмитрием | — |
 | 2026-10-14 | Ревизия 1: коллекция `levels` убрана, уровни — из `structure.json` | `file()` заменяет числовой `id` уровня на строковый, коллекция дублировала `structure.json`; контракт `lib/catalog.ts` не меняется |
+| 2026-10-14 | Ревизия 2: в `routes.ts` добавлена `quoteFor(slug)` → `/kontakty/?product={slug}#rozrakhunok` | нужна карточке SPEC-002 и форме SPEC-009 (D-027 п. 10) |
 | 2026-10-14 | Ревизия 3: в `routes.ts` добавлена `quoteWith(params)` → `/kontakty/?picker=…#rozrakhunok` | CTA подборщиков SPEC-004 (D-029 п. 5) |
