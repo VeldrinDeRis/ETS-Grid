@@ -107,9 +107,9 @@ if (heroTitle && document.documentElement.dataset.motion === 'on' && !reduce) {
     }
     const text = heroTitle.textContent ?? '';
     const { words } = splitText(heroTitle, { preserveHyphens: true, wordClass: 'hero__word' });
-    for (const word of words) word.style.opacity = '0.25';
+    for (const word of words) word.style.opacity = '0.3';
     heroTitle.dataset.lit = '';
-    animate(words, { opacity: [0.25, 1] }, { duration: 0.45, delay: stagger(0.08, { startDelay: 0.15 }), ease: [0.16, 1, 0.3, 1] }).finished.then(() => {
+    animate(words, { opacity: [0.3, 1] }, { duration: 0.55, delay: stagger(0.09, { startDelay: 0.15 }), ease: [0.4, 0, 0.2, 1] }).finished.then(() => {
       heroTitle.textContent = text;
       heroTitle.removeAttribute('aria-label');
     });

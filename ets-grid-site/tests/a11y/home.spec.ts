@@ -8,7 +8,7 @@ for (const palette of ['a', 'b'] as const) {
       await presetStorage(page, { 'etsgrid:palette': palette });
       await page.goto('/');
       await expect(page.locator('html')).toHaveAttribute('data-palette', palette);
-      // Контраст перевіряємо в кінцевому стані: слова H1 загоряються ≈ 1,2 с (SPEC-006 AC-24).
+      // Контраст перевіряємо в кінцевому стані: слова H1 загоряються ≈ 1,3 с (SPEC-006 AC-24).
       await expect(page.locator('h1 .hero__word')).toHaveCount(0, { timeout: 2500 });
       await expect(page.locator('h1')).toHaveCSS('opacity', '1');
       const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
