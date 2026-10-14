@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import preact from '@astrojs/preact';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import { motionStudio } from 'motion-studio';
 
 // Службові сторінки не йдуть у sitemap (SPEC-008 §3.3); список дублює NOINDEX_PATHS із src/lib/seo.ts — тест звіряє.
 const NOINDEX = ['/koshyk/', '/oformlennya/', '/dyakuyemo/', '/porivnyannya/', '/poshuk/'];
@@ -23,4 +24,8 @@ export default defineConfig({
     react({ include: ['**/src/islands/react/**/*.{ts,tsx}'] }),
     sitemap({ filter: (page) => !NOINDEX.some((p) => new URL(page).pathname === p) && !page.includes('404') }),
   ],
+  // Motion Studio — таймлайн анімацій лише в dev; сервер редактора: `npx motion-studio serve` (порт 5200), D-052.
+  vite: {
+    plugins: [motionStudio({ serverUrl: 'http://localhost:5200' })],
+  },
 });
