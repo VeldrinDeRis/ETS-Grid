@@ -119,8 +119,9 @@ const MIN = 3;
     background: var(--color-surface);
     box-shadow: var(--shadow-1);
   }
+  /* Плитка підбору — інша дія, а не відсутні дані: тонка суцільна рамка без тіні. */
   .systems__item--fallback {
-    border: 1px dashed var(--color-ink-muted);
+    border: 1px solid var(--color-line);
     background: transparent;
     box-shadow: none;
   }

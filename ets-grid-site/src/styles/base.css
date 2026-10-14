@@ -131,3 +131,61 @@ html {
   caret-color: var(--color-ink);
   scrollbar-color: var(--color-ink-muted) var(--color-bg);
 }
+
+/* Поверхні керують нативними елементами (select, скролбари) — DESIGN.md, доводка SPEC-010. */
+[data-surface='night'] {
+  color-scheme: dark;
+}
+[data-surface='day'] {
+  color-scheme: light;
+}
+
+/* Радіо й прапорці — власні, однакові на денній і нічній поверхні: порожнє кільце → ink-кільце з точкою. */
+input[type='radio'],
+input[type='checkbox'] {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0;
+  border: 1.5px solid var(--color-ink-muted);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+input[type='checkbox'] {
+  border-radius: 3px;
+}
+input[type='radio']::before,
+input[type='checkbox']::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-ink);
+  transform: scale(0);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+input[type='checkbox']::before {
+  border-radius: 1px;
+}
+input[type='radio']:checked,
+input[type='checkbox']:checked {
+  border-color: var(--color-ink);
+}
+input[type='radio']:checked::before,
+input[type='checkbox']:checked::before {
+  transform: scale(1);
+}
+input[type='radio']:disabled,
+input[type='checkbox']:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Внутрішні сторінки: перша секція одразу під крихтами — без «мертвої смуги» (доводка SPEC-010). */
+.crumbs + main > section:first-child {
+  padding-top: var(--space-l);
+}

@@ -25,7 +25,7 @@ function House({ lit }: { lit: number }) {
     svg.querySelectorAll<SVGRectElement>('[data-window]').forEach((w, i) => {
       const target = i < lit ? 1 : 0.12;
       if (reduce) w.style.opacity = String(target);
-      else animate(w, { opacity: target }, { duration: 0.45, delay: i * 0.06, ease: 'easeOut' });
+      else animate(w, { opacity: target }, { duration: 0.45, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] });
     });
   }, [lit]);
   const cells = Array.from({ length: WINDOWS }, (_, i) => ({ x: 30 + (i % 3) * 34, y: 58 + Math.floor(i / 3) * 30 }));

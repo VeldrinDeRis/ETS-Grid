@@ -84,7 +84,7 @@ export default function PowerCheck({ stations, info, calc, idPrefix = 'pc' }: Pr
 
       <Result summary={summary} tone={r.outcome === 'ok' ? 'ok' : r.outcome === 'none' ? 'neutral' : 'warn'}>
         <p class="pk-result__title">
-          <span aria-hidden="true">{r.outcome === 'ok' ? '✓ ' : '! '}</span>
+          <span aria-hidden="true" class={r.outcome === 'ok' ? 'pk-led' : 'pk-led pk-led--warn'} />
           {title}
         </p>
         <p>{text}</p>

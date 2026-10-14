@@ -99,10 +99,14 @@ const inStock = product.stock === 'in_stock';
     box-shadow: var(--shadow-1);
     overflow: hidden;
   }
+  /* Плита товару вкладена в білу картку — силует картки читається й на денному тлі (Product Plate). */
   .product-card__photo {
     position: relative;
     display: grid;
     place-items: center;
+    margin: var(--space-xs) var(--space-xs) 0;
+    border-radius: var(--radius-m);
+    overflow: hidden;
     aspect-ratio: 1;
     background: var(--day-bg);
     color: var(--day-ink-muted);

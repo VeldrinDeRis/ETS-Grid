@@ -62,9 +62,9 @@
   text-decoration: underline;
 }
 
-/* Неактивна дія з поясненням поруч (D-031): видна, але не кличе. */
+/* Неактивна дія з поясненням поруч (D-031): видна, але не кличе. Суцільна тонка рамка — пунктир лише для даних замовника. */
 .btn[aria-disabled='true'] {
-  border: 1px dashed var(--color-ink-muted);
+  border: 1px solid var(--color-line);
   background: transparent;
   color: var(--color-ink-muted);
   cursor: not-allowed;

@@ -135,12 +135,29 @@
   margin: 0;
 }
 
+/* Стан результату — лампа-індикатор перед заголовком і повна тонка рамка кольору стану. */
 .pk-result--ok {
-  box-shadow: var(--shadow-1), inset 4px 0 0 var(--color-status-ok);
+  border: 1px solid color-mix(in srgb, var(--color-status-ok) 55%, transparent);
 }
 
 .pk-result--warn {
-  box-shadow: var(--shadow-1), inset 4px 0 0 var(--color-status-wait);
+  border: 1px solid color-mix(in srgb, var(--color-status-wait) 55%, transparent);
+}
+
+.pk-led {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  margin-right: 0.45em;
+  border-radius: 50%;
+  vertical-align: 0.12em;
+  background: var(--color-status-ok);
+  box-shadow: 0 0 0 0.2em color-mix(in srgb, var(--color-status-ok) 22%, transparent);
+}
+
+.pk-led--warn {
+  background: var(--color-status-wait);
+  box-shadow: 0 0 0 0.2em color-mix(in srgb, var(--color-status-wait) 22%, transparent);
 }
 
 .pk-result__title {
@@ -154,9 +171,7 @@
   color: var(--color-status-ok);
 }
 
-.pk-result--warn .pk-result__title span[aria-hidden] {
-  color: var(--color-status-wait);
-}
+
 
 .pk-result__label {
   color: var(--color-ink-muted);

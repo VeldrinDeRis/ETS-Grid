@@ -27,10 +27,11 @@
     color: var(--color-ink);
     cursor: pointer;
   }
+  /* Обраний — інверсія ink, без акценту: акцент лише в основній дії (One Lamp). */
   .palette-switch button[aria-pressed='true'] {
-    border-color: var(--color-accent);
-    background: var(--color-accent);
-    color: var(--color-on-accent);
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-bg);
     font-weight: 600;
   }
 </style>

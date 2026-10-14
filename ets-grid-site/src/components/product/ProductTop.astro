@@ -5,8 +5,9 @@ import { formatPrice } from '../../lib/format';
 import { productImage } from '../../lib/images';
 import { hasToggle, installPrice, keyRows } from '../../lib/product';
 import { routes } from '../../lib/routes';
-import type { Product } from '../../lib/schema';
+import type { LevelKey, Product } from '../../lib/schema';
 import DemoBadge from '../ui/DemoBadge.astro';
+import { LEVEL_ICON } from '../../lib/level-icons';
 import Icon, { type IconName } from '../layout/Icon.astro';
 import Placeholder from '../ui/Placeholder.astro';
 import Price from '../ui/Price.astro';
@@ -29,7 +30,7 @@ const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
 const CONNECTOR_ICON: Record<string, IconName> = { type2: 'type2', ccs2: 'ccs2', gbt_ac: 'gbt', gbt_dc: 'gbt', chademo: 'chademo' };
 const ROW_ICON: Record<string, IconName> = {
   power_kw: 'power', pcs_kw: 'power', panel_w: 'power', kwp: 'sun',
-  phases: 'phases', ip: 'ip', cable: 'cable', capacity_kwh: 'battery', max_expand_kwh: 'battery', places: 'carport',
+  phases: 'phases', ip: 'ip', cable: 'cable', control: 'control', capacity_kwh: 'battery', max_expand_kwh: 'battery', places: 'carport',
 };
 const firstConnector = Array.isArray(product.attrs.connectors) ? String(product.attrs.connectors[0]) : '';
 function rowIcon(row: { key?: string; label: string }): IconName | undefined {
@@ -52,7 +53,10 @@ function rowIcon(row: { key?: string; label: string }): IconName | undefined {
             </li>
           ) : (
             <li class:list={['gallery__item', { 'gallery__item--main': i === 0 }]} data-gallery-placeholder>
-              <Placeholder label={`[ФОТО ${i + 1}]`} />
+              <span class="gallery__empty">
+                <Icon name={LEVEL_ICON[levelKey as LevelKey]} size={i === 0 ? 40 : 22} />
+                <Placeholder label={`[ФОТО ${i + 1}]`} />
+              </span>
             </li>
           ),
         )
@@ -198,6 +202,12 @@ function rowIcon(row: { key?: string; label: string }): IconName | undefined {
   /* Місце без фото — видима рамка (D-031), щоб пробіл було видно на будь-якому фоні. */
   .gallery__item[data-gallery-placeholder] {
     border: 1px dashed var(--color-placeholder);
+  }
+  .gallery__empty {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2xs);
+    color: var(--day-ink-muted);
   }
   .gallery__item--main {
     grid-column: 1 / -1;
