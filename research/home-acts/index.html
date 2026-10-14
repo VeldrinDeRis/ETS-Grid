@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="uk" data-palette="a">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ETS GRID — макет актів I–II (SPEC-006 рев. 5)</title>
+    <link rel="preload" href="/fonts/geologica.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/wix-madefor-text.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script>
+      document.documentElement.classList.add('js');
+      if (matchMedia('(prefers-reduced-motion: no-preference)').matches) document.documentElement.dataset.motion = 'on';
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Перейти до змісту</a>
+    <header class="top" data-surface="day">
+      <div class="top__inner">
+        <a class="top__logo" href="/">ETS GRID</a>
+        <nav class="top__nav" aria-label="Основне меню">
+          <a href="/zaryadni-stantsii/">Зарядні станції</a>
+          <a href="/sonyachni-paneli/">Сонячні панелі та СЕС</a>
+          <a href="/batarei/">Батареї</a>
+          <a href="/solar-carport/">Solar Carport</a>
+        </nav>
+        <div class="top__actions">
+          <span class="ph">[ТЕЛЕФОН]</span>
+          <a class="btn btn--secondary btn--s" href="/kontakty/#rozrakhunok">Розрахувати</a>
+          <a class="top__cart" href="/koshyk/" aria-label="Кошик">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.4 10.2a1 1 0 0 0 1 .8h8.9a1 1 0 0 0 1-.8L20 8H6.2M9 20h.01M17 20h.01" /></svg>
+          </a>
+          <button class="top__menu" type="button" aria-label="Меню">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Акт I · Ніч. Блок 1 ТЗ цілком: надзаголовок, H1, підзаголовок, якір ціни, 2 CTA, 4 плитки, довіра, контакт. -->
+      <section class="hero" data-surface="night" aria-labelledby="hero-title">
+        <picture class="hero__bg">
+          <source srcset="/img/photos/hero-dc-night-640.avif 640w, /img/photos/hero-dc-night-1280.avif 1280w" type="image/avif" />
+          <img src="/img/photos/hero-dc-night-1280.webp" srcset="/img/photos/hero-dc-night-640.webp 640w, /img/photos/hero-dc-night-1280.webp 1280w" sizes="100vw" alt="Швидкі зарядні станції під деревʼяним навісом уночі, авто на зарядці" fetchpriority="high" decoding="sync" />
+        </picture>
+        <div class="hero__shade" aria-hidden="true"></div>
+        <div class="hero__lamp" aria-hidden="true"></div>
+
+        <div class="hero__inner">
+          <div class="hero__text">
+            <p class="hero__overline">Київ і вся Україна · Підбір, доставка, монтаж</p>
+            <h1 id="hero-title" class="hero__title">Зарядні станції та сонячна енергія для бізнесу</h1>
+            <p class="hero__subtitle">Перевіримо потужність вашого вводу, підберемо станції, сонце й накопичувач, змонтуємо під ключ. Одна гарантія на всю систему.</p>
+            <div class="hero__ctas">
+              <a class="btn btn--primary btn--l" href="#potuzhnist">Підібрати станцію</a>
+              <a class="btn btn--secondary btn--l" href="/kontakty/#rozrakhunok">Розрахувати під ключ</a>
+            </div>
+            <p class="hero__anchor">
+              <span class="hero__anchor-label">Станція на 2 авто 22 кВт</span>
+              <span class="num hero__anchor-price">84&nbsp;900&nbsp;₴ <span class="demo">демо-ціна</span></span>
+              <span class="hero__anchor-note">з монтажем від 109&nbsp;900&nbsp;₴</span>
+            </p>
+          </div>
+
+          <ul class="tiles" role="list" aria-label="Рівні каталогу">
+            <li><a class="tile" href="/zaryadni-stantsii/"><span class="tile__lamp" aria-hidden="true"></span>
+              <svg class="tile__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V6a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v15M4 21h14M9 8h4M11 12l-1.5 2.5h3L11 17M16 9h2a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0" /></svg>
+              <span class="tile__name">Зарядні станції</span><span class="tile__price num">від 11&nbsp;900&nbsp;₴</span></a></li>
+            <li><a class="tile" href="/sonyachni-paneli/"><span class="tile__lamp" aria-hidden="true"></span>
+              <svg class="tile__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" /></svg>
+              <span class="tile__name">Сонячні панелі та СЕС</span><span class="tile__price num">від 4&nbsp;200&nbsp;₴</span></a></li>
+            <li><a class="tile" href="/batarei/"><span class="tile__lamp" aria-hidden="true"></span>
+              <svg class="tile__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM10 2.5h4M9.5 16.5h5M9.5 13h5M9.5 9.5h5" /></svg>
+              <span class="tile__name">Батареї</span><span class="tile__price num">від 98&nbsp;000&nbsp;₴</span></a></li>
+            <li><a class="tile" href="/solar-carport/"><span class="tile__lamp" aria-hidden="true"></span>
+              <svg class="tile__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-4 9 4M5 8.1V20M19 8.1V20M8 17h8M8.5 17v-2.2a1.5 1.5 0 0 1 1.5-1.5h4a1.5 1.5 0 0 1 1.5 1.5V17" /></svg>
+              <span class="tile__name">Solar Carport</span><span class="tile__price">Ціна за розрахунком</span></a></li>
+          </ul>
+
+          <div class="hero__trust">
+            <ul class="hero__facts" role="list" aria-label="Чому ETS GRID">
+              <li><span class="ph">[N] обʼєктів</span></li><li><span class="ph">гарантія [N] років</span></li><li><span class="ph">монтаж від [N] днів</span></li><li><span class="ph">[СЕРТИФІКАТИ]</span></li>
+            </ul>
+            <p class="hero__contact"><span>Звʼязатися:</span> <span class="ph">[ТЕЛЕФОН]</span> <span class="ph">[TELEGRAM]</span> <span class="ph">[VIBER]</span></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Акт II · Система. Блок 5 (схема) → блок 2 (вхід за сценарієм). -->
+      <section class="system" data-surface="night" aria-labelledby="system-title">
+        <div class="system__track">
+          <div class="system__stage">
+            <div class="system__head">
+              <h2 id="system-title">Одна система.<br />Одна гарантія.</h2>
+              <p class="system__lead">Сонце заряджає батарею, батарея — авто й дім. Кожна ланка — з нашого каталогу, і вмикається по черзі.</p>
+            </div>
+
+            <ol class="scheme" role="list">
+              <li class="node" data-node>
+                <span class="node__dot" aria-hidden="true"></span><span class="node__seg" aria-hidden="true"><span class="node__segfill"></span></span>
+                <div class="node__body">
+                  <a class="node__label" href="/sonyachni-paneli/">Сонце</a>
+                  <p class="node__num"><span data-number="4.2" data-digits="1"></span> <span class="node__unit">kWp</span></p>
+                  <p class="node__text">8 панелей на даху дають енергію вдень</p>
+                  <p class="node__price num">від 4&nbsp;200&nbsp;₴ за панель</p>
+                </div>
+              </li>
+              <li class="node" data-node>
+                <span class="node__dot" aria-hidden="true"></span><span class="node__seg" aria-hidden="true"><span class="node__segfill"></span></span>
+                <div class="node__body">
+                  <a class="node__label" href="/sonyachni-paneli/invertory/">Інвертор</a>
+                  <p class="node__num"><span data-number="10" data-digits="0"></span> <span class="node__unit">кВт</span></p>
+                  <p class="node__text">Перетворює й розподіляє між домом, батареєю і авто</p>
+                  <p class="node__price num">68&nbsp;000&nbsp;₴ <span class="demo">демо-ціна</span></p>
+                </div>
+              </li>
+              <li class="node" data-node>
+                <span class="node__dot" aria-hidden="true"></span><span class="node__seg" aria-hidden="true"><span class="node__segfill"></span></span>
+                <div class="node__body">
+                  <a class="node__label" href="/batarei/">Батарея</a>
+                  <p class="node__num"><span data-number="10.24" data-digits="2"></span> <span class="node__unit">кВт·год</span></p>
+                  <p class="node__text">≈ 29 годин світла на базові потреби без мережі</p>
+                  <p class="node__price num">98&nbsp;000&nbsp;₴ <span class="demo">демо-ціна</span></p>
+                </div>
+              </li>
+              <li class="node" data-node>
+                <span class="node__dot" aria-hidden="true"></span><span class="node__seg" aria-hidden="true"><span class="node__segfill"></span></span>
+                <div class="node__body">
+                  <a class="node__label" href="/zaryadni-stantsii/">Зарядна станція</a>
+                  <p class="node__num"><span data-number="22" data-digits="0"></span> <span class="node__unit">кВт</span></p>
+                  <p class="node__text">Віддає енергію авто: 2 порти, 3 фази, OCPP</p>
+                  <p class="node__price num">84&nbsp;900&nbsp;₴ <span class="demo">демо-ціна</span></p>
+                </div>
+              </li>
+              <li class="node" data-node>
+                <span class="node__dot" aria-hidden="true"></span>
+                <div class="node__body">
+                  <a class="node__label" href="/systems/dim-plus-avto/">Авто й дім</a>
+                  <p class="node__num"><span data-number="3" data-digits="0"></span> <span class="node__unit">складові</span></p>
+                  <p class="node__text">Їздите й живете зі світлом. Система «Дім + авто» — одним замовленням</p>
+                  <p class="node__price num">307&nbsp;900&nbsp;₴ <span class="demo">демо-ціна</span></p>
+                </div>
+              </li>
+            </ol>
+            <p class="system__hint" aria-hidden="true">Гортайте — система вмикається</p>
+          </div>
+        </div>
+
+        <div class="needs">
+          <h2 class="needs__title">Що вам потрібно?</h2>
+          <div class="tabs" role="tablist" aria-label="Сценарії">
+            <button class="tab" role="tab" type="button" aria-selected="true" aria-controls="panel-business" id="tab-business">Бізнес</button>
+            <button class="tab" role="tab" type="button" aria-selected="false" aria-controls="panel-home" id="tab-home" tabindex="-1">Дім</button>
+            <button class="tab" role="tab" type="button" aria-selected="false" aria-controls="panel-highway" id="tab-highway" tabindex="-1">АЗС і автопарки</button>
+          </div>
+
+          <div class="panel" role="tabpanel" id="panel-business" aria-labelledby="tab-business">
+            <article class="sys"><h3 class="sys__name">Паркінг, що заробляє</h3><p class="sys__text">Навіс на 8 місць + станція на 2 авто. До <span class="ph">[N]</span> авто на добу</p><p class="sys__price">Ціна за розрахунком</p><a class="sys__link" href="/systems/parking-shcho-zaroblyaye/">Детальніше</a></article>
+            <article class="sys sys--pick"><h3 class="sys__name">Підберемо систему під ваш обʼєкт</h3><p class="sys__text">Відповісте на 3 питання — порахуємо склад і ціну.</p><a class="sys__link" href="#potuzhnist">Підібрати</a></article>
+          </div>
+          <div class="panel" role="tabpanel" id="panel-home" aria-labelledby="tab-home" hidden>
+            <article class="sys"><h3 class="sys__name">Дім без відключень</h3><p class="sys__text">Гібридний інвертор 10 кВт + батарея 10,24 кВт·год</p><p class="sys__price num">166&nbsp;000&nbsp;₴ <span class="demo">демо-ціна</span></p><a class="sys__link" href="/systems/dim-bez-vidklyuchen/">Детальніше</a></article>
+            <article class="sys"><h3 class="sys__name">Дім + авто</h3><p class="sys__text">Станція 7,4 кВт + СЕС 5 kWp + батарея 10,24 кВт·год</p><p class="sys__price num">307&nbsp;900&nbsp;₴ <span class="demo">демо-ціна</span></p><a class="sys__link" href="/systems/dim-plus-avto/">Детальніше</a></article>
+            <article class="sys sys--pick"><h3 class="sys__name">Підберемо систему під ваш дім</h3><p class="sys__text">Скільки годин без мережі вам потрібно?</p><a class="sys__link" href="/batarei/#pidbir">Підібрати</a></article>
+          </div>
+          <div class="panel" role="tabpanel" id="panel-highway" aria-labelledby="tab-highway" hidden>
+            <article class="sys"><h3 class="sys__name">АЗС на слабкому вводі</h3><p class="sys__text">DC 120 кВт + накопичувач 215 кВт·год: заряджає між сесіями</p><p class="sys__price">Ціна за розрахунком</p><a class="sys__link" href="/systems/azs-na-slabkomu-vvodi/">Детальніше</a></article>
+            <article class="sys sys--pick"><h3 class="sys__name">Підберемо систему під ваш обʼєкт</h3><p class="sys__text">Перевіримо, чи вистачить потужності вводу.</p><a class="sys__link" href="#potuzhnist">Підібрати</a></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="rest" data-surface="day" aria-label="Далі">
+        <p>Акт III «Потужність» і далі — поки як на поточній головній. Макет актів I–II · SPEC-006 рев. 5 · 14.10.2026</p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
