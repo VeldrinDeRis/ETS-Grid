@@ -1,5 +1,6 @@
 // Поведінка шапки (SPEC-001 §3.4, §4): мега-меню, мобільне меню, лічильник кошика.
 import { CART_CHANGE_EVENT, KEYS, cartCount, read } from '../lib/storage';
+import './search-suggest';
 
 document.documentElement.classList.add('js');
 

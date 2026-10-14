@@ -137,3 +137,15 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-003/AC-13 JS ≤ 100 КБ | build | `build/budget.test.ts` | ✅ |
 | SPEC-002/AC-29 пробелы видны: фасеты без данных, «Новинки» | unit, functional | `unit/missing-facets.test.ts`, `functional/catalog.spec.ts` | ✅ |
 | SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |
+| SPEC-005/AC-01 корзина: setQty, setTurnkey, remove, clear, totals | unit | `unit/shop.test.ts` | ✅ |
+| SPEC-005/AC-02 сравнение, событие, recent | unit | `unit/shop.test.ts` | ✅ |
+| SPEC-005/AC-03 поиск: «ets home», «gbt», «інвертр» | unit | `unit/shop.test.ts` | ✅ |
+| SPEC-005/AC-04 orderId, контракт заказа | unit | `unit/shop.test.ts` | ✅ |
+| SPEC-005/AC-05 корзина в браузере | functional | `functional/shop.spec.ts` | ✅ |
+| SPEC-005/AC-06 оформление, begin_checkout, purchase, «Дякуємо» | functional | `functional/shop.spec.ts` | ✅ |
+| SPEC-005/AC-07 путь покупки ≤ 6 шагов | functional | `functional/shop.spec.ts` | ✅ |
+| SPEC-005/AC-08 сравнение | functional | `functional/shop.spec.ts` | ✅ |
+| SPEC-005/AC-09 поиск и подсказки в шапке | functional | `functional/shop.spec.ts` | ✅ |
+| SPEC-005/AC-10 без JS — понятная строка; индекс и combobox | build | `build/shop.test.ts` | ✅ |
+| SPEC-005/AC-11 axe-core | a11y | `a11y/shop.spec.ts` | ✅ |
+| SPEC-005/AC-12 JS ≤ 100 КБ | build | `build/budget.test.ts` | ✅ |

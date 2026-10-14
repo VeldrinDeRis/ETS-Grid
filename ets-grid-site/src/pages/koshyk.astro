@@ -1,9 +1,17 @@
 ---
-import StubPage from '../layouts/StubPage.astro';
+// Кошик (SPEC-005 §3.2). Вміст — у localStorage, тому список малює острів.
+import NoJsNote from '../components/shop/NoJsNote.astro';
+import Section from '../components/ui/Section.astro';
+import Cart from '../islands/shop/Cart';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { levelLinks, shopProducts } from '../lib/shop-data';
+
+const products = await shopProducts();
 ---
-<StubPage
-  title="Кошик"
-  description="Кошик ETS GRID: обладнання і монтаж під ключ."
-  spec="SPEC-005"
-  note="Позиції, перемикач «з монтажем», промокод, підсумок (ТЗ §6.8)."
-/>
+<BaseLayout title="Кошик" description="Кошик ETS GRID: обладнання і монтаж під ключ." crumbs={[{ label: 'Кошик' }]} robots="noindex, follow">
+  <Section>
+    <h1>Кошик</h1>
+    <NoJsNote text="Кошик працює з увімкненим JavaScript." />
+    <Cart client:load products={products} levels={levelLinks()} />
+  </Section>
+</BaseLayout>

@@ -1,10 +1,165 @@
 ---
-import StubPage from '../layouts/StubPage.astro';
+// Пошук (SPEC-005 §3.7): усі картки на сервері приховані, скрипт показує збіги за ?q= у порядку релевантності.
+import ProductCard from '../components/catalog/ProductCard.astro';
+import NoJsNote from '../components/shop/NoJsNote.astro';
+import Section from '../components/ui/Section.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getProductsBy } from '../lib/catalog';
+import { routes } from '../lib/routes';
+import { levelLinks, searchIndex } from '../lib/shop-data';
+
+const products = await getProductsBy();
+const index = await searchIndex();
 ---
-<StubPage
-  title="Пошук"
-  description="Пошук по каталогу ETS GRID: назва, артикул, розʼєм."
-  spec="SPEC-005"
-  note="Результати з підказками (ТЗ §10.1)."
-  robots="noindex, follow"
-/>
+<BaseLayout title="Пошук" description="Пошук по каталогу ETS GRID: назва, артикул, розʼєм." crumbs={[{ label: 'Пошук' }]} robots="noindex, follow">
+  <Section>
+    <h1>Пошук по каталогу</h1>
+    <form class="sp-form" role="search" action={routes.search} method="get">
+      <label for="search-q">Назва, артикул або розʼєм</label>
+      <div class="sp-form__row">
+        <input id="search-q" name="q" type="search" placeholder="Наприклад, ETS Home або GB/T" />
+        <button type="submit">Знайти</button>
+      </div>
+    </form>
+
+    <NoJsNote text="Пошук працює з увімкненим JavaScript." />
+
+    <p class="sp-count js-only" role="status" data-search-count></p>
+
+    <section class="sp-cats" aria-labelledby="sp-cats-title" data-search-categories hidden>
+      <h2 id="sp-cats-title">Розділи</h2>
+      <ul role="list" data-search-category-list></ul>
+    </section>
+
+    <div class="sp-grid" data-search-results>
+      {
+        products.map((p) => (
+          <div class="sp-item" data-search-item={p.slug} hidden>
+            <ProductCard product={p} headingLevel={2} />
+          </div>
+        ))
+      }
+    </div>
+
+    <section class="sp-empty" aria-labelledby="sp-empty-title" data-search-empty hidden>
+      <h2 id="sp-empty-title">Нічого не знайшли</h2>
+      <p>Спробуйте назву моделі або розʼєм: «ETS Home», «Type 2», «GB/T». Або оберіть розділ:</p>
+      <ul role="list" class="sp-levels">
+        {
+          levelLinks().map((l) => (
+            <li>
+              <a href={l.url}>
+                <span class="sp-levels__name">{l.name}</span>
+                <span class="sp-levels__short">{l.short}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </Section>
+  <script type="application/json" data-search-index set:html={JSON.stringify(index)} />
+</BaseLayout>
+
+<script>
+  import '../scripts/search-page';
+</script>
+
+<style>
+  .sp-form {
+    display: grid;
+    gap: var(--space-3xs);
+    max-width: 36rem;
+    margin-bottom: var(--space-l);
+  }
+  .sp-form label {
+    font-weight: 600;
+  }
+  .sp-form__row {
+    display: flex;
+    gap: var(--space-2xs);
+  }
+  .sp-form input {
+    flex: 1;
+    min-width: 0;
+    min-height: var(--tap);
+    padding: 0 var(--space-xs);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  .sp-form button {
+    min-height: var(--tap);
+    padding: 0 var(--space-m);
+    border: 0;
+    border-radius: var(--radius-m);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .sp-count {
+    margin: 0 0 var(--space-m);
+    font-weight: 600;
+  }
+  .sp-cats {
+    margin-bottom: var(--space-l);
+  }
+  .sp-cats h2,
+  .sp-empty h2 {
+    font-size: var(--step-1);
+  }
+  .sp-cats ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .sp-cats :global(a) {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding: 0 var(--space-s);
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .sp-cats :global(a:hover) {
+    border-color: var(--color-ink);
+  }
+  .sp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-m);
+  }
+  .sp-item[hidden],
+  .sp-cats[hidden],
+  .sp-empty[hidden] {
+    display: none;
+  }
+  .sp-item {
+    display: grid;
+  }
+  .sp-levels {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-xs);
+  }
+  .sp-levels a {
+    display: grid;
+    gap: var(--space-3xs);
+    height: 100%;
+    padding: var(--space-s);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+    text-decoration: none;
+  }
+  .sp-levels__name {
+    font-weight: 700;
+  }
+  .sp-levels__short {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+</style>

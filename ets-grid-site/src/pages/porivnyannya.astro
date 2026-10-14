@@ -1,10 +1,22 @@
 ---
-import StubPage from '../layouts/StubPage.astro';
+// Порівняння (SPEC-005 §3.6): до 4 товарів зі сховища.
+import NoJsNote from '../components/shop/NoJsNote.astro';
+import Section from '../components/ui/Section.astro';
+import Compare from '../islands/shop/Compare';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { levelLinks, shopProducts } from '../lib/shop-data';
+
+const products = await shopProducts({ rows: true });
 ---
-<StubPage
+<BaseLayout
   title="Порівняння"
-  description="Порівняння до 4 товарів, режим «тільки відмінності»."
-  spec="SPEC-005"
-  note="Таблиця до 4 товарів (ТЗ §6.9)."
+  description="Порівняння до 4 товарів ETS GRID, режим «тільки відмінності»."
+  crumbs={[{ label: 'Порівняння' }]}
   robots="noindex, follow"
-/>
+>
+  <Section>
+    <h1>Порівняння товарів</h1>
+    <NoJsNote text="Порівняння працює з увімкненим JavaScript." />
+    <Compare client:load products={products} levels={levelLinks()} />
+  </Section>
+</BaseLayout>

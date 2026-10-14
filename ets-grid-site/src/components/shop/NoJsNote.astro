@@ -1,0 +1,49 @@
+---
+// Видима строка для сторінок, що працюють лише з JS (SPEC-005 AC-10). З JS ховається до першого кадру.
+import { levelLinks } from '../../lib/shop-data';
+
+interface Props {
+  text: string;
+  /** Додати посилання на розділи каталогу. */
+  levels?: boolean;
+}
+const { text, levels = true } = Astro.props;
+---
+<div class="nojs-note" data-nojs-note>
+  <p><strong>{text}</strong></p>
+  {
+    levels && (
+      <ul role="list">
+        {levelLinks().map((l) => (
+          <li>
+            <a href={l.url}>{l.name}</a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>
+
+<style>
+  :global(html.js) .nojs-note {
+    display: none;
+  }
+  .nojs-note {
+    padding: var(--space-m);
+    border: 1px dashed var(--color-ink-muted);
+    border-radius: var(--radius-l);
+  }
+  .nojs-note p {
+    margin: 0 0 var(--space-2xs);
+  }
+  .nojs-note ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+  }
+  .nojs-note a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+</style>

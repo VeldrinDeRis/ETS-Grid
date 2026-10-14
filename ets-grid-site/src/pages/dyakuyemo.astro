@@ -1,56 +1,124 @@
 ---
-// «Дякуємо» — заглушка SPEC-005; текст для заявок (?type=lead&id=) — SPEC-009 ревізія 1.
+// «Дякуємо» (SPEC-005 §3.4): замовлення (?type=order&id=ETS-…), заявка (?type=lead&id=L-…, SPEC-009), без параметрів — загальне.
+// В адресі лише тип і номер; способи доставки й оплати — з sessionStorage (без персональних даних).
 import Placeholder from '../components/ui/Placeholder.astro';
-import StubPage from '../layouts/StubPage.astro';
+import Section from '../components/ui/Section.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import { routes } from '../lib/routes';
+import { levelLinks } from '../lib/shop-data';
 ---
-<StubPage
-  title="Дякуємо"
-  description="Заявку чи замовлення прийнято. Наступні кроки."
-  spec="SPEC-005"
-  note="Сторінку для замовлень із кошика зробить SPEC-005."
-  robots="noindex, follow"
->
-  <div class="thanks" data-thanks-lead hidden>
-    <h2>Заявка № <span data-thanks-id></span> прийнята</h2>
-    <p>
-      Менеджер звʼяжеться з вами протягом <Placeholder label="[N] хвилин" /> у робочий час. Ми вже бачимо ваші параметри підбору, якщо ви
-      проходили підбірник.
-    </p>
-    <ol>
-      <li>Уточнимо обʼєкт і потужність вводу.</li>
-      <li>Підготуємо розрахунок під ключ.</li>
-      <li>Домовимося про обстеження або доставку.</li>
-    </ol>
-  </div>
-  <p class="thanks__demo">Демо: заявка нікуди не надсилається — у бойовій версії вона піде в CRM.</p>
-  <p><a href={routes.home}>На головну</a></p>
-</StubPage>
+<BaseLayout title="Дякуємо" description="Заявку чи замовлення прийнято. Наступні кроки." crumbs={[{ label: 'Дякуємо' }]} robots="noindex, follow">
+  <Section width="narrow">
+    <h1>
+      <span data-thanks-heading="general">Дякуємо!</span>
+      <span data-thanks-heading="order" hidden>Замовлення № <span class="num" data-thanks-order-id></span> прийнято</span>
+      <span data-thanks-heading="lead" hidden>Заявка № <span class="num" data-thanks-id></span> прийнята</span>
+    </h1>
+    <div class="thanks" data-thanks-general>
+      <p>Ми отримали ваше звернення. Поки чекаєте на дзвінок — подивіться каталог:</p>
+    </div>
+
+    <div class="thanks" data-thanks-order hidden>
+      <ol class="thanks__steps">
+        <li>Менеджер підтвердить замовлення протягом <Placeholder label="[N] хвилин" /> у робочий час.</li>
+        <li data-thanks-payment>Оплата — способом, який ви обрали.</li>
+        <li data-thanks-delivery>Доставка — після підтвердження і оплати.</li>
+      </ol>
+      <p class="thanks__demo">Демо: замовлення нікуди не надсилається — у бойовій версії воно піде в CRM, а вам прийде SMS.</p>
+    </div>
+
+    <div class="thanks" data-thanks-lead hidden>
+      <p>
+        Менеджер звʼяжеться з вами протягом <Placeholder label="[N] хвилин" /> у робочий час. Ми вже бачимо ваші параметри підбору, якщо ви
+        проходили підбірник.
+      </p>
+      <ol class="thanks__steps">
+        <li>Уточнимо обʼєкт і потужність вводу.</li>
+        <li>Підготуємо розрахунок під ключ.</li>
+        <li>Домовимося про обстеження або доставку.</li>
+      </ol>
+      <p class="thanks__demo">Демо: заявка нікуди не надсилається — у бойовій версії вона піде в CRM.</p>
+    </div>
+
+    <ul role="list" class="thanks__links">
+      {
+        levelLinks().map((l) => (
+          <li>
+            <a href={l.url}>{l.name}</a>
+          </li>
+        ))
+      }
+      <li><a href={routes.home}>На головну</a></li>
+    </ul>
+  </Section>
+</BaseLayout>
 
 <script>
+  import { LAST_ORDER_KEY } from '../lib/order';
+
+  const PAYMENT: Record<string, string> = {
+    card: 'Оплата онлайн-картою — посилання на оплату надішлемо після підтвердження.',
+    parts_mono: 'Покупка частинами Monobank — заявку на розстрочку оформимо після підтвердження.',
+    parts_privat: 'Оплата частинами ПриватБанку — заявку на розстрочку оформимо після підтвердження.',
+    cod: 'Накладений платіж — оплата при отриманні у відділенні.',
+    invoice: 'Рахунок для юрособи — надішлемо на пошту або в месенджер після підтвердження.',
+  };
+  const DELIVERY: Record<string, string> = {
+    np_branch: 'Доставка Новою Поштою у відділення.',
+    np_locker: 'Доставка Новою Поштою в поштомат.',
+    np_courier: 'Доставка курʼєром Нової Пошти.',
+    install: 'Доставка і монтаж — дату узгодить менеджер.',
+    pickup: 'Самовивіз — адресу й час підкаже менеджер.',
+  };
+
   const params = new URLSearchParams(location.search);
-  const id = params.get('id');
-  if (params.get('type') === 'lead' && id && /^L-\d{8}-[A-Z0-9]{4}$/.test(id)) {
-    const block = document.querySelector<HTMLElement>('[data-thanks-lead]');
-    const slot = document.querySelector<HTMLElement>('[data-thanks-id]');
-    if (block && slot) {
-      slot.textContent = id;
-      block.hidden = false;
+  const type = params.get('type');
+  const id = params.get('id') ?? '';
+  const show = (kind: 'order' | 'lead') => {
+    document.querySelector<HTMLElement>('[data-thanks-general]')!.hidden = true;
+    document.querySelector<HTMLElement>(`[data-thanks-${kind}]`)!.hidden = false;
+    for (const h of document.querySelectorAll<HTMLElement>('[data-thanks-heading]')) h.hidden = h.dataset.thanksHeading !== kind;
+  };
+
+  if (type === 'order' && /^ETS-\d{8}-[A-Z0-9]{4}$/.test(id)) {
+    document.querySelector<HTMLElement>('[data-thanks-order-id]')!.textContent = id;
+    try {
+      const last = JSON.parse(sessionStorage.getItem(LAST_ORDER_KEY) ?? 'null') as { id: string; payment: string; delivery: string } | null;
+      if (last?.id === id) {
+        if (PAYMENT[last.payment]) document.querySelector<HTMLElement>('[data-thanks-payment]')!.textContent = PAYMENT[last.payment];
+        if (DELIVERY[last.delivery]) document.querySelector<HTMLElement>('[data-thanks-delivery]')!.textContent = DELIVERY[last.delivery];
+      }
+    } catch {
+      // лишаються загальні кроки
     }
+    show('order');
+  } else if (type === 'lead' && /^L-\d{8}-[A-Z0-9]{4}$/.test(id)) {
+    document.querySelector<HTMLElement>('[data-thanks-id]')!.textContent = id;
+    show('lead');
   }
 </script>
 
 <style>
-  .thanks[hidden] {
+  .thanks[hidden],
+  [data-thanks-heading][hidden] {
     display: none;
   }
-  .thanks ol {
+  .thanks__steps {
     padding-left: 1.4em;
+  }
+  .thanks__steps li + li {
+    margin-top: var(--space-2xs);
   }
   .thanks__demo {
     color: var(--color-placeholder);
   }
-  a {
+  .thanks__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+    margin-top: var(--space-l);
+  }
+  .thanks__links a {
     display: inline-flex;
     align-items: center;
     min-height: var(--tap);
