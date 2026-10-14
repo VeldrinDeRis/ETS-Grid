@@ -1,0 +1,355 @@
+---
+// Блоки 5–10 картки товару (SPEC-003 §3.1) + повна таблиця характеристик (частина блоку 4).
+import carsJson from '../../data/cars.json';
+import levelContentJson from '../../data/level-content.json';
+import productContent from '../../data/product-content.json';
+import { getProduct, getProductsBy } from '../../lib/catalog';
+import type { Car } from '../../lib/filters';
+import { formatUnit } from '../../lib/format';
+import type { LevelContent } from '../../lib/level-content';
+import { carCompatibility, crossTitle, fullRows } from '../../lib/product';
+import { routes } from '../../lib/routes';
+import type { Product } from '../../lib/schema';
+import ProductCard from '../catalog/ProductCard.astro';
+import Placeholder from '../ui/Placeholder.astro';
+
+interface Props {
+  product: Product;
+  levelKey: string;
+  levelSlug: string;
+}
+const { product, levelKey, levelSlug } = Astro.props;
+const isPh = (v: string) => /\[[^\]]+\]/.test(v);
+const withPh = (text: string) => text.split(/(\[[^\]]+\])/);
+
+const cars = carsJson as Car[];
+const adapters = (await getProductsBy({ level: 'charging' })).filter((p) => p.type === 'cable');
+const isCharging = product.level === 1;
+const compat = isCharging ? cars.map((car) => ({ car, result: carCompatibility(product, car, adapters) })) : [];
+const STATUS = { fits: 'Підходить', adapter: 'Потрібен адаптер', no: 'Не підходить' } as const;
+const speed = (kw: number | null) => (kw === null ? 'швидкість уточнимо' : `до ${formatUnit(kw, 'кВт')}`);
+const adapterProduct = adapters[0];
+
+const scenarioLabels: Record<string, string> = {
+  home: 'Дім',
+  business: 'Бізнес / паркінг',
+  highway: 'АЗС / траса',
+  fleet: 'Автопарк',
+  backup: 'Резерв при відключеннях',
+  solar_night: 'Сонце вночі',
+  peak_shaving: 'Зрізання пікових навантажень',
+  arbitrage: 'Арбітраж тарифів',
+  dc_support: 'Під DC-станцію',
+};
+
+const cross = (await Promise.all(product.cross_level.map((s) => getProduct(s)))).filter((p): p is Product => Boolean(p));
+const related = (await Promise.all(product.related.map((s) => getProduct(s)))).filter((p): p is Product => Boolean(p));
+const faq = (levelContentJson as Partial<LevelContent>)[levelKey as keyof LevelContent]?.faq ?? [];
+const input = typeof product.attrs.input_min_kw === 'number' ? product.attrs.input_min_kw : null;
+const listingWithCar = `/${levelSlug}/${product.category}/`;
+const compositionKey = product.type === 'kit' ? 'kit' : levelKey;
+const composition = (productContent.composition as Record<string, string[]>)[compositionKey] ?? [];
+---
+<section class="pblock" aria-labelledby="spec-title" data-product-part="spec-table">
+  <h2 id="spec-title">Характеристики</h2>
+  <table class="spec">
+    <tbody>
+      {
+        fullRows(product).map((row) => (
+          <tr>
+            <th scope="row">{row.label}</th>
+            <td>{row.value === null ? <Placeholder label="[ДАНІ]" /> : isPh(row.value) ? <Placeholder label={row.value} /> : row.value}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</section>
+
+<section class="pblock" aria-labelledby="fit-title" data-product-block="fit">
+  <h2 id="fit-title">Підходить для</h2>
+  <ul role="list" class="chips">
+    {product.scenarios.map((s) => <li>{scenarioLabels[s] ?? s}</li>)}
+  </ul>
+  {
+    isCharging && (
+      <div class="compat" data-compat>
+        <h3>Сумісність з вашим авто</h3>
+        <div class="compat__live js-only">
+          <label class="compat__label" for="compat-car">
+            Ваше авто
+          </label>
+          <select id="compat-car" data-compat-select>
+            <option value="">Оберіть модель</option>
+            {cars.map((c) => (
+              <option value={c.id}>
+                {c.brand} {c.model}
+              </option>
+            ))}
+          </select>
+          <p class="compat__result" aria-live="polite" data-compat-result>
+            Оберіть авто, щоб перевірити розʼєм і реальну швидкість зарядки.
+          </p>
+        </div>
+        <details class="compat__all">
+          <summary>Усі моделі ({cars.length})</summary>
+          <table class="spec">
+            <thead>
+              <tr>
+                <th scope="col">Авто</th>
+                <th scope="col">Результат</th>
+                <th scope="col">Швидкість</th>
+              </tr>
+            </thead>
+            <tbody>
+              {compat.map(({ car, result }) => (
+                <tr data-compat-row={car.id} data-status={result.status} data-speed={result.speedKw ?? ''} data-adapter={result.adapter ?? ''}>
+                  <th scope="row">
+                    {car.brand} {car.model}
+                  </th>
+                  <td>{STATUS[result.status]}</td>
+                  <td>{result.status === 'no' ? '—' : speed(result.speedKw)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </details>
+        <p class="compat__hint">
+          {adapterProduct && (
+            <>
+              Для авто з GB/T AC є <a href={routes.product(adapterProduct.slug)}>{adapterProduct.name}</a>.{' '}
+            </>
+          )}
+          Не знайшли своє авто? <a href={listingWithCar}>Фільтр «Підбір за авто» в каталозі</a>.
+        </p>
+      </div>
+    )
+  }
+</section>
+
+<section class="pblock" aria-labelledby="install-title" data-product-block="install">
+  <h2 id="install-title">Що входить у монтаж</h2>
+  <ul>
+    {composition.map((c) => <li>{withPh(c).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</li>)}
+  </ul>
+  <p>Строки монтажу: <Placeholder label={productContent.install_term} /></p>
+  {
+    input !== null && (
+      <p class="install__input">
+        Потрібний ввід: від {formatUnit(input, 'кВт')}. <a href="/#potuzhnist">Перевірити свій ввід</a>
+      </p>
+    )
+  }
+</section>
+
+<section class="pblock" aria-labelledby="delivery-title" data-product-block="delivery">
+  <h2 id="delivery-title">Доставка й оплата</h2>
+  <div class="cols">
+    <div>
+      <h3>Доставка</h3>
+      <ul>{productContent.delivery.map((d) => <li>{withPh(d).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</li>)}</ul>
+      <p>{withPh(productContent.delivery_cost).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</p>
+    </div>
+    <div>
+      <h3>Оплата</h3>
+      <ul>{productContent.payment.map((d) => <li>{d}</li>)}</ul>
+    </div>
+  </div>
+</section>
+
+<section class="pblock" aria-labelledby="docs-title" data-product-block="docs">
+  <h2 id="docs-title">Документи</h2>
+  <ul role="list" class="docs">
+    {
+      product.docs.length
+        ? product.docs.map((d) => (
+            <li>
+              <a href={d.href}>{d.title}</a>
+            </li>
+          ))
+        : productContent.docs_expected.map((d) => (
+            <li>
+              <Placeholder label={d} />
+            </li>
+          ))
+    }
+  </ul>
+</section>
+
+<section class="pblock" aria-labelledby="cross-title" data-product-block="cross">
+  <h2 id="cross-title">{crossTitle(product)}</h2>
+  {
+    cross.length ? (
+      <div class="grid">
+        {cross.map((p) => (
+          <ProductCard product={p} variant="compact" />
+        ))}
+      </div>
+    ) : (
+      <p class="plate">{productContent.cross_placeholder}</p>
+    )
+  }
+  <h3>Аксесуари</h3>
+  {
+    related.length ? (
+      <div class="grid">
+        {related.map((p) => (
+          <ProductCard product={p} variant="compact" />
+        ))}
+      </div>
+    ) : (
+      <p class="plate">{productContent.related_placeholder}</p>
+    )
+  }
+</section>
+
+<section class="pblock" aria-labelledby="reviews-title" data-product-block="reviews">
+  <h2 id="reviews-title">Відгуки та питання</h2>
+  <p class="plate">{productContent.reviews_placeholder}</p>
+  {
+    faq.length ? (
+      faq.map((item) => (
+        <details class="faq">
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))
+    ) : (
+      <p>
+        <Placeholder label={productContent.faq_placeholder} />
+      </p>
+    )
+  }
+</section>
+
+<section class="pblock" aria-labelledby="recent-title" data-product-part="recent" data-recent>
+  <h2 id="recent-title">Недавно переглянуті</h2>
+  <ul role="list" class="recent" data-recent-list></ul>
+  <p class="recent__empty" data-recent-empty>Тут зʼявляться товари, які ви переглядали.</p>
+</section>
+
+<script type="application/json" data-product-index set:html={JSON.stringify(Object.fromEntries((await getProductsBy()).map((p) => [p.slug, { name: p.name, url: routes.product(p.slug) }])))} />
+<script type="application/json" data-adapter-names set:html={JSON.stringify(Object.fromEntries(adapters.map((a) => [a.slug, a.name])))} />
+
+<style>
+  .pblock {
+    margin-top: var(--space-2xl);
+  }
+  .spec {
+    width: 100%;
+    max-width: 52rem;
+    border-collapse: collapse;
+  }
+  .spec th,
+  .spec td {
+    padding: var(--space-2xs) var(--space-xs);
+    border-bottom: 1px solid var(--color-line);
+    text-align: left;
+    vertical-align: top;
+  }
+  .spec th {
+    width: 40%;
+    color: var(--color-ink-muted);
+    font-weight: 400;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .chips li {
+    padding: 0.2em 0.7em;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+  }
+  .compat {
+    margin-top: var(--space-l);
+    padding: var(--space-m);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+  .compat__live {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2xs);
+    max-width: 32rem;
+  }
+  .compat__label {
+    font-weight: 600;
+  }
+  /* Довгі назви моделей не розтягують сторінку на 320 px. */
+  .compat select {
+    width: 100%;
+    min-width: 0;
+    min-height: var(--tap);
+    padding: 0 var(--space-xs);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  .compat__result {
+    font-weight: 600;
+  }
+  .compat__all summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .compat__hint {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-l);
+  }
+  .docs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--space-m);
+  }
+  .plate {
+    max-width: none;
+    padding: var(--space-m);
+    border: 1px dashed var(--color-placeholder);
+    border-radius: var(--radius-m);
+    color: var(--color-placeholder);
+  }
+  .faq {
+    max-width: 52rem;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .faq summary {
+    display: flex;
+    align-items: center;
+    min-height: 3.25rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .recent {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--space-s);
+  }
+  .recent :global(a) {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    font-weight: 600;
+  }
+  .recent__empty {
+    color: var(--color-ink-muted);
+  }
+  .recent__empty[hidden] {
+    display: none;
+  }
+</style>

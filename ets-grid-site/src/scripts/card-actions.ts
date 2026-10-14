@@ -22,8 +22,11 @@ document.addEventListener('click', (event) => {
   const addButton = target.closest<HTMLButtonElement>('[data-add-to-cart]');
   if (addButton) {
     const slug = addButton.dataset.addToCart!;
-    add(slug, false);
-    track('add_to_cart', { slug, turnkey: false, source: 'listing' });
+    // Сторінка товару ставить data-turnkey з перемикача (SPEC-003); у лістингу — без монтажу.
+    const turnkey = addButton.dataset.turnkey === 'true';
+    add(slug, turnkey);
+    track('add_to_cart', { slug, turnkey, source: addButton.dataset.source ?? 'listing' });
+    document.querySelectorAll<HTMLElement>(`[data-cart-added="${slug}"]`).forEach((el) => (el.hidden = false));
     const label = addButton.textContent;
     addButton.textContent = 'Додано ✓';
     setTimeout(() => (addButton.textContent = label), 1600);

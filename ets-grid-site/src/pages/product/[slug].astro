@@ -1,11 +1,14 @@
 ---
-// Сторінка товару — заглушка з назвою і ціною; наповнює SPEC-003.
+// Сторінка товару (SPEC-003, ТЗ §6.4): 11 блоків у порядку ТЗ.
 import type { GetStaticPaths } from 'astro';
-import StubNotice from '../../components/layout/StubNotice.astro';
-import Price from '../../components/ui/Price.astro';
+import ProductDetails from '../../components/product/ProductDetails.astro';
+import ProductTop from '../../components/product/ProductTop.astro';
 import Section from '../../components/ui/Section.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCategories, getLevelById, getProductsBy } from '../../lib/catalog';
+import { formatPrice } from '../../lib/format';
+import { priceView } from '../../lib/price';
+import { hasToggle } from '../../lib/product';
 import { routes } from '../../lib/routes';
 import type { Product } from '../../lib/schema';
 
@@ -18,6 +21,7 @@ interface Props {
 const { product } = Astro.props;
 const level = getLevelById(product.level);
 const category = getCategories(level.key).find((c) => c.slug === product.category)!;
+const stickyPrice = hasToggle(product) ? formatPrice(product.price_turnkey_from) : priceView(product).primary;
 ---
 <BaseLayout
   title={product.name}
@@ -29,8 +33,71 @@ const category = getCategories(level.key).find((c) => c.slug === product.categor
   ]}
 >
   <Section>
-    <h1>{product.name}</h1>
-    <Price product={product} />
-    <StubNotice spec="SPEC-003" note="Тут будуть галерея, перемикач «Тільки обладнання / З монтажем», характеристики, сумісність з авто й перехресні блоки (ТЗ §6.4)." />
+    <div data-product-slug={product.slug}>
+      <ProductTop product={product} levelKey={level.key} />
+      <ProductDetails product={product} levelKey={level.key} levelSlug={level.slug} />
+    </div>
   </Section>
+
+  <div class="sticky" data-product-block="sticky" data-sticky hidden>
+    <span class="sticky__price num" data-sticky-price>{stickyPrice}</span>
+    {
+      product.sale_mode === 'cart' ? (
+        <button type="button" class="sticky__cta" data-add-to-cart={product.slug} data-turnkey={hasToggle(product) ? 'true' : 'false'} data-source="sticky">
+          До кошика
+        </button>
+      ) : (
+        <a class="sticky__cta" href={routes.quoteFor(product.slug)}>
+          Розрахувати
+        </a>
+      )
+    }
+  </div>
 </BaseLayout>
+
+<script>
+  import '../../scripts/product';
+  import '../../scripts/card-actions';
+</script>
+
+<style>
+  .sticky {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 40;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding: var(--space-xs) var(--gutter);
+    background: var(--color-surface);
+    box-shadow: 0 -4px 16px rgb(0 0 0 / 0.12);
+  }
+  .sticky__price {
+    font-weight: 700;
+    font-size: var(--step-1);
+  }
+  .sticky__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--tap);
+    padding: 0 var(--space-l);
+    border: 0;
+    border-radius: var(--radius-m);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  /* Липка панель — лише на mobile; з атрибутом hidden прихована, поки блок ціни у полі зору. */
+  @media (max-width: 959.98px) {
+    .sticky:not([hidden]) {
+      display: flex;
+    }
+    :global(body.has-sticky) {
+      padding-bottom: 4.5rem;
+    }
+  }
+</style>

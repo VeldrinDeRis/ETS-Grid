@@ -66,6 +66,7 @@ describe('SPEC-001/AC-10 сховище з try/catch', () => {
       cart: 'etsgrid:cart:v1',
       compare: 'etsgrid:compare:v1',
       palette: 'etsgrid:palette',
+      recent: 'etsgrid:recent:v1',
     });
   });
 });

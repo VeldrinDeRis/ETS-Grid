@@ -122,3 +122,16 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-009/AC-11 UTM | functional | `functional/forms.spec.ts` | ✅ |
 | SPEC-009/AC-12 axe-core | a11y | `a11y/forms.spec.ts` | ✅ |
 | SPEC-009/AC-13 клавиатура | a11y | `a11y/forms.spec.ts` | ✅ |
+| SPEC-003/AC-01 совместимость с авто | unit | `unit/product.test.ts` | ✅ |
+| SPEC-003/AC-02 цена монтажа, переключатель | unit | `unit/product.test.ts` | ✅ |
+| SPEC-003/AC-03 11 блоков, плейсхолдеры | build | `build/product.test.ts` | ✅ |
+| SPEC-003/AC-04 таблица характеристик | unit, build | `unit/product.test.ts`, `build/product.test.ts` | ✅ |
+| SPEC-003/AC-05 перекрёстный блок ТЗ §5 | unit, build | `unit/product.test.ts`, `build/product.test.ts` | ✅ |
+| SPEC-003/AC-06 переключатель и turnkey | functional | `functional/product.spec.ts` | ✅ |
+| SPEC-003/AC-07 совместимость в браузере | functional | `functional/product.spec.ts` | ✅ |
+| SPEC-003/AC-08 увеличение фото | functional | `functional/product.spec.ts` | ✅ |
+| SPEC-003/AC-09 липкая панель | functional | `functional/product.spec.ts` | ✅ |
+| SPEC-003/AC-10 недавно просмотренные | unit, functional | `unit/product.test.ts`, `functional/product.spec.ts` | ✅ |
+| SPEC-003/AC-11 путь до корзины ≤ 6 шагов | functional | `functional/product.spec.ts` | ✅ |
+| SPEC-003/AC-12 axe-core | a11y | `a11y/product.spec.ts` | ✅ |
+| SPEC-003/AC-13 JS ≤ 100 КБ | build | `build/budget.test.ts` | ✅ |

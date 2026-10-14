@@ -147,7 +147,7 @@ test('@smoke головна → рівень → лістинг → товар �
   await expect(page.locator('h1')).toHaveText('Для дому');
   await page.locator('main').getByRole('link', { name: 'ETS Home 7' }).click();
   await expect(page.locator('h1')).toHaveText('ETS Home 7');
-  await expect(page.locator('main .price')).toContainText('демо-ціна');
+  await expect(page.locator('main [data-product-block="price"]')).toContainText('демо-ціна');
   if (isDesktop(info)) {
     await page.getByRole('link', { name: /^Кошик/ }).click();
   } else {

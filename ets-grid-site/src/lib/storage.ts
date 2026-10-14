@@ -4,6 +4,8 @@ export const KEYS = {
   cart: 'etsgrid:cart:v1',
   compare: 'etsgrid:compare:v1',
   palette: 'etsgrid:palette',
+  /** Недавно переглянуті (SPEC-005 §3.1, ревізія 5 SPEC-001). */
+  recent: 'etsgrid:recent:v1',
 } as const;
 
 /** Модуль кошика надсилає цю подію на window після кожної зміни. */

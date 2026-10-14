@@ -1,0 +1,394 @@
+---
+// Блоки 1–4 картки товару: галерея, заголовок, ціна з перемикачем, ключові характеристики (SPEC-003 §3.1).
+import productContent from '../../data/product-content.json';
+import { formatPrice } from '../../lib/format';
+import { productImage } from '../../lib/images';
+import { hasToggle, installPrice, keyRows } from '../../lib/product';
+import { routes } from '../../lib/routes';
+import type { Product } from '../../lib/schema';
+import DemoBadge from '../ui/DemoBadge.astro';
+import Placeholder from '../ui/Placeholder.astro';
+import Price from '../ui/Price.astro';
+
+interface Props {
+  product: Product;
+  levelKey: string;
+}
+const { product, levelKey } = Astro.props;
+const image = productImage(product);
+const SLOTS = 4;
+const toggle = hasToggle(product);
+const install = installPrice(product);
+const compositionKey = product.type === 'kit' ? 'kit' : levelKey;
+const composition = (productContent.composition as Record<string, string[]>)[compositionKey] ?? [];
+const inStock = product.stock === 'in_stock';
+const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
+---
+<div class="ptop">
+  <div class="ptop__gallery" data-product-block="gallery">
+    <ul role="list" class="gallery">
+      {
+        Array.from({ length: SLOTS }, (_, i) =>
+          i === 0 && image ? (
+            <li class="gallery__item gallery__item--main">
+              <button type="button" class="gallery__zoom" data-zoom={image.src} data-zoom-alt={image.alt}>
+                <img src={image.src} alt={image.alt} width="600" height="600" />
+                <span class="visually-hidden">Збільшити фото</span>
+              </button>
+            </li>
+          ) : (
+            <li class:list={['gallery__item', { 'gallery__item--main': i === 0 }]} data-gallery-placeholder>
+              <Placeholder label={`[ФОТО ${i + 1}]`} />
+            </li>
+          ),
+        )
+      }
+    </ul>
+    <dialog class="zoom" data-zoom-dialog aria-label="Фото товару">
+      <div class="zoom__frame" data-zoom-frame></div>
+      <button type="button" class="zoom__close" data-zoom-close>Закрити</button>
+    </dialog>
+  </div>
+
+  <div class="ptop__info">
+    <div data-product-block="header" class="pheader">
+      <h1>{product.name}</h1>
+      <ul role="list" class="pheader__meta">
+        <li>Артикул: <Placeholder label="[АРТИКУЛ]" /></li>
+        <li>Бренд: {isPlaceholder(product.brand) ? <Placeholder label={product.brand} /> : product.brand}</li>
+        <li class:list={['pheader__stock', inStock ? 'is-in-stock' : 'is-preorder']}>
+          <span class="pheader__led" aria-hidden="true"></span>
+          {inStock ? 'В наявності' : 'Під замовлення'}
+        </li>
+        <li>Доставка: ≈ {product.delivery_days} дн.</li>
+      </ul>
+    </div>
+
+    <div data-product-block="price" class="pprice" data-price-block data-turnkey={toggle ? 'true' : undefined}>
+      {
+        toggle ? (
+          <>
+            <fieldset class="pprice__toggle js-only" data-turnkey-toggle>
+              <legend class="visually-hidden">Варіант покупки</legend>
+              <label class="pprice__opt">
+                <input type="radio" name="turnkey" value="false" />
+                <span>Тільки обладнання</span>
+              </label>
+              <label class="pprice__opt">
+                <input type="radio" name="turnkey" value="true" checked />
+                <span>З монтажем під ключ</span>
+              </label>
+            </fieldset>
+            <div class="pprice__value num" aria-live="polite" data-price-live>
+              <p class="pprice__main" data-price-for="true">
+                {formatPrice(product.price_turnkey_from)} <span class="pprice__note">з монтажем під ключ</span>
+              </p>
+              <p class="pprice__main" data-price-for="false">
+                {formatPrice(product.price_equipment)} <span class="pprice__note">тільки обладнання</span>
+              </p>
+              <p class="pprice__install" data-price-for="true">монтаж від {formatPrice(install)}</p>
+              {product.demo && <DemoBadge />}
+            </div>
+          </>
+        ) : (
+          <Price product={product} />
+        )
+      }
+
+      <div class="pprice__includes">
+        <p class="pprice__label">Що входить</p>
+        <ul class="pprice__list" data-includes-for="true">
+          {composition.map((c) => <li>{c.split(/(\[[^\]]+\])/).map((ch) => (isPlaceholder(ch) ? <Placeholder label={ch} /> : ch))}</li>)}
+        </ul>
+        {
+          toggle && (
+            <ul class="pprice__list" data-includes-for="false">
+              {productContent.equipment_only.map((c) => (
+                <li>{c}</li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      <div class="pprice__actions">
+        {
+          product.sale_mode === 'cart' ? (
+            <button
+              type="button"
+              class="pprice__cta js-only"
+              data-add-to-cart={product.slug}
+              data-turnkey={toggle ? 'true' : 'false'}
+              data-source="product"
+              data-main-cta
+            >
+              До кошика
+            </button>
+          ) : (
+            <a class="pprice__cta" href={routes.quoteFor(product.slug)} data-main-cta>
+              Розрахувати
+            </a>
+          )
+        }
+        <button type="button" class="pprice__compare js-only" data-compare={product.slug} aria-pressed="false">
+          Порівняти
+        </button>
+      </div>
+      <p class="pprice__added" data-cart-added={product.slug} hidden>
+        Додано до кошика · <a href={routes.cart}>Перейти до кошика</a>
+      </p>
+      <p class="visually-hidden" role="status" data-card-status></p>
+    </div>
+
+    <div data-product-block="chars" class="pchars">
+      <h2 class="pchars__title">Головне</h2>
+      <dl class="pchars__list">
+        {
+          keyRows(product).map((row) => (
+            <div>
+              <dt>{row.label}</dt>
+              <dd>{row.value === null ? <Placeholder label="[ДАНІ]" /> : isPlaceholder(row.value) ? <Placeholder label={row.value} /> : row.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ptop {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-xl);
+    align-items: start;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-xs);
+  }
+  .gallery__item {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    background: var(--day-bg);
+    color: var(--day-ink);
+    overflow: hidden;
+  }
+  /* Місце без фото — видима рамка (D-031), щоб пробіл було видно на будь-якому фоні. */
+  .gallery__item[data-gallery-placeholder] {
+    border: 1px dashed var(--color-placeholder);
+  }
+  .gallery__item--main {
+    grid-column: 1 / -1;
+  }
+  .gallery__zoom {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+  .gallery__zoom img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .zoom {
+    max-width: min(90vw, 64rem);
+    padding: var(--space-m);
+    border: 0;
+    border-radius: var(--radius-l);
+    background: var(--day-surface);
+  }
+  .zoom::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
+  .zoom :global(img) {
+    max-height: 80vh;
+    margin-inline: auto;
+  }
+  .zoom__close {
+    display: block;
+    min-height: var(--tap);
+    margin: var(--space-s) auto 0;
+    padding: 0 var(--space-m);
+    border: 2px solid var(--day-ink);
+    border-radius: var(--radius-m);
+    background: transparent;
+    color: var(--day-ink);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .ptop__info {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .pheader h1 {
+    font-size: var(--step-3);
+    margin-bottom: var(--space-xs);
+  }
+  .pheader__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .pheader__stock {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .pheader__led {
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .is-in-stock {
+    color: var(--color-status-ok);
+  }
+  .is-preorder {
+    color: var(--color-status-wait);
+  }
+  .pprice {
+    display: grid;
+    gap: var(--space-s);
+    padding: var(--space-m);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+  }
+  .pprice__toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .pprice__opt {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: var(--tap);
+    padding: 0 var(--space-s);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+  }
+  .pprice__opt:has(input:checked) {
+    border-color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+    font-weight: 600;
+  }
+  .pprice__opt:has(input:focus-visible) {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .pprice__value p,
+  .pprice__includes p {
+    margin: 0;
+  }
+  .pprice__main {
+    font-size: var(--step-2);
+    font-weight: 700;
+  }
+  .pprice__note,
+  .pprice__install,
+  .pprice__label {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+    font-weight: 400;
+  }
+  .pprice__list {
+    margin: var(--space-3xs) 0 0;
+    padding-left: 1.2em;
+  }
+  /* Без JS видно обидві ціни і обидва склади; з JS — лише обраний варіант. */
+  :global(html.js) [data-price-block][data-turnkey='true'] [data-price-for='false'],
+  :global(html.js) [data-price-block][data-turnkey='false'] [data-price-for='true'],
+  :global(html.js) [data-price-block][data-turnkey='true'] [data-includes-for='false'],
+  :global(html.js) [data-price-block][data-turnkey='false'] [data-includes-for='true'] {
+    display: none;
+  }
+  .pprice__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .pprice__cta {
+    display: inline-flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.25rem;
+    padding: 0 var(--space-l);
+    border: 0;
+    border-radius: var(--radius-m);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .pprice__compare {
+    min-height: 3.25rem;
+    padding: 0 var(--space-m);
+    border: 1px solid var(--color-ink-muted);
+    border-radius: var(--radius-m);
+    background: transparent;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  .pprice__compare[aria-pressed='true'] {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-bg);
+  }
+  .pprice__added {
+    margin: 0;
+    color: var(--color-status-ok);
+  }
+  .pprice__added[hidden] {
+    display: none;
+  }
+  .pchars__title {
+    font-size: var(--step-1);
+  }
+  .pchars__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-s);
+    margin: 0;
+  }
+  .pchars__list dt {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
+  .pchars__list dd {
+    margin: 0;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  @media (max-width: 959.98px) {
+    .ptop {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-l);
+    }
+  }
+</style>
