@@ -4,6 +4,10 @@
       "type": "http",
       "url": "https://mcp.motion.dev"
     },
+    "motion-plus": {
+      "type": "http",
+      "url": "https://mcp.motion.dev/plus"
+    },
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"

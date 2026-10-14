@@ -49,7 +49,8 @@
 - Дизайн: `impeccable` (основной), `frontend-design`, `design:*` (critique, ux-copy, accessibility-review), `design-motion-principles`, `/motion`.
 - Тексты: `marketing:draft-content` (крупные блоки), `design:ux-copy` (микротексты), `marketing:competitive-brief` (конкуренты → `research/`).
 - Документация свежих версий (Astro 7, TS 6): MCP `context7` — сверяться перед кодом. Для Astro сначала `resolve-library-id` и проверить, есть ли у `/withastro/astro` версия 7.x в поле Versions; если нет (на 14.10.2026 там только 6.3.1) — брать `/withastro/docs` (D-021).
-- MCP `context7` и `motion` продублированы в local-scope (`~/.claude.json`, только эта папка): приложение не подхватывает серверы только из проектного `.mcp.json`. `.mcp.json` оставлен как общий конфиг.
+- MCP `motion-plus` (`https://mcp.motion.dev/plus`) — исходники примеров Motion+ (`search-motion-source`), редактор переходов; нужен вход в аккаунт Motion+ (OAuth через `/mcp`).
+- MCP `context7`, `motion` и `motion-plus` продублированы в local-scope (`~/.claude.json`, только эта папка): приложение не подхватывает серверы только из проектного `.mcp.json`. `.mcp.json` оставлен как общий конфиг.
 - Проверка: Playwright MCP, Chrome DevTools MCP (`lighthouse_audit`), встроенный браузер.
 - Windows: PowerShell с `ExecutionPolicy RemoteSigned` (CurrentUser) — `npx`/`npm` работают.
 
