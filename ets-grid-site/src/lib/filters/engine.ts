@@ -226,3 +226,42 @@ export function intervalBounds(products: Product[], facet: ResolvedFacet): [numb
   const xs = products.map((p) => fieldValue(p, facet.field)).filter((x): x is number => typeof x === 'number');
   return xs.length ? [Math.floor(Math.min(...xs)), Math.ceil(Math.max(...xs))] : null;
 }
+
+export interface FacetRank {
+  /** Розкриті фасети в порядку конфігу. */
+  open: ResolvedFacet[];
+  /** Згорнуті під «Ще N фільтрів», у порядку конфігу. */
+  folded: ResolvedFacet[];
+}
+
+/**
+ * Фасети за змістом (SPEC-002 §3.9 Б, ревізія 5; H-013). Розкритий — фасет із вибраним значенням або той, що ділить
+ * лістинг: ≥ 2 значень із лічильником > 0 при порожньому стані; інтервал — коли межі різні. Розкритих без вибору —
+ * не більше `max` (ТЗ §6.3 «перші 4»); вибрані розкриті завжди. Головний фільтр у ранжування не входить.
+ * Лічильники передавати для порожнього стану: ранжування рахується раз при завантаженні, фасети не стрибають.
+ */
+export function rankFacets(
+  facets: ResolvedFacet[],
+  counts: Record<string, Record<string, number>>,
+  state: FilterState,
+  bounds: Record<string, [number, number]>,
+  max = 4,
+): FacetRank {
+  const open: ResolvedFacet[] = [];
+  const folded: ResolvedFacet[] = [];
+  let unselectedOpen = 0;
+  for (const facet of facets) {
+    if (facet.primary) continue;
+    const selected = (state.filters[facet.key]?.length ?? 0) > 0;
+    const splits =
+      facet.kind === 'interval'
+        ? bounds[facet.key] !== undefined && bounds[facet.key][0] < bounds[facet.key][1]
+        : Object.values(counts[facet.key] ?? {}).filter((n) => n > 0).length >= 2;
+    if (selected) open.push(facet);
+    else if (splits && unselectedOpen < max) {
+      open.push(facet);
+      unselectedOpen += 1;
+    } else folded.push(facet);
+  }
+  return { open, folded };
+}
