@@ -78,3 +78,15 @@ test.describe('SPEC-006/AC-35 reduced-motion: доба не крутиться (
     expect(anims).toEqual([['none', '0'], ['none', '0'], ['none', '0']]);
   });
 });
+
+test.describe('SPEC-006/AC-39 reduced-motion: кроки горять цілком', () => {
+  test.use({ reducedMotion: 'reduce' });
+  test('лінії кроків заповнені без прокрутки, лампи янтарні', async ({ page }) => {
+    await page.goto('/');
+    const fills = await page.locator('#zayavka [data-step-fill]').evaluateAll((els) => els.map((e) => getComputedStyle(e).transform));
+    for (const f of fills) expect(f).toBe('none');
+    const accent = await page.evaluate(() => { const p = document.createElement('span'); p.style.color = 'var(--night-accent)'; document.body.append(p); const c = getComputedStyle(p).color; p.remove(); return c; });
+    const lamps = await page.locator('#zayavka [data-step]').evaluateAll((els) => els.map((e) => getComputedStyle(e, '::before').backgroundColor));
+    for (const l of lamps) expect(l).toBe(accent);
+  });
+});

@@ -48,11 +48,17 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
 }
 {
   part === 'steps' && (
-    <div class="steps">
+    <div class="steps" data-steps>
       <h2>Як ми працюємо</h2>
+      {/* Кроки — лінія мнемосхеми: заповнюється з прокруткою (home.ts, scroll()), крок вмикається, коли лінія до нього дійшла. */}
       <ol class="steps__list">
-        {home.steps.map((s) => (
-          <li>
+        {home.steps.map((s, i) => (
+          <li data-step>
+            {i < home.steps.length - 1 && (
+              <span class="steps__line" aria-hidden="true">
+                <span class="steps__fill" data-step-fill />
+              </span>
+            )}
             <strong>{s.title}</strong>
             <Placeholder label={s.term} />
           </li>
@@ -63,11 +69,15 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
 }
 {
   part === 'faq' && (
-    <div class="faq">
+    <div class="faq" data-faq>
       <h2>Незручні питання. Прямі відповіді</h2>
+      {/* Акордеон на <details>: без JS працює як є; з JS відкриття/закриття — плавна висота (home.ts, animateLayout). */}
       {home.faq.map((item) => (
-        <details class="faq__item">
-          <summary>{item.q}</summary>
+        <details class="faq__item" data-layout>
+          <summary>
+            {item.q}
+            <span class="faq__mark" aria-hidden="true" />
+          </summary>
           <p>{item.a}</p>
         </details>
       ))}
@@ -76,8 +86,11 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
 }
 {
   part === 'cases' && (
-    <div class="cases">
-      <h2>Обʼєкти</h2>
+    <div class="cases plate">
+      <div class="cases__head">
+        <h2 class="plate__title">Обʼєкти</h2>
+        <a class="carport__more" href={routes.cases}>Сторінка обʼєктів</a>
+      </div>
       <p class="cases-plate">Тут будуть реальні обʼєкти ETS GRID</p>
       {/* Індикативні картки (D-058): фото прототипу з міткою, підписи — плейсхолдери; реальні кейси — від замовника. */}
       <ul role="list" class="cases__list">
@@ -102,16 +115,13 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
           </li>
         ))}
       </ul>
-      <p>
-        <a class="carport__more" href={routes.cases}>Сторінка обʼєктів</a>
-      </p>
     </div>
   )
 }
 {
   part === 'financing' && (
-    <div class="financing">
-      <h2>{home.financing.title}</h2>
+    <div class="financing plate">
+      <h2 class="plate__title">{home.financing.title}</h2>
       <ul role="list" class="financing__list">
         {home.financing.items.map((item) => (
           <li>
@@ -210,11 +220,11 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
     min-height: var(--tap);
     font-weight: 600;
   }
-  /* Кроки — послідовність на лінії мнемосхеми: номер у лампі, лінія до наступного кроку. */
+  /* Акт V (SPEC-006 §4.10): кроки — вертикальна лінія мнемосхеми, як у схемі енергії. Номер у лампі; лінія до
+     наступного кроку заповнюється з прокруткою (home.ts), крок «вмикається» — лампа янтарна. Без руху все горить. */
   .steps__list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: var(--space-m);
+    gap: 0;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -222,14 +232,20 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
   }
   .steps__list li {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-2xs);
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: var(--space-s);
+    row-gap: var(--space-3xs);
+    padding-bottom: var(--space-m);
     counter-increment: step;
+  }
+  .steps__list li:last-child {
+    padding-bottom: 0;
   }
   .steps__list li::before {
     content: counter(step);
+    grid-row: 1 / 3;
     display: grid;
     place-items: center;
     width: 2.25rem;
@@ -239,40 +255,109 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
     position: relative;
     z-index: 1;
     background: var(--color-bg);
+    color: var(--color-ink);
     font-weight: 700;
     font-variant-numeric: tabular-nums;
+    transition:
+      border-color var(--dur) var(--ease-out),
+      background-color var(--dur) var(--ease-out),
+      color var(--dur) var(--ease-out);
   }
-  .steps__list li:not(:last-child)::after {
-    content: '';
+  .steps__list li[data-lit]::before,
+  :global(html:not([data-motion='on'])) .steps__list li::before {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .steps__list li > strong {
+    font-family: var(--font-display);
+    font-size: var(--step-0);
+    line-height: 1.3;
+  }
+  .steps__line {
     position: absolute;
-    top: 1.125rem;
-    left: 2.25rem;
-    right: calc(-1 * var(--space-m));
-    height: 2px;
-    background: var(--color-line);
+    top: 2.25rem;
+    bottom: 0;
+    left: calc(1.125rem - 1px);
+    width: 2px;
+    background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+    overflow: hidden;
   }
-  @media (max-width: 959.98px) {
-    .steps__list li:not(:last-child)::after {
-      display: none;
-    }
+  .steps__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform-origin: center top;
+    transform: scaleY(0);
   }
-  .faq {
-    max-width: 52rem;
+  :global(html:not([data-motion='on'])) .steps__fill {
+    transform: none;
   }
+  /* FAQ — акордеон на <details>; маркер — «+», що обертається в «×». */
   .faq__item {
     border-bottom: 1px solid var(--color-line);
   }
   .faq__item summary {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
     min-height: 3.25rem;
     font-weight: 600;
     cursor: pointer;
+    list-style: none;
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__item > p {
+    margin: 0 0 var(--space-s);
+    color: var(--color-ink-muted);
+  }
+  .faq__mark {
+    position: relative;
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform var(--dur) var(--ease-out);
+  }
+  .faq__mark::before,
+  .faq__mark::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 0.875rem;
+    height: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+  }
+  .faq__mark::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  .faq__item[open] .faq__mark {
+    transform: rotate(45deg);
+  }
+  /* Плашки «Обʼєкти» і «Фінансування» — тихі вікна на ночі. */
+  .plate {
+    padding: var(--space-m);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+  }
+  .plate__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-s);
+  }
+  .cases__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-l);
   }
   .financing__list {
     display: grid;
     gap: var(--space-2xs);
-    font-size: var(--step-1);
+    font-size: var(--step-0);
   }
   .financing__checked {
     color: var(--color-ink-muted);
@@ -280,7 +365,8 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
   }
   .cases-plate {
     max-width: none;
-    padding: var(--space-s) var(--space-m);
+    padding: var(--space-2xs) var(--space-s);
+    font-size: var(--step--1);
     border: 1px dashed var(--color-placeholder);
     border-radius: var(--radius-m);
     color: var(--color-placeholder);
@@ -290,7 +376,7 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-s);
-    margin: var(--space-m) 0 var(--space-s);
+    margin: var(--space-s) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -376,6 +462,7 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
   .case__title {
     margin: var(--space-xs) 0 var(--space-3xs);
     font-weight: 700;
+    font-size: var(--step--1);
   }
   .case__meta {
     margin: 0;

@@ -1,6 +1,6 @@
 // Поведінка головної (SPEC-006 §4.7): вкладки, фільтри хітів, варіант героя, аналітика, лінії енергії.
 import { splitText } from '@motionplus/core';
-import { animate, frame, inView, motionValue, scroll, stagger } from 'motion';
+import { animate, animateLayout, frame, inView, motionValue, scroll, stagger } from 'motion';
 import { HERO_LEDS } from '../lib/photos';
 import { track } from '../lib/track';
 
@@ -211,4 +211,45 @@ if (heroBlock && ledLayer && heroImg && !reduce && matchMedia('(min-width: 960px
   place();
   if (!heroImg.complete) heroImg.addEventListener('load', place, { once: true });
   new ResizeObserver(() => frame.read(place)).observe(heroBlock);
+}
+
+/* ---------- Акт V · кроки-лінія і FAQ-акордеон (SPEC-006 §4.10, D-060) ----------
+   Кроки: лінія від кроку до кроку заповнюється з прокруткою блоку (scroll(), як сцена схеми), крок вмикається,
+   коли лінія до нього дійшла; односпрямовано. FAQ: <details> працює без JS; з JS висота сусідів їде плавно
+   (animateLayout із motion, SPEC-002 §3.8). Без руху — все статично. */
+const stepsBlock = document.querySelector<HTMLElement>('[data-steps]');
+if (stepsBlock && !reduce) {
+  const steps = [...stepsBlock.querySelectorAll<HTMLElement>('[data-step]')];
+  const fills = steps.map((s) => s.querySelector<HTMLElement>('[data-step-fill]'));
+  const segs = fills.filter(Boolean).length;
+  const done = steps.map(() => false);
+  scroll(
+    (progress: number) => {
+      steps.forEach((step, i) => {
+        if (done[i] || progress < i / steps.length + 0.02) return;
+        done[i] = true;
+        step.toggleAttribute('data-lit', true);
+      });
+      fills.forEach((fill, i) => {
+        if (!fill) return;
+        const local = Math.min(1, Math.max(0, progress * segs - i));
+        const prev = parseFloat(fill.dataset.filled ?? '0');
+        if (local <= prev) return;
+        fill.dataset.filled = String(local);
+        fill.style.transform = `scaleY(${local})`;
+      });
+    },
+    { target: stepsBlock, offset: ['start 85%', 'end 55%'] },
+  );
+}
+
+const faqBlock = document.querySelector<HTMLElement>('[data-faq]');
+if (faqBlock && !reduce) {
+  for (const item of faqBlock.querySelectorAll<HTMLDetailsElement>('details')) {
+    const summary = item.querySelector('summary')!;
+    summary.addEventListener('click', (e) => {
+      e.preventDefault();
+      animateLayout(faqBlock, () => item.toggleAttribute('open'), { duration: 0.32, ease: [0.22, 1, 0.36, 1] });
+    });
+  }
 }

@@ -154,3 +154,20 @@ describe('SPEC-006/AC-38 акт IV: стики і Carport одним рядко�
     expect(row.querySelector('[data-picker="carport"], astro-island')).not.toBeNull();
   });
 });
+
+describe('SPEC-006/AC-39 акт V: одна нічна секція довіри і дії', () => {
+  test('блоки 7–11 усередині #zayavka (night, dusk), порядок збережено; 5 кроків із лінією; FAQ — details з відповідями', () => {
+    const section = doc().querySelector('#zayavka')!;
+    expect(section.getAttribute('data-surface')).toBe('night');
+    expect(section.getAttribute('data-seam')).toBe('dusk');
+    const inside = [...section.querySelectorAll('[data-home-block]')].map((el) => el.getAttribute('data-home-block'));
+    expect(inside).toEqual(['steps', 'faq', 'cases', 'financing', 'final']);
+    expect(section.querySelectorAll('[data-step]')).toHaveLength(5);
+    expect(section.querySelectorAll('[data-step-fill]')).toHaveLength(4);
+    const faq = [...section.querySelectorAll('[data-faq] details')];
+    expect(faq.length).toBeGreaterThanOrEqual(4);
+    expect(faq.length).toBeLessThanOrEqual(6);
+    for (const d of faq) expect(d.querySelector('summary + p')?.textContent?.length).toBeGreaterThan(20);
+    expect(section.querySelector('form[data-lead-form][data-kind="final"]')).not.toBeNull();
+  });
+});

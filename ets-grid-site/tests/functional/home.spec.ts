@@ -356,3 +356,30 @@ test.describe('SPEC-006/AC-38 акт IV: карусель хітів і стик
     expect(carport.height).toBeLessThanOrEqual(720);
   });
 });
+
+test.describe('SPEC-006/AC-39 акт V: кроки-лінія, акордеон, форма праворуч', () => {
+  test('кроки вмикаються з прокруткою; FAQ відкривається кліком; на 1440 форма праворуч від довіри, на 375 — під нею', async ({ page }, info) => {
+    await page.goto('/');
+    const section = page.locator('#zayavka');
+    const steps = section.locator('[data-step]');
+    await expect(steps).toHaveCount(5);
+    await expect(steps.last()).not.toHaveAttribute('data-lit', '');
+    const sb = (await section.boundingBox())!;
+    const top = sb.y + (await page.evaluate(() => window.scrollY));
+    for (let y = top - 400; y < top + sb.height; y += 150) {
+      await page.evaluate((v) => window.scrollTo(0, v), y);
+      await page.waitForTimeout(60);
+    }
+    await expect(steps.last()).toHaveAttribute('data-lit', '', { timeout: 3000 });
+    const fills = await section.locator('[data-step-fill]').evaluateAll((els) => els.map((e) => (e as HTMLElement).style.transform));
+    for (const f of fills) expect(f).toBe('scaleY(1)');
+    const first = section.locator('[data-faq] details').first();
+    await first.locator('summary').click();
+    await expect(first).toHaveAttribute('open', '');
+    await expect(first.locator('p')).toBeVisible();
+    const trust = (await section.locator('[data-home-block="steps"]').boundingBox())!;
+    const form = (await section.locator('[data-home-block="final"]').boundingBox())!;
+    if (isMobile(info)) expect(form.y).toBeGreaterThan(trust.y + trust.height - 1);
+    else expect(form.x).toBeGreaterThan(trust.x + trust.width - 1);
+  });
+});
