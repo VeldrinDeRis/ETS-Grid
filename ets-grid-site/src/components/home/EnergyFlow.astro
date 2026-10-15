@@ -155,6 +155,9 @@ const nodes = home.flow.map((node) => {
     opacity: 0.9;
     animation: flow-spark 2.4s linear infinite;
   }
+  .flow[data-offscreen] .flow__spark[data-run] {
+    animation-play-state: paused;
+  }
   @keyframes flow-spark {
     to {
       transform: translateX(560%);
@@ -219,18 +222,24 @@ const nodes = home.flow.map((node) => {
     font-size: var(--step--1);
     color: var(--color-ink-muted);
   }
+  /* Риска підказки росте від лівого краю: scaleX, не width (D-072) — три подихи й стоп; після [data-done] — без анімації. */
   .flow__hint::before {
     content: '';
-    width: 2.5rem;
+    width: 4.5rem;
     height: 2px;
     background: color-mix(in srgb, var(--color-accent) 50%, transparent);
+    transform: scaleX(0.56);
+    transform-origin: left center;
   }
   :global(html[data-motion='on']) .flow__hint::before {
-    animation: flow-hint 1.6s var(--ease-out) infinite alternate;
+    animation: flow-hint 1.6s var(--ease-out) 6 alternate;
+  }
+  .flow[data-done] .flow__hint::before {
+    animation: none;
   }
   @keyframes flow-hint {
     to {
-      width: 4.5rem;
+      transform: scaleX(1);
     }
   }
   :global(html:not([data-motion='on'])) .flow__hint {

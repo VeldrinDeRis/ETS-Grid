@@ -3,6 +3,7 @@
 // Кадри — серверний HTML <picture> (Photo.astro) через іменовані слоти shot0…shotN: без JS усі кадри в документі
 // і видно перший; острів лише додає гортання. Мітка «Ілюстративне фото» — на кожному кадрі в слоті.
 import { Carousel, useCarousel } from '@motionplus/core/react';
+import { usePageTransition } from './use-page-transition';
 import type { ReactNode } from 'react';
 
 interface Props {
@@ -41,6 +42,7 @@ function Controls({ label }: { label: string }) {
 }
 
 export default function CaseGallery({ count, label, ...slots }: Props) {
+  const transition = usePageTransition();
   const items = Array.from({ length: count }, (_, i) => (
     <div key={i} className="case__shot">
       {slots[`shot${i}`] as ReactNode}
@@ -48,7 +50,7 @@ export default function CaseGallery({ count, label, ...slots }: Props) {
   ));
   return (
     <div className="case__gallery" data-case-gallery>
-      <Carousel className="case__track" items={items} gap={8} snap="page" loop={false} itemSize="fill">
+      <Carousel className="case__track" items={items} gap={8} snap="page" loop={false} itemSize="fill" transition={transition}>
         <Controls label={label} />
       </Carousel>
     </div>

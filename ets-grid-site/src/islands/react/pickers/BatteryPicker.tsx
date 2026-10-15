@@ -1,6 +1,7 @@
 /** @jsxImportSource react */
 // Підбірник батарей: 3 питання ТЗ §7, формула 03 §3.2; «вікна загоряються» (концепція §4.1, H-011).
 import { animate } from '../../../lib/motion-dom';
+import { DUR, EASE_SPRING } from '../../../lib/motion-tokens';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import LiveNumber from './LiveNumber';
 import { batteryPicker, type Calc } from '../../../lib/calc';
@@ -26,7 +27,7 @@ function House({ lit }: { lit: number }) {
     svg.querySelectorAll<SVGRectElement>('[data-window]').forEach((w, i) => {
       const target = i < lit ? 1 : 0.12;
       if (reduce) w.style.opacity = String(target);
-      else animate(w, { opacity: target }, { duration: 0.45, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] });
+      else animate(w, { opacity: target }, { duration: DUR, delay: i * 0.06, ease: EASE_SPRING });
     });
   }, [lit]);
   const cells = Array.from({ length: WINDOWS }, (_, i) => ({ x: 30 + (i % 3) * 34, y: 58 + Math.floor(i / 3) * 30 }));

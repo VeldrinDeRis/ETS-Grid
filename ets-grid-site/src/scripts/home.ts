@@ -1,6 +1,7 @@
 // Поведінка головної (SPEC-006 §4.7): вкладки, фільтри хітів, варіант героя, аналітика, лінії енергії.
 import { splitText } from '@motionplus/core';
 import { animate, animateLayout, frame, inView, motionValue, scroll, stagger } from 'motion';
+import { DUR, DUR_FAST, DUR_SLOW, EASE_SPRING } from '../lib/motion-tokens';
 import { HERO_LEDS } from '../lib/photos';
 import { track } from '../lib/track';
 
@@ -95,10 +96,10 @@ if (flow && !reduce) {
     lit[i] = on;
     const n = nodes[i];
     n.toggleAttribute('data-lit', on);
-    animate(n.querySelector<HTMLElement>('[data-flow-dot]')!, { opacity: on ? 1 : 0.25, transform: on ? 'scale(1)' : 'scale(0.7)' }, { duration: 0.45, ease });
+    animate(n.querySelector<HTMLElement>('[data-flow-dot]')!, { opacity: on ? 1 : 0.25, transform: on ? 'scale(1)' : 'scale(0.7)' }, { duration: DUR, ease });
     n.dispatchEvent(new CustomEvent('etsgrid:node-lit', { detail: { on } }));
     if (lit.every(Boolean)) flow.dataset.done = '';
-    if (!desktop && pulses[i]) animate(pulses[i]!, { transform: on ? 'scaleY(1)' : 'scaleY(0)' }, { duration: 0.4, delay: on ? 0.18 : 0, ease });
+    if (!desktop && pulses[i]) animate(pulses[i]!, { transform: on ? 'scaleY(1)' : 'scaleY(0)' }, { duration: DUR, delay: on ? DUR_FAST : 0, ease });
     // Блик по лінії: запускається, коли лінія до наступного вузла ввімкнена.
     sparks[i]?.toggleAttribute('data-run', on);
   };
@@ -148,7 +149,9 @@ if (heroTitle && document.documentElement.dataset.motion === 'on' && !reduce) {
 
 /* ---------- Акт I · лампа-курсор над героєм (SPEC-006 §4.9, D-054) ----------
    За прикладом Motion+ «Conic gradient pointer»: позиція вказівника → motionValue → frame.render, без читання
-   розмірів у кожному кадрі. Лише desktop із точним вказівником; при reduced-motion лампа не вмикається. */
+   розмірів у кожному кадрі. Пляма фіксованого розміру їде transform: translate() — без перемальовування градієнта
+   й успадкованих змінних на .hero (D-072). Зсув блоку міряємо на вході вказівника й на зміну розміру, не на кожну
+   прокрутку. Лише desktop із точним вказівником; при reduced-motion лампа не вмикається. */
 const heroBlock = document.querySelector<HTMLElement>('[data-home-block="hero"]');
 const heroLamp = heroBlock?.querySelector<HTMLElement>('[data-hero-lamp]');
 if (heroBlock && heroLamp && !reduce && matchMedia('(pointer: fine)').matches) {
@@ -157,19 +160,22 @@ if (heroBlock && heroLamp && !reduce && matchMedia('(pointer: fine)').matches) {
   let rect = heroBlock.getBoundingClientRect();
   const measure = () => (rect = heroBlock.getBoundingClientRect());
   const render = () => {
-    heroBlock.style.setProperty('--lx', `${lx.get()}px`);
-    heroBlock.style.setProperty('--ly', `${ly.get()}px`);
+    heroLamp.style.transform = `translate(${lx.get()}px, ${ly.get()}px)`;
   };
   lx.on('change', () => frame.render(render));
   ly.on('change', () => frame.render(render));
   addEventListener('resize', () => frame.read(measure));
-  addEventListener('scroll', () => frame.read(measure), { passive: true });
   heroBlock.addEventListener('pointermove', (e) => {
     lx.set(e.clientX - rect.left);
     ly.set(e.clientY - rect.top);
   });
-  heroBlock.addEventListener('pointerenter', () => animate(heroLamp, { opacity: 1 }, { duration: 0.6, ease: [0.16, 1, 0.3, 1] }));
-  heroBlock.addEventListener('pointerleave', () => animate(heroLamp, { opacity: 0 }, { duration: 0.9, ease: [0.16, 1, 0.3, 1] }));
+  heroBlock.addEventListener('pointerenter', (e) => {
+    measure();
+    lx.set(e.clientX - rect.left);
+    ly.set(e.clientY - rect.top);
+    animate(heroLamp, { opacity: 1 }, { duration: DUR_SLOW, ease: EASE_SPRING });
+  });
+  heroBlock.addEventListener('pointerleave', () => animate(heroLamp, { opacity: 0 }, { duration: DUR_SLOW, ease: EASE_SPRING }));
 }
 
 /* ---------- Акт I · вогники зарядки на стійках у кадрі (D-056) ----------
@@ -251,4 +257,16 @@ if (faqBlock && !reduce) {
       animateLayout(faqBlock, () => item.toggleAttribute('open'), { duration: 0.32, ease: [0.22, 1, 0.36, 1] });
     });
   }
+}
+
+/* ---------- Цикли поза кадром — на паузі (SPEC-006 §4.12, D-072) ----------
+   Доба й світлодіоди героя, блик схеми: поки блок поза кадром, [data-offscreen] ставить animation-play-state: paused. */
+for (const block of document.querySelectorAll<HTMLElement>('[data-home-block="hero"], [data-energy-flow]')) {
+  block.dataset.offscreen = '';
+  inView(block, () => {
+    delete block.dataset.offscreen;
+    return () => {
+      block.dataset.offscreen = '';
+    };
+  });
 }
