@@ -1,6 +1,8 @@
 // Фото для макета (SPEC-010 §5, D-039, D-042). Файли — public/img/photos/{key}-{width}.{avif,webp}, генерує scripts/photos.mjs.
 // Чужі фото — ілюстрації обладнання (D-042) і індикативні галереї «Обʼєктів» з міткою (D-058, D-061); за обʼєкти ETS GRID їх не видаємо (D-005).
 
+import frames from '../data/product-frames.json';
+
 export interface PhotoInfo {
   alt: string;
   widths: number[];
@@ -13,7 +15,7 @@ const PRODUCT = { widths: [480, 960], ratio: 1 };
 // Галереї обʼєктів 16:9 (D-061): індикативні кадри з міткою, по 10 на обʼєкт.
 const CASE = { widths: [640, 1280], ratio: 16 / 9 };
 
-export const PHOTOS = {
+const STATIC_PHOTOS = {
   // Паркінг із навісом — серія Kindel Media, Pexels.
   'case-parking-1': { alt: 'Сонячні навіси над паркінгом, вигляд збоку (ілюстрація)', ...CASE },
   'case-parking-2': { alt: 'Паркінг із сонячними навісами з висоти (ілюстрація)', ...CASE },
@@ -66,7 +68,36 @@ export const PHOTOS = {
   'p-carport-below': { alt: 'Сонячний навіс над паркінгом (ілюстрація)', ...PRODUCT },
 } satisfies Record<string, PhotoInfo>;
 
-export type PhotoKey = keyof typeof PHOTOS;
+/** Кадри міні-галерей карток (SPEC-002 §3.10, D-065): pf-{набір}-{n} — нові кадри Pexels, p-case-* — 1:1-версії кадрів «Обʼєкти». */
+export type FrameSet = keyof typeof frames.sets;
+export type FrameKey = `pf-${string}` | `p-case-${string}`;
+const FRAME_PHOTOS: Record<string, PhotoInfo> = {};
+for (const [set, s] of Object.entries(frames.sets)) {
+  s.frames.forEach((f, i) => {
+    FRAME_PHOTOS[`pf-${set}-${i + 1}`] = { alt: f.alt, ...PRODUCT };
+  });
+  for (const key of s.reuse) FRAME_PHOTOS[`p-${key}`] = { alt: (STATIC_PHOTOS as Record<string, PhotoInfo>)[key].alt, ...PRODUCT };
+}
+
+export const PHOTOS = { ...STATIC_PHOTOS, ...FRAME_PHOTOS } as typeof STATIC_PHOTOS & Record<FrameKey, PhotoInfo>;
+
+export type PhotoKey = keyof typeof STATIC_PHOTOS | FrameKey;
+
+/** Набір → ключі кадрів у порядку конфігу (без першого кадру-ілюстрації товару). */
+export const FRAME_SETS = Object.fromEntries(
+  Object.entries(frames.sets).map(([set, s]) => [set, [...s.frames.map((_, i) => `pf-${set}-${i + 1}`), ...s.reuse.map((k) => `p-${k}`)]]),
+) as Record<FrameSet, PhotoKey[]>;
+
+/** Товар → набір кадрів. */
+export const PRODUCT_FRAME_SET = frames.products as Record<string, FrameSet>;
+
+/** Кадри міні-галереї картки: ілюстрація товару першою, далі набір без повтору, рівно 5 (чиста функція, AC-41). */
+export function productFrames(slug: string): PhotoKey[] {
+  const first = PRODUCT_ILLUSTRATION[slug];
+  const set = PRODUCT_FRAME_SET[slug] ? FRAME_SETS[PRODUCT_FRAME_SET[slug]] : [];
+  const list = first ? [first, ...set.filter((k) => k !== first)] : [...set];
+  return list.slice(0, 5);
+}
 
 export const photoSrc = (key: PhotoKey, width: number, format: 'avif' | 'webp') => `/img/photos/${key}-${width}.${format}`;
 

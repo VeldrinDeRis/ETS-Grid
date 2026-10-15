@@ -1,5 +1,5 @@
 ---
-// Картка товару в лістингу (SPEC-002 §3.5). Використовують також SPEC-003 і SPEC-006.
+// Картка товару в лістингу (SPEC-002 §3.5, §3.10 міні-галерея — D-065). Використовують також SPEC-003 і SPEC-006.
 import { getLevelById } from '../../lib/catalog';
 import { cardBadge, keyChars } from '../../lib/filters';
 import { productImage } from '../../lib/images';
@@ -7,7 +7,8 @@ import { routes } from '../../lib/routes';
 import type { Product } from '../../lib/schema';
 import { LEVEL_ICON } from '../../lib/level-icons';
 import Icon from '../layout/Icon.astro';
-import { ILLUSTRATION_LABEL, PRODUCT_ILLUSTRATION } from '../../lib/photos';
+import { ILLUSTRATION_LABEL, PRODUCT_ILLUSTRATION, productFrames } from '../../lib/photos';
+import CardGallery from '../../islands/react/CardGallery';
 import Photo from '../ui/Photo.astro';
 import Price from '../ui/Price.astro';
 
@@ -15,21 +16,35 @@ interface Props {
   product: Product;
   variant?: 'listing' | 'compact';
   headingLevel?: 2 | 3 | 4;
+  /** Міні-галерея з 5 ілюстративних кадрів (§3.10); у хітах головної й compact — лише перший кадр. */
+  gallery?: boolean;
 }
-const { product, variant = 'listing', headingLevel = 3 } = Astro.props;
+const { product, variant = 'listing', headingLevel = 3, gallery = variant === 'listing' } = Astro.props;
 const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
 const image = productImage(product);
 const badge = cardBadge(product);
 const chars = variant === 'listing' ? keyChars(product) : [];
 const level = getLevelById(product.level);
 const inStock = product.stock === 'in_stock';
-const illustration = image ? undefined : PRODUCT_ILLUSTRATION[product.slug];
+// Кадри галереї — лише без фото замовника; без галереї показуємо перший кадр набору (або ілюстрацію).
+const frames = image ? [] : productFrames(product.slug);
+const illustration = image ? undefined : gallery ? undefined : (PRODUCT_ILLUSTRATION[product.slug] ?? frames[0]);
+const showGallery = !image && gallery && frames.length > 1;
 ---
 <article class:list={["product-card", `product-card--${variant}`]} data-product-card data-layout data-slug={product.slug}>
-  <div class="product-card__photo">
+  <div class:list={['product-card__photo', showGallery && 'product-card__photo--gallery']}>
     {
       image ? (
         <img src={image.src} alt={image.alt} width="400" height="400" loading="lazy" decoding="async" />
+      ) : showGallery ? (
+        <CardGallery client:visible count={frames.length} label={product.name}>
+          {frames.map((key, i) => (
+            <div slot={`shot${i}`} class="product-card__frame">
+              <Photo photo={key} sizes="(max-width: 639px) calc(100vw - 3rem), 18rem" class="product-card__illustration" />
+              <span class="photo-note">{ILLUSTRATION_LABEL}</span>
+            </div>
+          ))}
+        </CardGallery>
       ) : illustration ? (
         <>
           <Photo photo={illustration} sizes="(max-width: 639px) calc(100vw - 3rem), 18rem" class="product-card__illustration" />
@@ -126,6 +141,85 @@ const illustration = image ? undefined : PRODUCT_ILLUSTRATION[product.slug];
     width: 100%;
     height: 100%;
     object-fit: contain;
+  }
+  /* Міні-галерея (§3.10): кадр 1:1; острів малює розмітку сам — :global. Бейдж лишається поверх (absolute у .product-card__photo). */
+  .product-card__photo--gallery {
+    display: block;
+  }
+  .product-card__photo--gallery :global(.product-card__frame) {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .product-card__photo--gallery :global(.product-card__frame img) {
+    object-fit: cover;
+  }
+  .product-card__photo--gallery :global(.pgal__shot) {
+    width: 100%;
+    flex: none;
+  }
+  .product-card__photo--gallery :global(.pgal__shot > astro-slot),
+  .product-card__photo--gallery :global(.pgal__shot > div) {
+    display: block;
+  }
+  /* До гідратації astro-island показує слоти підряд — обрізаємо до першого кадру. */
+  .product-card__photo--gallery :global(astro-island:not([ssr])) {
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .product-card__photo--gallery :global(.pgal__nav) {
+    position: absolute;
+    inset: auto 0 0 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3xs);
+    padding: var(--space-3xs) var(--space-2xs);
+    background: linear-gradient(transparent, rgb(13 20 36 / 0.55));
+  }
+  .product-card__photo--gallery :global(.pgal__arrow) {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(244 246 248 / 0.9);
+    color: var(--day-ink);
+    cursor: pointer;
+    transition: opacity var(--dur-fast);
+  }
+  .product-card__photo--gallery :global(.pgal__arrow:disabled) {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .product-card__photo--gallery :global(.pgal__dots) {
+    display: flex;
+    gap: 0.3rem;
+    padding: 0 var(--space-2xs);
+  }
+  /* Точка активного кадру — янтарна лампа (The Lit Chip Rule), решта — скло. */
+  .product-card__photo--gallery :global(.pgal__dot) {
+    width: 0.4rem;
+    height: 0.4rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(244 246 248 / 0.5);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast),
+      transform var(--dur) var(--ease-out);
+  }
+  .product-card__photo--gallery :global(.pgal__dot[aria-selected='true']) {
+    background: var(--color-accent);
+    transform: scale(1.4);
+  }
+  /* Мітка — над навігацією, щоб не перекривалась стрілками. */
+  .product-card__photo--gallery :global(.product-card__frame .photo-note) {
+    bottom: calc(2rem + var(--space-xs));
   }
   /* Порожня рамка фото (D-031): значок рівня й підпис звичайним регістром. */
   .product-card__photo-label {

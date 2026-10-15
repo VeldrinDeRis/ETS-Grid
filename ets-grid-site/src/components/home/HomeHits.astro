@@ -16,7 +16,7 @@ const levels = getLevels()
 <div class="hits">
   <h2 id="hits-title">Хіти каталогу</h2>
   <HitsCarousel client:visible levels={levels} hits={hits.map((p) => ({ slug: p.slug, level: p.level }))}>
-    {hits.map((p, i) => <div slot={`card${i}`} class="hits__card"><ProductCard product={p} /></div>)}
+    {hits.map((p, i) => <div slot={`card${i}`} class="hits__card"><ProductCard product={p} gallery={false} /></div>)}
   </HitsCarousel>
 </div>
 

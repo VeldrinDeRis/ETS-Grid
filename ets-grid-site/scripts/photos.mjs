@@ -1,6 +1,6 @@
 // Оптимізація фото для макета (SPEC-010 §5, D-042): кадрування, AVIF + WebP у кількох ширинах → public/img/photos/.
 // Сирі файли — у ../sources/photos/raw/ (поза git). Запуск: node scripts/photos.mjs [ключ…]
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,6 +9,9 @@ const sharp = createRequire(import.meta.url)('sharp');
 const RAW = fileURLToPath(new URL('../../sources/photos/raw/2026-10-14/', import.meta.url));
 // Кадри обʼєктів (D-061) — окрема тека за датою скачування.
 const RAW_CASES = fileURLToPath(new URL('../../sources/photos/raw/2026-10-15/', import.meta.url));
+// Кадри міні-галерей карток (D-065): нові кадри Pexels pf-{id}.jpg; набори — src/data/product-frames.json.
+const RAW_PRODUCTS = fileURLToPath(new URL('../../sources/photos/raw/2026-10-15-products/', import.meta.url));
+const frames = JSON.parse(readFileSync(new URL('../src/data/product-frames.json', import.meta.url), 'utf8'));
 const OUT = fileURLToPath(new URL('../public/img/photos/', import.meta.url));
 mkdirSync(OUT, { recursive: true });
 
@@ -20,8 +23,15 @@ const HERO = { ratio: 4 / 3, widths: [640, 1280, 1920] };
 const PRODUCT = { ratio: 1, widths: [480, 960] };
 // Галереї обʼєктів (D-061): 16:9 (ТЗ §8.3), два розміри — картка 3-в-ряд і телефон; кадр цілком, центр.
 const CASE = { ratio: 16 / 9, widths: [640, 1280], raw: RAW_CASES };
+/** Кадри наборів карток 1:1 (D-065): нові — з RAW_PRODUCTS, повтори «Обʼєкти» — 1:1-версії кадрів case-*. */
+const productFrames = () =>
+  Object.entries(frames.sets).flatMap(([set, s]) => [
+    ...s.frames.map((f, i) => ({ key: `pf-${set}-${i + 1}`, src: `pf-${f.id}`, crop: [0, 0, 1, 1], ...PRODUCT, raw: RAW_PRODUCTS })),
+    ...s.reuse.map((k) => ({ key: `p-${k}`, src: k, crop: [0, 0, 1, 1], ...PRODUCT, raw: RAW_CASES })),
+  ]);
 const cases = (group, n) => Array.from({ length: n }, (_, i) => ({ key: `case-${group}-${i + 1}`, src: `case-${group}-${i + 1}`, crop: [0, 0, 1, 1], ...CASE }));
 export const PHOTOS = [
+  ...productFrames(),
   ...cases('parking', 10),
   ...cases('home', 10),
   ...cases('biz', 10),

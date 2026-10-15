@@ -147,6 +147,10 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-002/AC-38 остров React, вес с островами | build | `build/catalog-rev5.test.ts`, `build/budget.test.ts` | ✅ |
 | SPEC-002/AC-39 axe и клавиатура ревизии 5 | a11y | `a11y/catalog.spec.ts` | ✅ |
 | SPEC-002/AC-40 эталоны листинга и уровня | visual | `visual/templates.spec.ts` | ✅ |
+| SPEC-002/AC-41 наборы кадров, productFrames | unit | `unit/product-frames.test.ts` | ✅ |
+| SPEC-002/AC-42 мини-галерея в HTML, compact и хиты без неё | build | `build/card-gallery.test.ts` | ✅ |
+| SPEC-002/AC-43 гортание кадров, drag, без JS, фильтр | functional | `functional/card-gallery.spec.ts` | ✅ |
+| SPEC-002/AC-44 axe и клавиатура галереи | a11y | `a11y/card-gallery.spec.ts` | ✅ |
 | SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |
 | SPEC-005/AC-01 корзина: setQty, setTurnkey, remove, clear, totals | unit | `unit/shop.test.ts` | ✅ |
 | SPEC-005/AC-02 сравнение, событие, recent | unit | `unit/shop.test.ts` | ✅ |

@@ -1,0 +1,135 @@
+{
+  "_note": "Набори кадрів міні-галерей карток (SPEC-002 §3.10, D-065). frames — нові кадри Pexels (сирий файл sources/photos/raw/2026-10-15-products/pf-{id}.jpg → ключ pf-{set}-{n}), reuse — 1:1-версії кадрів «Обʼєкти» (ключ p-{case}). Перший кадр товару — його ілюстрація з PRODUCT_ILLUSTRATION, далі frames і reuse до 5.",
+  "sets": {
+    "wallbox": {
+      "frames": [
+        { "id": 27355833, "author": "Andersen EV", "slug": "stylish-and-functional-home-ev-charger-blending-seamlessly-with-modern-home-exteriors", "alt": "Деревʼяна настінна зарядна станція на цегляній стіні (ілюстрація)" },
+        { "id": 27355837, "author": "Andersen EV", "slug": "home-ev-charger-with-integrated-charging-cable-offering-seamless-and-convenient-charging-solutions-for-type-2-electric-vehicles", "alt": "Настінна станція з інтегрованим кабелем на фасаді (ілюстрація)" },
+        { "id": 27355835, "author": "Andersen EV", "slug": "custom-finish-ev-charger-in-a-home-garage-showcasing-our-wide-range-of-colour-options", "alt": "Настінна станція в гаражі, синє авто на зарядці (ілюстрація)" },
+        { "id": 38171185, "author": "Elite Power Group", "slug": "modern-myenergi-zappi-electric-vehicle-charger", "alt": "Настінна зарядна станція зблизька, рука на корпусі (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "duo": {
+      "frames": [
+        { "id": 15158968, "author": "Magda Ehlers", "slug": "charging-station-for-electric-cars", "alt": "Два кабелі в розетках зарядної станції (ілюстрація)" },
+        { "id": 32472662, "author": "Haberdoedas", "slug": "modern-electric-vehicle-charging-station", "alt": "Вулична зарядна стійка з підключеними кабелями (ілюстрація)" },
+        { "id": 32472665, "author": "Haberdoedas", "slug": "electric-vehicle-charging-station-outdoors", "alt": "Зарядна стійка зблизька, кабель і штекер (ілюстрація)" },
+        { "id": 33508506, "author": "Mohamed B.", "slug": "modern-electric-vehicle-charging-station-outdoors", "alt": "Зарядна стійка на сонячному майданчику (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "dc": {
+      "frames": [
+        { "id": 33508505, "author": "Mohamed B.", "slug": "modern-electric-vehicle-charging-station-in-urban-area", "alt": "Швидка станція біля торгової зони (ілюстрація)" },
+        { "id": 9800004, "author": "Kindel Media", "slug": "ev-charger-in-california-usa", "alt": "Зарядна станція просто неба (ілюстрація)" },
+        { "id": 9799991, "author": "Kindel Media", "slug": "road-street-industry-charging", "alt": "Біле авто на зарядці на відкритому паркінгу (ілюстрація)" },
+        { "id": 35736783, "author": "04iraq", "slug": "tesla-model-3-charging-at-station", "alt": "Електромобіль на швидкій станції вдень (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "split-dc": {
+      "frames": [
+        { "id": 33661084, "author": "Mohamed B.", "slug": "modern-electric-vehicle-charging-station-outdoors", "alt": "Кілька зарядних постів під навісом (ілюстрація)" },
+        { "id": 37576187, "author": "Giant Asparagus", "slug": "electric-car-charging-at-station-with-multiple-chargers", "alt": "Авто біля ряду зарядних станцій (ілюстрація)" },
+        { "id": 9799724, "author": "Kindel Media", "slug": "white-and-red-plastic-container", "alt": "Електромобілі на зарядці біля кількох станцій (ілюстрація)" },
+        { "id": 28851165, "author": "Jakub Zerdzicki", "slug": "eco-friendly-electric-cars-in-underground-parking", "alt": "Електромобілі на зарядці в підземному паркінгу (ілюстрація)" },
+        { "id": 30361373, "author": "ShotTrotter", "slug": "tesla-charging-stations-in-urban-setting", "alt": "Лінія зарядних станцій у тумані (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "dc-battery": {
+      "frames": [
+        { "id": 9800025, "author": "Kindel Media", "slug": "industry-charging-technology-architecture", "alt": "Зарядна станція з накопичувачем на відновлюваній енергії (ілюстрація)" },
+        { "id": 33508509, "author": "Mohamed B.", "slug": "modern-electric-vehicle-charging-station", "alt": "Зарядна станція під чистим небом (ілюстрація)" },
+        { "id": 9799738, "author": "Kindel Media", "slug": "industry-charging-car-vehicle", "alt": "Зарядна станція зблизька, авто в розфокусі (ілюстрація)" },
+        { "id": 37576213, "author": "Giant Asparagus", "slug": "public-electric-vehicle-charging-station-in-park", "alt": "Публічна зарядна станція в міському парку (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "portable": {
+      "frames": [
+        { "id": 8827006, "author": "Introspectivedsgn", "slug": "hand-holding-a-device", "alt": "Рука з зарядним кабелем просто неба (ілюстрація)" },
+        { "id": 5967550, "author": "Cesare Elettrico", "slug": "electric-renault-car-charging", "alt": "Біле авто заряджається біля червоної стіни (ілюстрація)" },
+        { "id": 24376862, "author": "Elmir Jafarov", "slug": "electric-car-while-charging", "alt": "Біле авто на зарядці на міській вулиці (ілюстрація)" },
+        { "id": 9799725, "author": "Kindel Media", "slug": "person-holding-black-and-gray-metal-tool", "alt": "Зарядний штекер у руці (ілюстрація)" },
+        { "id": 11457403, "author": "Introspectivedsgn", "slug": "close-up-of-a-digital-display", "alt": "Портативна батарея з дисплеєм заряду (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "cable": {
+      "frames": [
+        { "id": 37576204, "author": "Giant Asparagus", "slug": "close-up-of-electric-vehicle-charging-plugs", "alt": "Зарядні штекери зблизька (ілюстрація)" },
+        { "id": 17000830, "author": "Vitali Adutskevich", "slug": "close-up-of-car-charging-outlet", "alt": "Зарядний порт електромобіля зблизька (ілюстрація)" },
+        { "id": 37576219, "author": "Giant Asparagus", "slug": "electric-vehicle-charging-close-up-in-sunlight", "alt": "Розʼєм зарядки на сонці зблизька (ілюстрація)" },
+        { "id": 34800670, "author": "smart me AG", "slug": "electric-vehicle-charging-station-close-up", "alt": "Зарядна станція зблизька в приміщенні (ілюстрація)" },
+        { "id": 9799743, "author": "Kindel Media", "slug": "charging-of-a-vehicle-i", "alt": "Авто підключене до зарядної станції зблизька (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "panel": {
+      "frames": [
+        { "id": 9799702, "author": "Kindel Media", "slug": "close-up-of-a-solar-panel", "alt": "Комірки сонячної панелі зблизька (ілюстрація)" },
+        { "id": 18306343, "author": "Michael Pointner", "slug": "black-solar-panels", "alt": "Чорні сонячні панелі під сонцем (ілюстрація)" },
+        { "id": 9875445, "author": "Kindel Media", "slug": "a-solar-panel-on-roof-tiles", "alt": "Сонячна панель на черепичному даху зблизька (ілюстрація)" },
+        { "id": 14384697, "author": "Markus Spiske", "slug": "close-up-photo-of-solar-panels", "alt": "Монтаж сонячних панелей, техніки поруч (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "inverter": {
+      "frames": [
+        { "id": 36085778, "author": "Elite Power Group", "slug": "solar-technician-installing-sungrow-inverter", "alt": "Монтаж сонячного інвертора в приміщенні (ілюстрація)" },
+        { "id": 38171130, "author": "Elite Power Group", "slug": "electrician-installing-solar-inverter-outdoors", "alt": "Електрик монтує інвертор на фасаді (ілюстрація)" },
+        { "id": 33438229, "author": "Elite Power Group", "slug": "technician-installing-solar-inverter-in-australia", "alt": "Налаштування сонячного інвертора (ілюстрація)" },
+        { "id": 38171183, "author": "Elite Power Group", "slug": "detailed-close-up-of-solar-inverter-internals", "alt": "Внутрішні компоненти інвертора зблизька (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "solar-kit": {
+      "frames": [],
+      "reuse": ["case-home-1", "case-home-2", "case-home-4", "case-home-6"]
+    },
+    "home-battery": {
+      "frames": [
+        { "id": 39057093, "author": "Elite Power Group", "slug": "professional-home-battery-installation-process", "alt": "Технік монтує домашню батарею (ілюстрація)" },
+        { "id": 39057090, "author": "Elite Power Group", "slug": "electrician-installing-residential-battery-storage", "alt": "Електрик біля домашнього накопичувача (ілюстрація)" },
+        { "id": 33751679, "author": "Elite Power Group", "slug": "technician-installing-home-battery-system-indoors", "alt": "Домашня батарея в приміщенні, монтаж (ілюстрація)" },
+        { "id": 37929911, "author": "Magda Ehlers", "slug": "high-efficiency-residential-power-inverter-setup", "alt": "Домашній інвертор із батареєю на стіні (ілюстрація)" }
+      ],
+      "reuse": []
+    },
+    "bess": {
+      "frames": [
+        { "id": 17429847, "author": "Ellie Burgin", "slug": "transformer-substation-behind-building", "alt": "Промисловий контейнер із кондиціонером (ілюстрація)" },
+        { "id": 36594160, "author": "Heru Dharma", "slug": "industrial-worker-inspecting-batteries-in-warehouse", "alt": "Перевірка промислових батарей у цеху (ілюстрація)" },
+        { "id": 4089662, "author": "rkftr", "slug": "electric-boxes-in-close-up-shot", "alt": "Електрошафи на промисловому майданчику (ілюстрація)" }
+      ],
+      "reuse": ["case-biz-4"]
+    },
+    "carport": {
+      "frames": [],
+      "reuse": ["case-parking-1", "case-parking-2", "case-parking-5", "case-parking-7"]
+    }
+  },
+  "products": {
+    "ets-home-7": "wallbox",
+    "ets-home-22": "wallbox",
+    "ets-home-11-gbt": "wallbox",
+    "ets-duo-22-ocpp": "duo",
+    "ets-dc-60": "dc",
+    "ets-dc-120": "dc",
+    "ets-dc-240-split": "split-dc",
+    "ets-dc-120-battery": "dc-battery",
+    "ets-portable-7": "portable",
+    "cable-gbt-type2": "cable",
+    "panel-550-topcon": "panel",
+    "inverter-hybrid-10": "inverter",
+    "ets-solar-home-5": "solar-kit",
+    "ets-battery-home-10": "home-battery",
+    "ets-bess-100": "bess",
+    "ets-bess-215": "bess",
+    "carport-private-2": "carport",
+    "carport-commercial-8": "carport",
+    "carport-hub-20": "carport"
+  }
+}

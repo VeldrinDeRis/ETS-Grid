@@ -35,7 +35,7 @@ const index = await searchIndex();
       {
         products.map((p) => (
           <div class="sp-item" data-search-item={p.slug} hidden>
-            <ProductCard product={p} headingLevel={2} />
+            <ProductCard product={p} headingLevel={2} gallery={false} />
           </div>
         ))
       }
