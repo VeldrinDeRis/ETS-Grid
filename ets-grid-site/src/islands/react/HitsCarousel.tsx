@@ -3,6 +3,7 @@
 // стрілки й точки сторінок. Картки — серверний HTML ProductCard через іменовані слоти card0…cardN: без JS усі
 // картки в документі. Фільтр рівня лишає картки вибраного рівня (ряд пересобирається, картки не дублюються).
 import { Carousel, useCarousel } from '@motionplus/core/react';
+import { usePageTransition } from './use-page-transition';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
@@ -42,6 +43,7 @@ function Controls() {
 
 export default function HitsCarousel({ levels, hits, ...slots }: Props) {
   const [level, setLevel] = useState<'all' | number>('all');
+  const transition = usePageTransition();
   const shown = hits.map((h, i) => ({ ...h, node: slots[`card${i}`] as ReactNode })).filter((h) => level === 'all' || h.level === level);
   return (
     <div className="hits__carousel" data-hits>
@@ -68,6 +70,7 @@ export default function HitsCarousel({ levels, hits, ...slots }: Props) {
         snap="page"
         loop={false}
         align="stretch"
+        transition={transition}
       >
         <Controls />
       </Carousel>

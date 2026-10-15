@@ -3,6 +3,7 @@
 // стрілки, точки-лампи. Кадри — серверний HTML <picture> (Photo.astro) через слоти shot0…shot4: без JS усі кадри
 // в документі, видно перший; острів лише додає гортання. Мітка «Ілюстративне фото» — у кожному кадрі, бейдж — поверх.
 import { Carousel, useCarousel } from '@motionplus/core/react';
+import { usePageTransition } from './use-page-transition';
 import { useEffect, useState, type ReactNode } from 'react';
 
 interface Props {
@@ -54,6 +55,7 @@ function Controls({ label, count }: { label: string; count: number }) {
 }
 
 export default function CardGallery({ count, label, ...slots }: Props) {
+  const transition = usePageTransition();
   const items = Array.from({ length: count }, (_, i) => (
     <div key={i} className="pgal__shot">
       {slots[`shot${i}`] as ReactNode}
@@ -61,7 +63,7 @@ export default function CardGallery({ count, label, ...slots }: Props) {
   ));
   return (
     <div className="pgal" data-card-gallery>
-      <Carousel className="pgal__track" items={items} gap={0} snap="page" loop={false} itemSize="fill">
+      <Carousel className="pgal__track" items={items} gap={0} snap="page" loop={false} itemSize="fill" transition={transition}>
         <Controls label={label} count={count} />
       </Carousel>
     </div>

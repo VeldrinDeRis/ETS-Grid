@@ -55,9 +55,9 @@ const levels = getLevels()
     border-radius: 50%;
     background: var(--color-accent);
     opacity: 0.3;
-    transition:
-      opacity var(--dur-fast) var(--ease-out),
-      box-shadow var(--dur-fast) var(--ease-out);
+    /* Ореол сталий, загоряння — лише opacity (D-072): у спокої тліє разом із вогником. */
+    box-shadow: 0 0 8px var(--color-accent);
+    transition: opacity var(--dur-fast) var(--ease-out);
   }
   .hits__filters button[aria-pressed='true'] {
     border-color: var(--color-ink);
@@ -65,7 +65,6 @@ const levels = getLevels()
   }
   .hits__filters button[aria-pressed='true']::before {
     opacity: 1;
-    box-shadow: 0 0 8px var(--color-accent);
   }
   .hits__track {
     position: relative;
