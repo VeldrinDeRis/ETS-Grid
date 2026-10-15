@@ -1,14 +1,16 @@
 ---
-// Блоки 1–4 картки товару: галерея, заголовок, ціна з перемикачем, ключові характеристики (SPEC-003 §3.1).
+// Смуга 1 картки товару (SPEC-003 §3.1, §3.5): галерея, заголовок, ціна з перемикачем, «Головне» і повна таблиця
+// характеристик. ≥ 960 px: ліворуч галерея → «Головне» → характеристики, праворуч блок покупки прилипає.
 import productContent from '../../data/product-content.json';
 import { formatPrice } from '../../lib/format';
 import { productImage } from '../../lib/images';
-import { hasToggle, installPrice, keyRows } from '../../lib/product';
+import { fullRows, hasToggle, installPrice, keyRows } from '../../lib/product';
 import { routes } from '../../lib/routes';
 import type { LevelKey, Product } from '../../lib/schema';
 import DemoBadge from '../ui/DemoBadge.astro';
 import { LEVEL_ICON } from '../../lib/level-icons';
-import { ILLUSTRATION_LABEL, PRODUCT_ILLUSTRATION } from '../../lib/photos';
+import { ILLUSTRATION_LABEL, PHOTOS, photoSrc, productFrames } from '../../lib/photos';
+import ProductGallery from '../../islands/react/ProductGallery';
 import Photo from '../ui/Photo.astro';
 import Icon from '../layout/Icon.astro';
 import type { IconName } from '../../lib/icons';
@@ -25,8 +27,10 @@ const SLOTS = 4;
 const toggle = hasToggle(product);
 const install = installPrice(product);
 const compositionKey = product.type === 'kit' ? 'kit' : levelKey;
-/** Ілюстрація до фото від замовника (D-042) — лише на місці головного фото. */
-const illustration = image ? undefined : PRODUCT_ILLUSTRATION[product.slug];
+/** Набір кадрів картки (SPEC-002 §3.10) до фото від замовника: фото замовника (Q-6) замінює набір цілком. */
+const frames = image ? [] : productFrames(product.slug);
+const zoomSrc = (key: (typeof frames)[number]) => photoSrc(key, PHOTOS[key].widths[PHOTOS[key].widths.length - 1], 'webp');
+const GALLERY_SIZES = '(max-width: 959px) calc(100vw - 2rem), 40vw';
 const composition = (productContent.composition as Record<string, string[]>)[compositionKey] ?? [];
 const inStock = product.stock === 'in_stock';
 const isPlaceholder = (v: string) => /\[[^\]]+\]/.test(v);
@@ -46,32 +50,47 @@ function rowIcon(row: { key?: string; label: string }): IconName | undefined {
 ---
 <div class="ptop">
   <div class="ptop__gallery" data-product-block="gallery">
-    <ul role="list" class="gallery">
-      {
-        Array.from({ length: SLOTS }, (_, i) =>
-          i === 0 && image ? (
-            <li class="gallery__item gallery__item--main">
-              <button type="button" class="gallery__zoom" data-zoom={image.src} data-zoom-alt={image.alt}>
-                <img src={image.src} alt={image.alt} width="600" height="600" />
+    {
+      frames.length ? (
+        <ProductGallery client:intent count={frames.length} label={product.name}>
+          {frames.map((key, i) => (
+            <div slot={`shot${i}`} class="gallery__frame">
+              <Photo photo={key} sizes={GALLERY_SIZES} priority={i === 0} />
+              <span class="photo-note">{ILLUSTRATION_LABEL}</span>
+              <button type="button" class="gallery__zoom-btn" data-zoom={zoomSrc(key)} data-zoom-alt={PHOTOS[key].alt}>
+                <Icon name="search" size={18} />
                 <span class="visually-hidden">Збільшити фото</span>
               </button>
-            </li>
-          ) : i === 0 && illustration ? (
-            <li class="gallery__item gallery__item--main gallery__item--illustration">
-              <Photo photo={illustration} sizes="(max-width: 959px) calc(100vw - 2rem), 40vw" priority />
-              <span class="photo-note">{ILLUSTRATION_LABEL}</span>
-            </li>
-          ) : (
-            <li class:list={['gallery__item', { 'gallery__item--main': i === 0 }]} data-gallery-placeholder>
-              <span class="gallery__empty">
-                <Icon name={LEVEL_ICON[levelKey as LevelKey]} size={i === 0 ? 40 : 22} />
-                <Placeholder label={`[ФОТО ${i + 1}]`} />
-              </span>
-            </li>
-          ),
-        )
-      }
-    </ul>
+            </div>
+          ))}
+          {frames.map((key, i) => (
+            <span slot={`thumb${i}`} class="gallery__thumb">
+              <Photo photo={key} sizes="5rem" />
+            </span>
+          ))}
+        </ProductGallery>
+      ) : (
+        <ul role="list" class="gallery">
+          {Array.from({ length: SLOTS }, (_, i) =>
+            i === 0 && image ? (
+              <li class="gallery__item gallery__item--main">
+                <button type="button" class="gallery__zoom" data-zoom={image.src} data-zoom-alt={image.alt}>
+                  <img src={image.src} alt={image.alt} width="600" height="600" />
+                  <span class="visually-hidden">Збільшити фото</span>
+                </button>
+              </li>
+            ) : (
+              <li class:list={['gallery__item', { 'gallery__item--main': i === 0 }]} data-gallery-placeholder>
+                <span class="gallery__empty">
+                  <Icon name={LEVEL_ICON[levelKey as LevelKey]} size={i === 0 ? 40 : 22} />
+                  <Placeholder label={`[ФОТО ${i + 1}]`} />
+                </span>
+              </li>
+            ),
+          )}
+        </ul>
+      )
+    }
     <dialog class="zoom" data-zoom-dialog aria-label="Фото товару">
       <div class="zoom__frame" data-zoom-frame></div>
       <button type="button" class="zoom__close" data-zoom-close>Закрити</button>
@@ -167,7 +186,9 @@ function rowIcon(row: { key?: string; label: string }): IconName | undefined {
       </p>
       <p class="visually-hidden" role="status" data-card-status></p>
     </div>
+  </div>
 
+  <div class="ptop__main">
     <div data-product-block="chars" class="pchars">
       <h2 class="pchars__title">Головне</h2>
       <dl class="pchars__list">
@@ -184,15 +205,209 @@ function rowIcon(row: { key?: string; label: string }): IconName | undefined {
         }
       </dl>
     </div>
+
+    <section class="pspec" aria-labelledby="spec-title" data-product-part="spec-table">
+      <h2 id="spec-title" class="pchars__title">Характеристики</h2>
+      <table class="pspec__table">
+        <tbody>
+          {
+            fullRows(product).map((row) => (
+              <tr>
+                <th scope="row">{row.label}</th>
+                <td>{row.value === null ? <Placeholder label="[ДАНІ]" /> : isPlaceholder(row.value) ? <Placeholder label={row.value} /> : row.value}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </section>
   </div>
 </div>
 
 <style>
+  /* Смуга 1 (§3.5): ліворуч галерея → «Головне» → характеристики, праворуч блок покупки прилипає. */
   .ptop {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'gallery info'
+      'main info';
     gap: var(--space-xl);
     align-items: start;
+  }
+  .ptop__gallery {
+    grid-area: gallery;
+    min-width: 0;
+  }
+  .ptop__info {
+    grid-area: info;
+    position: sticky;
+    top: var(--space-m);
+  }
+  .ptop__main {
+    grid-area: main;
+    display: grid;
+    gap: var(--space-l);
+    min-width: 0;
+  }
+  /* ---------- галерея: набір кадрів на Carousel (ProductGallery) ---------- */
+  .ptop__gallery :global(astro-island) {
+    display: block;
+  }
+  .ptop__gallery :global(.pgallery__track) {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    background: var(--day-bg);
+  }
+  .ptop__gallery :global(.pgallery__shot) {
+    width: 100%;
+    flex: none;
+  }
+  .ptop__gallery :global(.pgallery__shot > astro-slot),
+  .ptop__gallery :global(.pgallery__shot > div) {
+    display: block;
+    height: 100%;
+  }
+  .gallery__frame {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+  }
+  .gallery__frame :global(.photo),
+  .gallery__frame :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .gallery__zoom-btn {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    display: inline-grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border: 0;
+    border-radius: 50%;
+    background: rgb(244 246 248 / 0.9);
+    color: var(--day-ink);
+    cursor: zoom-in;
+  }
+  /* Без JS острів не гідратується: кадри — стрічкою з прокруткою, мініатюри ведуть до них не потрібні. */
+  :global(html:not(.js)) .ptop__gallery :global(.pgallery__track ul) {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+  }
+  .ptop__gallery :global(.pgallery__nav) {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: var(--space-s);
+  }
+  .ptop__gallery :global(.pgallery__arrow) {
+    display: inline-grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  .ptop__gallery :global(.pgallery__arrow:disabled) {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .ptop__gallery :global(.pgallery__arrow--next) {
+    grid-column: 3;
+  }
+  .ptop__gallery :global(.pgallery__thumbs) {
+    grid-row: 1;
+    grid-column: 2;
+    display: flex;
+    justify-content: center;
+    gap: var(--space-2xs);
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+  }
+  .ptop__gallery :global(.pgallery__thumb) {
+    position: relative;
+    display: block;
+    flex: none;
+    width: 4.5rem;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+    background: var(--day-bg);
+    cursor: pointer;
+    opacity: 0.7;
+    transition:
+      opacity var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+  /* Активний кадр — мініатюра в рамці ink і з вогником (The Lit Chip Rule). */
+  .ptop__gallery :global(.pgallery__thumb[aria-current='true']) {
+    border-color: var(--color-ink);
+    opacity: 1;
+  }
+  .ptop__gallery :global(.pgallery__thumb::after) {
+    content: '';
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+  .ptop__gallery :global(.pgallery__thumb[aria-current='true']::after) {
+    opacity: 1;
+  }
+  .gallery__thumb,
+  .gallery__thumb :global(.photo),
+  .gallery__thumb :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* ---------- повна таблиця характеристик: дві колонки на desktop ---------- */
+  .pspec__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .pspec__table tbody {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-l);
+  }
+  .pspec__table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-xs);
+    padding: var(--space-2xs) 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .pspec__table th {
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+    font-weight: 400;
+    text-align: left;
+  }
+  .pspec__table td {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
   .gallery {
     display: grid;
@@ -420,7 +635,29 @@ function rowIcon(row: { key?: string; label: string }): IconName | undefined {
   @media (max-width: 959.98px) {
     .ptop {
       grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'gallery'
+        'info'
+        'main';
       gap: var(--space-l);
+    }
+    .ptop__info {
+      position: static;
+    }
+    .ptop__gallery :global(.pgallery__track) {
+      aspect-ratio: 4 / 3;
+    }
+    .gallery__frame {
+      aspect-ratio: 4 / 3;
+    }
+    .ptop__gallery :global(.pgallery__thumbs) {
+      justify-content: flex-start;
+    }
+    .ptop__gallery :global(.pgallery__thumb) {
+      width: 3.5rem;
+    }
+    .pspec__table tbody {
+      grid-template-columns: minmax(0, 1fr);
     }
     /* Телефон: головне фото 4:3 і рядок малих мініатюр — ціна й кнопка ближче до першого екрана. */
     .gallery {

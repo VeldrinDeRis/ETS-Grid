@@ -43,6 +43,8 @@ test.describe('SPEC-003/AC-06 перемикач «з монтажем»', () =>
 test.describe('SPEC-003/AC-07 сумісність з авто', () => {
   test('вибір авто міняє результат і швидкість', async ({ page }) => {
     await page.goto(HOME7);
+    // Рев. 1 (§3.5): сумісність — пункт акордеона смуги 2, відкривається покупцем.
+    await page.getByText('Сумісність з вашим авто').click();
     const select = page.getByLabel('Ваше авто');
     const result = page.locator('[data-compat-result]');
     await select.selectOption('tesla-model-3-lr-awd-2020');
@@ -51,28 +53,20 @@ test.describe('SPEC-003/AC-07 сумісність з авто', () => {
     await expect(result).toContainText('Потрібен адаптер: Адаптер Type 2 → GB/T AC');
     await expect(result).toContainText(`до 7${NBSP}кВт`);
     await page.goto('/product/ets-dc-60/');
+    await page.getByText('Сумісність з вашим авто').click();
     await page.getByLabel('Ваше авто').selectOption('nissan-leaf-40-ze1');
     await expect(page.locator('[data-compat-result]')).toContainText('Не підходить');
   });
 });
 
 test.describe('SPEC-003/AC-08 збільшення фото', () => {
-  test('dialog, Esc, повернення фокусу (картинка підставлена тестом — реальних фото до SPEC-010 немає)', async ({ page }) => {
+  test('dialog, Esc, повернення фокусу', async ({ page }) => {
     await page.goto(HOME7);
-    await page.evaluate(() => {
-      const item = document.querySelector('[data-gallery-placeholder]')!;
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.dataset.zoom = '/favicon.svg';
-      button.dataset.zoomAlt = 'Тестове фото';
-      button.textContent = 'Збільшити фото';
-      item.replaceChildren(button);
-    });
-    const trigger = page.getByRole('button', { name: 'Збільшити фото' });
+    const trigger = page.getByRole('button', { name: 'Збільшити фото' }).first();
     await trigger.click();
     const dialog = page.getByRole('dialog', { name: 'Фото товару' });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('img', { name: 'Тестове фото' })).toBeVisible();
+    await expect(dialog.getByRole('img')).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(dialog).toBeHidden();
     await expect(trigger).toBeFocused();

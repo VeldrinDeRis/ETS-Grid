@@ -45,9 +45,14 @@
   gap: 0.3em;
   max-width: 100%;
   color: var(--color-ink-muted);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   line-height: 1.2;
   text-align: center;
+  white-space: nowrap;
+}
+/* Мала мініатюра (зведення оформлення, 56 px): підпис у два рядки, а не поверх сусідньої назви. */
+.co-items .pthumb__note {
+  white-space: normal;
 }
 .pthumb__note::before {
   content: '';

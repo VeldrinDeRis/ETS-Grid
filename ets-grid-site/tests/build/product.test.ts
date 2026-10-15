@@ -6,7 +6,9 @@ import { fullRows } from '../../src/lib/product';
 import { page } from '../helpers/dist';
 
 const products = catalog.products.map((p) => ({ docs: [], related: [], ...p })) as unknown as Product[];
-const BLOCKS = ['gallery', 'header', 'price', 'chars', 'fit', 'install', 'delivery', 'docs', 'cross', 'reviews', 'sticky'];
+// Склад блоків ТЗ §6.4; порядок — за ревізією 1 (§3.5, D-071): вітрина «Разом працює краще» перед смугою «Ще про товар»
+// (аксесуари, документи, відгуки).
+const BLOCKS = ['gallery', 'header', 'price', 'chars', 'fit', 'install', 'delivery', 'cross', 'docs', 'reviews', 'sticky'];
 const text = (s: string | null | undefined) => (s ?? '').replace(/[ \t\r\n]+/g, ' ').trim();
 
 describe('SPEC-003/AC-03 11 блоків у порядку ТЗ, відсутнє — видимими плейсхолдерами', () => {
@@ -16,10 +18,13 @@ describe('SPEC-003/AC-03 11 блоків у порядку ТЗ, відсутн�
     expect(blocks).toEqual(BLOCKS);
 
     const gallery = doc.querySelector('[data-product-block="gallery"]')!;
-    expect(gallery.querySelectorAll('.gallery__item')).toHaveLength(4);
+    // Рев. 1 (§3.5): набір кадрів картки — 5 кадрів; без ілюстрацій — 4 видимі рамки [ФОТО N] (D-031).
+    const frames = gallery.querySelectorAll('.gallery__frame').length;
+    if (frames) expect(frames).toBe(5);
+    else expect(gallery.querySelectorAll('.gallery__item')).toHaveLength(4);
     expect(text(doc.querySelector('[data-product-block="header"]')?.textContent)).toContain('[АРТИКУЛ]');
     if (product.docs.length === 0) expect(text(doc.querySelector('[data-product-block="docs"]')?.textContent)).toContain('[ПАСПОРТ, PDF]');
-    if (product.related.length === 0) expect(text(doc.querySelector('[data-product-block="cross"]')?.textContent)).toContain('[АКСЕСУАРИ]');
+    if (product.related.length === 0) expect(text(doc.querySelector('[data-product-part="accessories"]')?.textContent)).toContain('[АКСЕСУАРИ]');
     expect(text(doc.querySelector('[data-product-block="reviews"]')?.textContent)).toContain('Відгуки зʼявляться після перших покупок');
   });
 });

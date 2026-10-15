@@ -103,6 +103,12 @@ html:not(.js) .js-only {
   display: none !important;
 }
 
+/* Каруселі Motion+ до гідратації (D-074): Ticker рендерить список з inline opacity: 0 і піднімає її лише після
+   заміру; острів на client:intent (D-069) і без JS лишається серверним HTML — перший кадр має бути видно одразу. */
+astro-island[ssr] [aria-roledescription='carousel'] > ul {
+  opacity: 1 !important;
+}
+
 /* Переходи між сторінками — прогресивне покращення, без JS (D-026 п. 6). */
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {

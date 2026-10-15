@@ -4,6 +4,7 @@
 // картки в документі. Фільтр рівня лишає картки вибраного рівня (ряд пересобирається, картки не дублюються).
 import { Carousel, useCarousel } from '@motionplus/core/react';
 import { usePageTransition } from './use-page-transition';
+import './hits-carousel.css';
 import { useState, type ReactNode } from 'react';
 
 interface Props {
@@ -47,16 +48,19 @@ export default function HitsCarousel({ levels, hits, ...slots }: Props) {
   const shown = hits.map((h, i) => ({ ...h, node: slots[`card${i}`] as ReactNode })).filter((h) => level === 'all' || h.level === level);
   return (
     <div className="hits__carousel" data-hits>
-      <div className="hits__filters" role="group" aria-label="Фільтр за рівнем">
-        <button type="button" aria-pressed={level === 'all'} data-hits-filter="all" onClick={() => setLevel('all')}>
-          Усі
-        </button>
-        {levels.map((l) => (
-          <button key={l.id} type="button" aria-pressed={level === l.id} data-hits-filter={String(l.id)} onClick={() => setLevel(l.id)}>
-            {l.name}
+      {/* Один рівень (полиця картки товару) — без фільтрів. */}
+      {levels.length > 1 && (
+        <div className="hits__filters" role="group" aria-label="Фільтр за рівнем">
+          <button type="button" aria-pressed={level === 'all'} data-hits-filter="all" onClick={() => setLevel('all')}>
+            Усі
           </button>
-        ))}
-      </div>
+          {levels.map((l) => (
+            <button key={l.id} type="button" aria-pressed={level === l.id} data-hits-filter={String(l.id)} onClick={() => setLevel(l.id)}>
+              {l.name}
+            </button>
+          ))}
+        </div>
+      )}
       {/* key — фільтр перезбирає карусель із нульової сторінки. */}
       <Carousel
         key={String(level)}

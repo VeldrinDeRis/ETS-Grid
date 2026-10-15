@@ -1,5 +1,6 @@
 ---
-// Блоки 5–10 картки товару (SPEC-003 §3.1) + повна таблиця характеристик (частина блоку 4).
+// Смуги 2–3 картки товару (SPEC-003 §3.1, §3.5): акордеон «Підходить для · Сумісність · Монтаж · Доставка»,
+// вітрина «Разом працює краще» на Carousel, «Ще про товар» (аксесуари, документи, відгуки), «Недавно переглянуті».
 import carsJson from '../../data/cars.json';
 import levelContentJson from '../../data/level-content.json';
 import productContent from '../../data/product-content.json';
@@ -7,7 +8,8 @@ import { getProduct, getProductsBy } from '../../lib/catalog';
 import type { Car } from '../../lib/filters';
 import { formatUnit } from '../../lib/format';
 import type { LevelContent } from '../../lib/level-content';
-import { carCompatibility, crossTitle, fullRows } from '../../lib/product';
+import { carCompatibility, crossTitle } from '../../lib/product';
+import HitsCarousel from '../../islands/react/HitsCarousel';
 import { routes } from '../../lib/routes';
 import { productThumb } from '../../lib/shop-data';
 import '../../styles/shop-ui.css';
@@ -52,176 +54,178 @@ const listingWithCar = `/${levelSlug}/${product.category}/`;
 const compositionKey = product.type === 'kit' ? 'kit' : levelKey;
 const composition = (productContent.composition as Record<string, string[]>)[compositionKey] ?? [];
 ---
-<section class="pblock" aria-labelledby="spec-title" data-product-part="spec-table">
-  <h2 id="spec-title">Характеристики</h2>
-  <table class="spec">
-    <tbody>
-      {
-        fullRows(product).map((row) => (
-          <tr>
-            <th scope="row">{row.label}</th>
-            <td>{row.value === null ? <Placeholder label="[ДАНІ]" /> : isPh(row.value) ? <Placeholder label={row.value} /> : row.value}</td>
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
-</section>
-
-<section class="pblock" aria-labelledby="fit-title" data-product-block="fit">
-  <h2 id="fit-title">Підходить для</h2>
-  <ul role="list" class="chips">
-    {product.scenarios.map((s) => <li>{scenarioLabels[s] ?? s}</li>)}
-  </ul>
+<!-- Смуга 2: акордеон, перший пункт відкритий; без JS — звичайні <details>, з JS — animateLayout (product.ts). -->
+<div class="paccordion" data-product-accordion>
+  <details class="pacc" data-product-block="fit" open>
+    <summary><h2 id="fit-title">Підходить для</h2></summary>
+    <div class="pacc__body">
+      <ul role="list" class="chips">
+        {product.scenarios.map((s) => <li>{scenarioLabels[s] ?? s}</li>)}
+      </ul>
+    </div>
+  </details>
   {
     isCharging && (
-      <div class="compat" data-compat>
-        <h3>Сумісність з вашим авто</h3>
-        <div class="compat__live js-only">
-          <label class="compat__label" for="compat-car">
-            Ваше авто
-          </label>
-          <select id="compat-car" data-compat-select>
-            <option value="">Оберіть модель</option>
-            {cars.map((c) => (
-              <option value={c.id}>
-                {c.brand} {c.model}
-              </option>
-            ))}
-          </select>
-          <p class="compat__result" aria-live="polite" data-compat-result>
-            Оберіть авто, щоб перевірити розʼєм і реальну швидкість зарядки.
+      <details class="pacc" data-product-part="compat">
+        <summary><h2 id="compat-title">Сумісність з вашим авто</h2></summary>
+        <div class="pacc__body compat" data-compat>
+          <div class="compat__live js-only">
+            <label class="compat__label" for="compat-car">
+              Ваше авто
+            </label>
+            <select id="compat-car" data-compat-select>
+              <option value="">Оберіть модель</option>
+              {cars.map((c) => (
+                <option value={c.id}>
+                  {c.brand} {c.model}
+                </option>
+              ))}
+            </select>
+            <p class="compat__result" aria-live="polite" data-compat-result>
+              Оберіть авто, щоб перевірити розʼєм і реальну швидкість зарядки.
+            </p>
+          </div>
+          <details class="compat__all">
+            <summary>Усі моделі ({cars.length})</summary>
+            <table class="spec">
+              <thead>
+                <tr>
+                  <th scope="col">Авто</th>
+                  <th scope="col">Результат</th>
+                  <th scope="col">Швидкість</th>
+                </tr>
+              </thead>
+              <tbody>
+                {compat.map(({ car, result }) => (
+                  <tr data-compat-row={car.id} data-status={result.status} data-speed={result.speedKw ?? ''} data-adapter={result.adapter ?? ''}>
+                    <th scope="row">
+                      {car.brand} {car.model}
+                    </th>
+                    <td>{STATUS[result.status]}</td>
+                    <td>{result.status === 'no' ? '—' : speed(result.speedKw)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+          <p class="compat__hint">
+            {adapterProduct && (
+              <>
+                Для авто з GB/T AC є <a href={routes.product(adapterProduct.slug)}>{adapterProduct.name}</a>.{' '}
+              </>
+            )}
+            Не знайшли своє авто? <a href={listingWithCar}>Фільтр «Підбір за авто» в каталозі</a>.
           </p>
         </div>
-        <details class="compat__all">
-          <summary>Усі моделі ({cars.length})</summary>
-          <table class="spec">
-            <thead>
-              <tr>
-                <th scope="col">Авто</th>
-                <th scope="col">Результат</th>
-                <th scope="col">Швидкість</th>
-              </tr>
-            </thead>
-            <tbody>
-              {compat.map(({ car, result }) => (
-                <tr data-compat-row={car.id} data-status={result.status} data-speed={result.speedKw ?? ''} data-adapter={result.adapter ?? ''}>
-                  <th scope="row">
-                    {car.brand} {car.model}
-                  </th>
-                  <td>{STATUS[result.status]}</td>
-                  <td>{result.status === 'no' ? '—' : speed(result.speedKw)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </details>
-        <p class="compat__hint">
-          {adapterProduct && (
-            <>
-              Для авто з GB/T AC є <a href={routes.product(adapterProduct.slug)}>{adapterProduct.name}</a>.{' '}
-            </>
-          )}
-          Не знайшли своє авто? <a href={listingWithCar}>Фільтр «Підбір за авто» в каталозі</a>.
-        </p>
+      </details>
+    )
+  }
+  <details class="pacc" data-product-block="install">
+    <summary><h2 id="install-title">Що входить у монтаж</h2></summary>
+    <div class="pacc__body">
+      <ul>
+        {composition.map((c) => <li>{withPh(c).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</li>)}
+      </ul>
+      <p>Строки монтажу: <Placeholder label={productContent.install_term} /></p>
+      {
+        input !== null && (
+          <p class="install__input">
+            Потрібний ввід: від {formatUnit(input, 'кВт')}. <a href="/#potuzhnist">Перевірити свій ввід</a>
+          </p>
+        )
+      }
+    </div>
+  </details>
+  <details class="pacc" data-product-block="delivery">
+    <summary><h2 id="delivery-title">Доставка й оплата</h2></summary>
+    <div class="pacc__body cols">
+      <div>
+        <h3>Доставка</h3>
+        <ul>{productContent.delivery.map((d) => <li>{withPh(d).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</li>)}</ul>
+        <p>{withPh(productContent.delivery_cost).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</p>
       </div>
-    )
-  }
-</section>
-
-<section class="pblock" aria-labelledby="install-title" data-product-block="install">
-  <h2 id="install-title">Що входить у монтаж</h2>
-  <ul>
-    {composition.map((c) => <li>{withPh(c).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</li>)}
-  </ul>
-  <p>Строки монтажу: <Placeholder label={productContent.install_term} /></p>
-  {
-    input !== null && (
-      <p class="install__input">
-        Потрібний ввід: від {formatUnit(input, 'кВт')}. <a href="/#potuzhnist">Перевірити свій ввід</a>
-      </p>
-    )
-  }
-</section>
-
-<section class="pblock" aria-labelledby="delivery-title" data-product-block="delivery">
-  <h2 id="delivery-title">Доставка й оплата</h2>
-  <div class="cols">
-    <div>
-      <h3>Доставка</h3>
-      <ul>{productContent.delivery.map((d) => <li>{withPh(d).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</li>)}</ul>
-      <p>{withPh(productContent.delivery_cost).map((ch) => (isPh(ch) ? <Placeholder label={ch} /> : ch))}</p>
+      <div>
+        <h3>Оплата</h3>
+        <ul>{productContent.payment.map((d) => <li>{d}</li>)}</ul>
+      </div>
     </div>
-    <div>
-      <h3>Оплата</h3>
-      <ul>{productContent.payment.map((d) => <li>{d}</li>)}</ul>
-    </div>
-  </div>
-</section>
+  </details>
+</div>
 
-<section class="pblock" aria-labelledby="docs-title" data-product-block="docs">
-  <h2 id="docs-title">Документи</h2>
-  <ul role="list" class="docs">
-    {
-      product.docs.length
-        ? product.docs.map((d) => (
-            <li>
-              <a href={d.href}>{d.title}</a>
-            </li>
-          ))
-        : productContent.docs_expected.map((d) => (
-            <li>
-              <Placeholder label={d} />
-            </li>
-          ))
-    }
-  </ul>
-</section>
-
+<!-- Смуга 3: вітрина — компактні картки на Carousel, як хіти головної (без галерей у картках). -->
 <section class="pblock" aria-labelledby="cross-title" data-product-block="cross">
   <h2 id="cross-title">{crossTitle(product)}</h2>
   {
     cross.length ? (
-      <div class="grid">
-        {cross.map((p) => (
-          <ProductCard product={p} variant="compact" />
-        ))}
+      <div class="hits pshelf">
+        <HitsCarousel client:visible levels={[]} hits={cross.map((p) => ({ slug: p.slug, level: p.level }))}>
+          {cross.map((p, i) => (
+            <div slot={`card${i}`} class="hits__card">
+              <ProductCard product={p} variant="compact" headingLevel={3} gallery={false} />
+            </div>
+          ))}
+        </HitsCarousel>
       </div>
     ) : (
       <p class="plate">{productContent.cross_placeholder}</p>
     )
   }
-  <h3>Аксесуари</h3>
-  {
-    related.length ? (
-      <div class="grid">
-        {related.map((p) => (
-          <ProductCard product={p} variant="compact" />
-        ))}
-      </div>
-    ) : (
-      <p class="plate">{productContent.related_placeholder}</p>
-    )
-  }
 </section>
 
-<section class="pblock" aria-labelledby="reviews-title" data-product-block="reviews">
-  <h2 id="reviews-title">Відгуки та питання</h2>
-  <p class="plate">{productContent.reviews_placeholder}</p>
-  {
-    faq.length ? (
-      faq.map((item) => (
-        <details class="faq">
-          <summary>{item.q}</summary>
-          <p>{item.a}</p>
-        </details>
-      ))
-    ) : (
-      <p>
-        <Placeholder label={productContent.faq_placeholder} />
-      </p>
-    )
-  }
+<section class="pblock pmore" aria-labelledby="more-title">
+  <h2 id="more-title">Ще про товар</h2>
+  <div class="pmore__grid">
+    <div class="pmore__item" data-product-part="accessories">
+      <h3>Аксесуари</h3>
+      {
+        related.length ? (
+          <div class="grid">
+            {related.map((p) => (
+              <ProductCard product={p} variant="compact" headingLevel={4} gallery={false} />
+            ))}
+          </div>
+        ) : (
+          <p class="plate">{productContent.related_placeholder}</p>
+        )
+      }
+    </div>
+    <div class="pmore__item" data-product-block="docs">
+      <h3 id="docs-title">Документи</h3>
+      <ul role="list" class="docs">
+        {
+          product.docs.length
+            ? product.docs.map((d) => (
+                <li>
+                  <a href={d.href}>{d.title}</a>
+                </li>
+              ))
+            : productContent.docs_expected.map((d) => (
+                <li>
+                  <Placeholder label={d} />
+                </li>
+              ))
+        }
+      </ul>
+    </div>
+    <div class="pmore__item pmore__item--wide" data-product-block="reviews">
+      <h3 id="reviews-title">Відгуки та питання</h3>
+      <p class="plate">{productContent.reviews_placeholder}</p>
+      {
+        faq.length ? (
+          faq.map((item) => (
+            <details class="faq">
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))
+        ) : (
+          <p>
+            <Placeholder label={productContent.faq_placeholder} />
+          </p>
+        )
+      }
+    </div>
+  </div>
 </section>
 
 <section class="pblock" aria-labelledby="recent-title" data-product-part="recent" data-recent>
@@ -235,7 +239,7 @@ const composition = (productContent.composition as Record<string, string[]>)[com
 
 <style>
   .pblock {
-    margin-top: var(--space-2xl);
+    margin-top: var(--space-xl);
   }
   /* Підзаголовок після сітки чи плашки — новий підблок, а не продовження попереднього. */
   .pblock > :is(.grid, .plate) + h3 {
@@ -258,6 +262,72 @@ const composition = (productContent.composition as Record<string, string[]>)[com
     color: var(--color-ink-muted);
     font-weight: 400;
   }
+  /* ---------- смуга 2: акордеон (як FAQ головної) ---------- */
+  .paccordion {
+    margin-top: var(--space-xl);
+    border-top: 1px solid var(--color-line);
+  }
+  .pacc {
+    border-bottom: 1px solid var(--color-line);
+  }
+  .pacc > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    min-height: 4rem;
+    list-style: none;
+    cursor: pointer;
+  }
+  .pacc > summary::-webkit-details-marker {
+    display: none;
+  }
+  .pacc > summary h2 {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+  /* Шеврон повертається при відкритті — лише transform. */
+  .pacc > summary::after {
+    content: '';
+    flex: none;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-25%) rotate(45deg);
+    transition: transform var(--dur) var(--ease-out);
+  }
+  .pacc[open] > summary::after {
+    transform: translateY(25%) rotate(-135deg);
+  }
+  .pacc__body {
+    padding-bottom: var(--space-l);
+  }
+  /* ---------- смуга 3: «Ще про товар» — плашки у два стовпці ---------- */
+  .pmore__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+  .pmore__item {
+    min-width: 0;
+    padding: var(--space-m);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+  }
+  .pmore__item > h3 {
+    margin-top: 0;
+    font-size: var(--step-0);
+  }
+  .pmore__item--wide {
+    grid-column: 1 / -1;
+  }
+  @media (max-width: 959.98px) {
+    .pmore__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
   .chips {
     display: flex;
     flex-wrap: wrap;
@@ -269,10 +339,8 @@ const composition = (productContent.composition as Record<string, string[]>)[com
     border-radius: var(--radius-pill);
   }
   .compat {
-    margin-top: var(--space-l);
-    padding: var(--space-m);
-    border-radius: var(--radius-l);
-    background: var(--color-surface);
+    display: grid;
+    gap: var(--space-s);
   }
   .compat__live {
     display: grid;

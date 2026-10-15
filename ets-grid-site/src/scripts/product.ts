@@ -1,5 +1,7 @@
 // Поведінка картки товару (SPEC-003 §3.1, §4): перемикач «з монтажем», сумісність з авто,
-// збільшення фото, липка панель, недавно переглянуті.
+// збільшення фото, липка панель, акордеон, недавно переглянуті.
+import { animateLayout } from 'motion';
+import { DUR, EASE_OUT } from '../lib/motion-tokens';
 import { push, list } from '../lib/recent';
 import { formatUnit } from '../lib/format';
 
@@ -103,6 +105,18 @@ if (sticky && priceBlock) {
   addEventListener('scroll', schedule, { passive: true });
   addEventListener('resize', schedule);
   update();
+}
+
+/* ---------- акордеон смуги 2 (SPEC-003 §3.5) ----------
+   Як FAQ головної: сусіди з'їжджають animateLayout, без руху — звичайні <details>. */
+const accordion = document.querySelector<HTMLElement>('[data-product-accordion]');
+if (accordion && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  for (const item of accordion.querySelectorAll<HTMLDetailsElement>(':scope > details')) {
+    item.querySelector(':scope > summary')!.addEventListener('click', (e) => {
+      e.preventDefault();
+      animateLayout(accordion, () => item.toggleAttribute('open'), { duration: DUR, ease: EASE_OUT });
+    });
+  }
 }
 
 /* ---------- недавно переглянуті ---------- */
