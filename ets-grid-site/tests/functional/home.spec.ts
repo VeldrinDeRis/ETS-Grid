@@ -137,6 +137,89 @@ test.describe('SPEC-006/AC-14, AC-19 вкладки і фільтри хітів
   });
 });
 
+test.describe('SPEC-006/AC-40 кнопки-фільтри хітів: вогник замість інверсії (The Lit Chip Rule, D-064)', () => {
+  // Обчислені стилі кнопки та її ::before: вогник акценту, фон кнопки прозорий у всіх, вибрана — рамка ink і текст 700.
+  // Кнопку шукаємо всередині сторінки за data-hits-filter щоразу заново: острів під час гідратації перебудовує вузли,
+  // і захоплений раніше елемент може виявитися від'єднаним (у нього обчислені стилі порожні).
+  const probe = (block: import('@playwright/test').Locator, filter: string) =>
+    block.evaluate((root, f) => {
+      const el = root.querySelector<HTMLElement>(`.hits__filters button[data-hits-filter="${f}"]`)!;
+      const cs = getComputedStyle(el);
+      const before = getComputedStyle(el, '::before');
+      const vars = getComputedStyle(document.documentElement);
+      const toRgb = (v: string) => {
+        const s = document.createElement('span');
+        s.style.color = v.trim();
+        document.body.append(s);
+        const rgb = getComputedStyle(s).color;
+        s.remove();
+        return rgb;
+      };
+      return {
+        pressed: el.getAttribute('aria-pressed'),
+        background: cs.backgroundColor,
+        borderColor: cs.borderColor,
+        fontWeight: cs.fontWeight,
+        dotWidth: before.width,
+        dotHeight: before.height,
+        dotRadius: before.borderRadius,
+        dotBackground: before.backgroundColor,
+        dotOpacity: before.opacity,
+        dotShadow: before.boxShadow,
+        accent: toRgb(vars.getPropertyValue('--color-accent')),
+        ink: toRgb(vars.getPropertyValue('--color-ink')),
+      };
+    }, filter);
+
+  const expectLit = (s: Awaited<ReturnType<typeof probe>>) => {
+    expect(s.dotOpacity).toBe('1');
+    expect(s.dotShadow).toContain(s.accent);
+    expect(s.borderColor).toBe(s.ink);
+    expect(s.fontWeight).toBe('700');
+  };
+  const expectDim = (s: Awaited<ReturnType<typeof probe>>) => {
+    expect(Number(s.dotOpacity)).toBeCloseTo(0.3, 2);
+    expect(s.dotShadow).toBe('none');
+    expect(s.borderColor).not.toBe(s.ink);
+    expect(s.fontWeight).not.toBe('700');
+  };
+
+  test('невибрана — вогник 0,3 без ореолу; вибрана — вогник 1 з ореолом, рамка ink, текст 700; фон прозорий; після кліку міняються місцями', async ({ page }) => {
+    await page.goto('/');
+    const block = page.locator('[data-home-block="hits"]');
+    await block.scrollIntoViewIfNeeded();
+    // Острів гідратований (Astro знімає атрибут ssr) — далі вузли кнопок стабільні.
+    await expect(block.locator('astro-island')).not.toHaveAttribute('ssr', /.*/, { timeout: 10_000 });
+    const all = block.getByRole('button', { name: 'Усі' });
+    const batteries = block.getByRole('button', { name: 'Батареї' });
+    await expect(all).toHaveAttribute('aria-pressed', 'true');
+    await expect(batteries).toHaveAttribute('aria-pressed', 'false');
+
+    const filters = await block.locator('.hits__filters button').evaluateAll((els) => els.map((e) => (e as HTMLElement).dataset.hitsFilter!));
+    expect(filters.length).toBeGreaterThanOrEqual(2);
+    for (const f of filters) {
+      const s = await probe(block, f);
+      // Вогник: 6 × 6 px, коло, колір акценту; фон самої кнопки прозорий у всіх (інверсії нема).
+      expect(s.dotWidth).toBe('6px');
+      expect(s.dotHeight).toBe('6px');
+      expect(s.dotRadius).toBe('50%');
+      expect(s.dotBackground).toBe(s.accent);
+      expect(s.background).toBe('rgba(0, 0, 0, 0)');
+    }
+
+    expectLit(await probe(block, 'all'));
+    expectDim(await probe(block, '3'));
+
+    await batteries.click();
+    await expect(batteries).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(async () => (await probe(block, '3')).dotOpacity).toBe('1');
+    expectLit(await probe(block, '3'));
+    await expect.poll(async () => Number((await probe(block, 'all')).dotOpacity)).toBeCloseTo(0.3, 2);
+    expectDim(await probe(block, 'all'));
+    expect((await probe(block, '3')).background).toBe('rgba(0, 0, 0, 0)');
+  });
+});
+
 test.describe('SPEC-006/AC-15 варіанти першого екрана', () => {
   test('без параметра — B; ?hero=a і ?hero=c — свої тексти; невідомий — B', async ({ page }) => {
     await page.goto('/');
