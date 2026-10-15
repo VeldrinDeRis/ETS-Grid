@@ -156,7 +156,7 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-001/AC-26 ночной порог, стык dawn, витрина вне порога | build | `build/night-threshold.test.ts` | ✅ |
 | SPEC-001/AC-27 высота порога | functional | `functional/night-threshold.spec.ts` | ✅ |
 | SPEC-001/AC-28 axe на ночной шапке и пороге | a11y | `a11y/*.spec.ts` (общие проверки страниц) | ✅ |
-| SPEC-001/AC-29 эталоны всех шаблонов | visual | `visual/templates.spec.ts` | ⏳ после приёмки дизайна |
+| SPEC-001/AC-29 эталоны всех шаблонов | visual | `visual/templates.spec.ts` | ✅ |
 | SPEC-002/AC-45 порог уровня и листинга | build | `build/night-threshold.test.ts` | ✅ |
 | SPEC-002/AC-46 витрина в первом экране | functional | `functional/night-threshold.spec.ts` | ✅ |
 | SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |
