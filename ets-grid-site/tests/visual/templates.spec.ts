@@ -25,6 +25,8 @@ for (const [name, url] of TEMPLATES) {
       window.scrollTo(0, 0);
     });
     await page.waitForLoadState('networkidle');
+    // Усі острови гідратовані (Astro знімає атрибут ssr), інакше висота сторінки гуляє між прогонами.
+    await page.waitForFunction(() => [...document.querySelectorAll('astro-island')].every((i) => !i.hasAttribute('ssr')), null, { timeout: 15_000 });
     await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true, animations: 'disabled', maxDiffPixelRatio: 0.01 });
   });
 }
