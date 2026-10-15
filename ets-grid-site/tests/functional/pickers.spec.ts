@@ -114,8 +114,8 @@ test.describe('SPEC-004/AC-16 фасет «Час автономії»', () => {
     test.skip(info.project.name !== 'desktop-1440', 'фасети в колонці — desktop');
     const catalog = new CatalogPage(page);
     await catalog.open('/batarei/');
-    // Розгорнуті лише перші 4 фасети; «Час автономії» — пʼятий.
-    await page.locator('.cf-sidebar summary', { hasText: 'Час автономії' }).click();
+    // Ревізія 5 SPEC-002: фасети за змістом — «Час автономії» на /batarei/ розкритий, але helper розкриє його за потреби.
+    await catalog.reveal('Час автономії (базові потреби)');
     await catalog.option('Час автономії (базові потреби)', '24–48 год').click();
     await expect(catalog.visibleCards()).toHaveCount(1);
     await expect(catalog.visibleCards().first()).toHaveAttribute('data-slug', 'ets-battery-home-10');
