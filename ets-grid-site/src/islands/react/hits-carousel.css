@@ -33,9 +33,10 @@
   border-radius: 50%;
   background: var(--color-accent);
   opacity: 0.3;
-  /* Ореол сталий, загоряння — лише opacity (D-072): у спокої тліє разом із вогником. */
-  box-shadow: 0 0 8px var(--color-accent);
-  transition: opacity var(--dur-fast) var(--ease-out);
+  /* Ореол лише у вибраної (AC-40 рев. 6.1): перехід box-shadow на 6 px — свідомий виняток аудиту D-072. */
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 .hits__filters button[aria-pressed='true'] {
   border-color: var(--color-ink);
@@ -43,6 +44,7 @@
 }
 .hits__filters button[aria-pressed='true']::before {
   opacity: 1;
+  box-shadow: 0 0 8px var(--color-accent);
 }
 .hits__track {
   position: relative;

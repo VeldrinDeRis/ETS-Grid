@@ -35,9 +35,10 @@ test.describe('SPEC-006/AC-28 лампа-курсор над героєм (ак�
     await page.mouse.move(900, 300);
     await page.mouse.move(1000, 400);
     await expect(lamp).toHaveCSS('opacity', '1', { timeout: 1500 });
-    const vars = await page.locator('[data-home-block="hero"]').evaluate((el) => [el.style.getPropertyValue('--lx'), el.style.getPropertyValue('--ly')]);
-    expect(vars[0]).toBe('1000px');
-    expect(parseFloat(vars[1])).toBeGreaterThan(0);
+    // Рев. 6.3 (AC-43): пляма їде transform: translate(), без змінних --lx/--ly на .hero.
+    const shift = await lamp.evaluate((el) => el.style.transform.match(/translate\(([-\d.]+)px, ([-\d.]+)px\)/)!.slice(1).map(Number));
+    expect(shift[0]).toBe(1000);
+    expect(shift[1]).toBeGreaterThan(0);
     await page.mouse.move(700, 20);
     await expect(lamp).toHaveCSS('opacity', '0', { timeout: 2000 });
   });

@@ -56,7 +56,7 @@ describe('SPEC-001/AC-20, AC-24, SPEC-002/AC-18, SPEC-006/AC-27 бюджети J
     expect(pageJsGz(p)).toBeLessThanOrEqual(limitFor(p));
   });
 
-  test('AC-24: острови враховано — головна важить більше за свої <script src>; React лише на головній і в каталозі (D-062, D-063)', () => {
+  test('AC-24: острови враховано — головна важить більше за свої <script src>; React лише на головній, у каталозі й на картці товару (D-062, D-063, D-071)', () => {
     const home = pages().find((p) => p.url === '/')!;
     const scriptsOnly = [...home.document.querySelectorAll('script[src]')].reduce((sum, s) => {
       let t = 0;
@@ -66,7 +66,7 @@ describe('SPEC-001/AC-20, AC-24, SPEC-002/AC-18, SPEC-006/AC-27 бюджети J
     expect(pageJsGz(home)).toBeGreaterThan(scriptsOnly + 50 * KB);
     const react = pages().filter(hasReactIsland).map((p) => p.url);
     expect(react).toContain('/');
-    expect(react.filter((u) => u !== '/' && !isCatalogPage(pages().find((p) => p.url === u)!))).toEqual([]);
+    expect(react.filter((u) => u !== '/' && !u.startsWith('/product/') && !isCatalogPage(pages().find((p) => p.url === u)!))).toEqual([]);
   });
 
   test('острів фільтрів є на сторінках каталогу', () => {

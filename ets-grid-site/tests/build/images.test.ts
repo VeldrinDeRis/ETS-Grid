@@ -63,18 +63,21 @@ describe('SPEC-010 §5 фото на сторінках', () => {
 describe('D-042 ілюстративні фото товарів', () => {
   test.each(Object.entries(PRODUCT_ILLUSTRATION))('%s → %s: галерея й картка з міткою', (slug, key) => {
     const doc = page(`/product/${slug}/`).document;
-    const main = doc.querySelector('[data-product-block="gallery"] .gallery__item--main');
+    // Рев. 1 SPEC-003 (D-071): головний кадр — перший кадр набору картки.
+    const main = doc.querySelector('[data-product-block="gallery"] .gallery__frame');
     expect(main?.querySelector(`picture[data-photo="${key}"]`), slug).not.toBeNull();
     expect(main?.querySelector('.photo-note')?.textContent).toBe(ILLUSTRATION_LABEL);
     const ld = [...doc.querySelectorAll('script[type="application/ld+json"]')].map((s) => s.textContent).join('');
     expect(ld).not.toContain(`/img/photos/${key}`);
   });
 
-  test.each(['ets-portable-7', 'cable-gbt-type2'])('%s — без ілюстрації (інший розʼєм на стоках)', (slug) => {
+  test.each(['ets-portable-7', 'cable-gbt-type2'])('%s — без ілюстрації товару (інший розʼєм на стоках), лише кадри набору', (slug) => {
     expect(PRODUCT_ILLUSTRATION[slug]).toBeUndefined();
     const doc = page(`/product/${slug}/`).document;
-    expect(doc.querySelector('[data-product-block="gallery"] picture')).toBeNull();
-    expect(doc.querySelector('[data-product-block="gallery"] [data-gallery-placeholder]')).not.toBeNull();
+    // Набір кадрів картки (D-065) — загальні сцени без розʼєму; кожен кадр з міткою (D-071).
+    const frames = [...doc.querySelectorAll('[data-product-block="gallery"] .gallery__frame')];
+    expect(frames.length).toBe(5);
+    for (const f of frames) expect(f.querySelector('.photo-note')?.textContent).toBe(ILLUSTRATION_LABEL);
   });
 
   test('у картках лістингу ілюстрація завжди з міткою', () => {
