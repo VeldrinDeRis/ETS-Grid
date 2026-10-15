@@ -26,22 +26,23 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
 {
   part === 'carport' && (
     <div class="carport">
-      <h2>Solar Carport</h2>
-      <div class="carport__grid">
+      <div class="carport__head">
+        <h2>Solar Carport</h2>
+        <a class="carport__more" href={routes.level('solar-carport')}>Усе про Solar Carport</a>
+      </div>
+      {/* Одним рядком (SPEC-006 §4.10 акт IV): плашка-маніфест · фото · міні-конфігуратор із CTA. */}
+      <div class="carport__row">
         <aside class="manifesto" data-manifesto>
           <p class="manifesto__big" aria-hidden="true">4 в 1</p>
           <p class="manifesto__text">Навіс. Генерація. Зарядка. Накопичення. Одна конструкція над вашим паркінгом.</p>
         </aside>
         <div class="carport__photo">
-          <Photo photo="carport-charging" sizes="(max-width: 959px) calc(100vw - 2rem), 45vw" />
+          <Photo photo="carport-charging" sizes="(max-width: 959px) calc(100vw - 2rem), 30vw" />
+        </div>
+        <div class="carport__config">
+          <Picker kind="carport" mode="mini" />
         </div>
       </div>
-      <div class="carport__config">
-        <Picker kind="carport" mode="mini" />
-      </div>
-      <p>
-        <a class="carport__more" href={routes.level('solar-carport')}>Усе про Solar Carport</a>
-      </p>
     </div>
   )
 }
@@ -136,11 +137,38 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
 }
 
 <style>
-  .carport__grid {
+  .carport__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-l);
+  }
+  .carport__head h2 {
+    margin: 0;
+  }
+  .carport__row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1.5fr);
     gap: var(--space-m);
-    margin-bottom: var(--space-l);
+    margin-top: var(--space-m);
+    align-items: start;
+  }
+  /* У третині ширини міні-конфігуратор — одним стовпцем, щільніше: питання над результатом, факти в один ряд. */
+  .carport__config :global(.pk) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-s);
+  }
+  .carport__config :global(.pk-result) {
+    padding: var(--space-m);
+    gap: var(--space-2xs);
+  }
+  .carport__config :global(.pk-grid) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-2xs) var(--space-s);
+  }
+  .carport__photo {
+    align-self: stretch;
   }
   .manifesto {
     display: flex;
@@ -155,7 +183,7 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
   .manifesto__big {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(4rem, 3rem + 6vw, 8rem);
+    font-size: clamp(3.5rem, 2.5rem + 4vw, 6rem);
     font-weight: 800;
     line-height: 0.9;
   }
@@ -166,6 +194,7 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
   }
   .carport__photo {
     min-height: 14rem;
+    max-height: 32rem;
     overflow: hidden;
     border-radius: var(--radius-l);
     background: var(--color-surface);
@@ -355,7 +384,7 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
     }
   }
   @media (max-width: 959.98px) {
-    .carport__grid {
+    .carport__row {
       grid-template-columns: 1fr;
     }
   }

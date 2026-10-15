@@ -139,3 +139,18 @@ describe('SPEC-006/AC-37 міні-галереї «Обʼєкти» (D-061)', ()
     }
   });
 });
+
+describe('SPEC-006/AC-38 акт IV: стики і Carport одним рядком', () => {
+  test('секція хітів — seam=dawn, заявка — seam=dusk; Carport — ряд із плашки, фото і конфігуратора', () => {
+    const hits = doc().querySelector('[data-home-block="hits"]')!.closest('section')!;
+    expect(hits.getAttribute('data-seam')).toBe('dawn');
+    expect(hits.getAttribute('data-surface')).toBe('day');
+    const final = doc().querySelector('[data-home-block="final"]')!.closest('section')!;
+    expect(final.getAttribute('data-seam')).toBe('dusk');
+    expect(final.getAttribute('data-surface')).toBe('night');
+    const row = doc().querySelector('[data-home-block="carport"] .carport__row')!;
+    expect(row.querySelector('[data-manifesto]')).not.toBeNull();
+    expect(row.querySelector('picture[data-photo="carport-charging"]')).not.toBeNull();
+    expect(row.querySelector('[data-picker="carport"], astro-island')).not.toBeNull();
+  });
+});

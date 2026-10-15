@@ -330,3 +330,29 @@ test.describe('SPEC-006/AC-37 галереї «Обʼєкти» на Carousel (D
     await expect.poll(async () => (await second.boundingBox())!.x + (await second.boundingBox())!.width).toBeGreaterThan(box.x);
   });
 });
+
+test.describe('SPEC-006/AC-38 акт IV: карусель хітів і стики', () => {
+  test('1440: ≥ 3 картки в рамці, стрілка гортає, точки відмічають; стики — градієнт; Carport ≤ 60 % висоти', async ({ page }, info) => {
+    await page.goto('/');
+    const block = page.locator('[data-home-block="hits"]');
+    await block.scrollIntoViewIfNeeded();
+    const nav = block.locator('.hits__nav');
+    await expect(nav).toBeVisible({ timeout: 5000 });
+    const seams = await page.evaluate(() => ['[data-seam="dawn"]', '[data-seam="dusk"]'].map((s) => getComputedStyle(document.querySelector(s)!, '::before').backgroundImage));
+    for (const bg of seams) expect(bg).toContain('linear-gradient');
+    if (isMobile(info)) return;
+    const track = (await block.locator('.hits__track').boundingBox())!;
+    const inFrame = async () => {
+      const boxes = await block.locator('.hits__item').evaluateAll((els) => els.map((e) => e.getBoundingClientRect()));
+      return boxes.filter((b) => b.left >= track.x - 1 && b.right <= track.x + track.width + 1).length;
+    };
+    expect(await inFrame()).toBeGreaterThanOrEqual(3);
+    const dots = nav.getByRole('tab');
+    await expect(dots.first()).toHaveAttribute('aria-selected', 'true');
+    await nav.getByRole('button', { name: 'Наступні товари' }).click();
+    await expect(dots.nth(1)).toHaveAttribute('aria-selected', 'true', { timeout: 3000 });
+    await expect.poll(async () => (await block.locator('.hits__item').first().boundingBox())!.x, { timeout: 3000 }).toBeLessThan(track.x);
+    const carport = (await page.locator('[data-home-block="carport"]').boundingBox())!;
+    expect(carport.height).toBeLessThanOrEqual(1178 * 0.6);
+  });
+});

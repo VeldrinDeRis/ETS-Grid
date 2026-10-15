@@ -33,7 +33,8 @@ const variant = activeVariant();
     </div>
   </Section>
 
-  <Section label="Хіти каталогу">
+  <!-- Акт IV «Вітрина» (SPEC-006 §4.10, D-060): день входить через «світанок»; хіти — карусель, Carport одним рядком. -->
+  <Section label="Хіти каталогу" seam="dawn">
     <div data-home-block="hits"><HomeHits /></div>
   </Section>
 
@@ -57,7 +58,7 @@ const variant = activeVariant();
     <div data-home-block="financing"><HomeBlocks part="financing" /></div>
   </Section>
 
-  <Section id="zayavka" label="Заявка" surface="night">
+  <Section id="zayavka" label="Заявка" surface="night" seam="dusk">
     <div data-home-block="final"><HomeBlocks part="final" /></div>
   </Section>
 </BaseLayout>
