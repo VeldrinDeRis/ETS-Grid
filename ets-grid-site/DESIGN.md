@@ -134,9 +134,12 @@ components:
     padding: "0 1.5rem"
     height: "2.75rem"
   chip-filter-selected:
-    backgroundColor: "{colors.day-ink}"
-    textColor: "{colors.day-bg}"
+    backgroundColor: "transparent"
+    textColor: "{colors.day-ink}"
+    borderColor: "{colors.day-ink}"
+    fontWeight: 700
     rounded: "{rounded.pill}"
+    indicator: "огонёк ::before 6 px {colors.accent}, opacity 1, ореол 0 0 8px {colors.accent} (в покое opacity .3, без ореола)"
   spec-tag:
     textColor: "{colors.day-ink}"
     typography: "{typography.label}"
@@ -362,7 +365,7 @@ components:
 
 ### Chips
 - **Style:** фильтр-чипы — пилюля, рамка 1 px `ink-muted`, прозрачные или `surface`, текст 600.
-- **State (каталог, SPEC-002 рев. 5, D-063):** выбранный фильтр-чип не инвертируется, а **загорается**: огонёк 6 px акцента слева (`::before`), в покое `opacity .3`, выбранный — `opacity 1` + ореол `0 0 8px` акцента, рамка `ink`, текст 700; значение с 0 — рамка `line`, текст `ink-muted`, огонёк 0,12. Кнопки-фильтры хитов на главной пока инверсия (мелкая ревизия SPEC-006 после утверждения). Теги характеристик в карточке — прямоугольник `rounded.s`, рамка `line`, `label`, табличные цифры.
+- **State (каталог, SPEC-002 рев. 5, D-063):** выбранный фильтр-чип не инвертируется, а **загорается**: огонёк 6 px акцента слева (`::before`), в покое `opacity .3`, выбранный — `opacity 1` + ореол `0 0 8px` акцента, рамка `ink`, текст 700; значение с 0 — рамка `line`, текст `ink-muted`, огонёк 0,12. Кнопки-фильтры хитов на главной — та же грамматика (SPEC-006 рев. 6.1, D-064). Теги характеристик в карточке — прямоугольник `rounded.s`, рамка `line`, `label`, табличные цифры.
 - **Плитки главного фильтра (ТЗ §9.1 п. 1):** грамматика плиток уровней героя на дневной поверхности — иконка 24 из набора, подпись 600, счётчик `label` `ink-muted`, `rounded.m`, рамка 1 px `line`, огонёк 8 px справа вверху (`::after`); выбранная — рамка `ink` + `inset 0 0 0 1px`, огонёк 1 с ореолом 10 px. Desktop — ряд с переносом (min 10rem), mobile — горизонтальная прокрутка со `scroll-snap`, плитка 9rem.
 
 **The Lit Chip Rule.** В фильтрах выбор показывает огонёк, а не заливка: акцент остаётся на одной primary-кнопке и на огоньках (The One Lamp Rule), рамки и фоны не красятся.

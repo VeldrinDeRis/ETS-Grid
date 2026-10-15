@@ -29,7 +29,12 @@ const levels = getLevels()
     overflow-x: auto;
     padding-bottom: var(--space-3xs);
   }
+  /* Рев. 6.1 (D-064): The Lit Chip Rule — вибір показує вогник, а не заливка; зразок — .cf-option каталогу. */
   .hits__filters button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
     flex: none;
     min-height: var(--tap);
     padding: 0 var(--space-m);
@@ -40,10 +45,27 @@ const levels = getLevels()
     font-weight: 600;
     cursor: pointer;
   }
+  /* Вогник: 6 px акценту, у спокої тліє на 0,3; вибраний — горить з ореолом. Лише opacity і box-shadow;
+     за prefers-reduced-motion перехід миттєвий (глобальне правило base.css). */
+  .hits__filters button::before {
+    content: '';
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    opacity: 0.3;
+    transition:
+      opacity var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
   .hits__filters button[aria-pressed='true'] {
     border-color: var(--color-ink);
-    background: var(--color-ink);
-    color: var(--color-bg);
+    font-weight: 700;
+  }
+  .hits__filters button[aria-pressed='true']::before {
+    opacity: 1;
+    box-shadow: 0 0 8px var(--color-accent);
   }
   .hits__track {
     position: relative;

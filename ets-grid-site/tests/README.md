@@ -184,6 +184,7 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-006/AC-18 axe-core | a11y | `a11y/home.spec.ts` | ✅ |
 | SPEC-006/AC-19 вкладки: WAI-ARIA и без JS | a11y, functional | `a11y/home.spec.ts`, `functional/home.spec.ts` | ✅ |
 | SPEC-006/AC-20 reduced-motion | a11y | `a11y/home.spec.ts` | ✅ |
+| SPEC-006/AC-40 кнопки-фильтры хитов: огонёк вместо инверсии (рев. 6.1, D-064) | functional | `functional/home.spec.ts` | ✅ |
 | SPEC-007/AC-01 content-pages.json, числа — плейсхолдеры | data | `data/content.test.ts` | ✅ |
 | SPEC-007/AC-02 блоки каждой страницы | build | `build/content.test.ts` | ✅ |
 | SPEC-007/AC-03 страницы систем: состав, цена, CTA | build, unit, functional | `build/content.test.ts`, `unit/content.test.ts`, `functional/content.spec.ts` | ✅ |
