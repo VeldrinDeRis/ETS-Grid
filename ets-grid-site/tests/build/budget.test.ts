@@ -73,6 +73,11 @@ describe('SPEC-001/AC-20, AC-24, SPEC-002/AC-18, SPEC-006/AC-27 бюджети J
     expect(pages().filter(isCatalogPage).length).toBeGreaterThanOrEqual(20);
   });
 
+  test('D-066: zod не потрапляє в клієнтський JS (схеми лише у lib/*/schema.ts)', () => {
+    const withZod = distFiles().filter((f) => /\.m?js$/.test(f) && /ZodError|_zod\b/.test(readFileSync(f, 'utf8')));
+    expect(withZod).toEqual([]);
+  });
+
   test('SPEC-010/AC-05 файлів шрифтів ≤ 2, на кожній сторінці ≤ 2 preload', () => {
     const fontFiles = distFiles().filter((f) => /\.(woff2?|ttf|otf)$/i.test(f));
     expect(fontFiles.length).toBeLessThanOrEqual(2);
