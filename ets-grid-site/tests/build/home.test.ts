@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import homeJson from '../../src/data/home-content.json';
 import { page } from '../helpers/dist';
@@ -117,5 +118,24 @@ describe('SPEC-006/AC-32 числа схеми — з каталогу (рев. 
     expect(nodes[2].querySelector('.flow__num')?.textContent?.replace(/\s+/g, ' ')).toContain('10,24');
     for (const n of nodes) expect(n.querySelector('.flow__price')?.textContent).toMatch(/₴/);
     expect(nodes[4].querySelector('.flow__price')?.textContent).toContain('демо');
+  });
+});
+
+describe('SPEC-006/AC-37 міні-галереї «Обʼєкти» (D-061)', () => {
+  test('3 картки × 10 кадрів у HTML, кожен — <picture> з AVIF і міткою; 30 ключів у CREDITS.md', () => {
+    const cards = [...doc().querySelectorAll('[data-home-block="cases"] [data-case]')];
+    expect(cards.map((c) => c.getAttribute('data-case'))).toEqual(['parking', 'home', 'biz']);
+    const credits = readFileSync(new URL('../../public/img/CREDITS.md', import.meta.url), 'utf8');
+    for (const card of cards) {
+      const group = card.getAttribute('data-case');
+      const pics = [...card.querySelectorAll('picture[data-photo]')];
+      expect(pics.map((p) => p.getAttribute('data-photo'))).toEqual(Array.from({ length: 10 }, (_, i) => `case-${group}-${i + 1}`));
+      for (const pic of pics) {
+        expect(pic.querySelector('source[type="image/avif"]')).not.toBeNull();
+        expect(pic.querySelector('img')?.getAttribute('alt')).toMatch(/ілюстрація/);
+        expect(credits).toContain(`case-${group}-${pic.getAttribute('data-photo')!.split('-')[2]}-*`);
+      }
+      expect(card.querySelectorAll('.photo-note').length).toBe(10);
+    }
   });
 });

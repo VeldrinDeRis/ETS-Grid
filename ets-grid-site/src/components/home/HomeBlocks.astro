@@ -1,5 +1,6 @@
 ---
 // Блоки 6, 7, 8, 10, 11 головної (SPEC-006 §4.2). Один компонент — частини за `part`.
+import CaseGallery from '../../islands/react/CaseGallery';
 import { home } from '../../lib/home';
 import { ILLUSTRATION_LABEL, type PhotoKey } from '../../lib/photos';
 import { routes } from '../../lib/routes';
@@ -13,11 +14,14 @@ interface Props {
 }
 const { part } = Astro.props;
 // Блок 9 до реальних кейсів (D-058): фото прототипу з міткою «Ілюстративне фото», підписи — плейсхолдери.
-const CASE_SAMPLES: { photo: PhotoKey; title: string; meta: string }[] = [
-  { photo: 'carport-below', title: '[Обʼєкт: паркінг із навісом]', meta: '[N] місць · [N] kWp' },
-  { photo: 'roof-solar', title: '[Обʼєкт: дім із СЕС і батареєю]', meta: '[N] kWp · [N] кВт·год' },
-  { photo: 'bess-container', title: '[Обʼєкт: накопичувач для бізнесу]', meta: '[N] кВт·год · [N] кВт' },
+// Кожна картка — міні-галерея з 10 кадрів (D-061): ключі case-{group}-1…10 у src/lib/photos.ts.
+const CASE_SAMPLES: { group: string; title: string; meta: string }[] = [
+  { group: 'parking', title: '[Обʼєкт: паркінг із навісом]', meta: '[N] місць · [N] kWp' },
+  { group: 'home', title: '[Обʼєкт: дім із СЕС і батареєю]', meta: '[N] kWp · [N] кВт·год' },
+  { group: 'biz', title: '[Обʼєкт: СЕС і зарядки для бізнесу]', meta: '[N] kWp · [N] кВт·год' },
 ];
+const CASE_SHOTS = 10;
+const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoKey;
 ---
 {
   part === 'carport' && (
@@ -77,10 +81,16 @@ const CASE_SAMPLES: { photo: PhotoKey; title: string; meta: string }[] = [
       {/* Індикативні картки (D-058): фото прототипу з міткою, підписи — плейсхолдери; реальні кейси — від замовника. */}
       <ul role="list" class="cases__list">
         {CASE_SAMPLES.map((c) => (
-          <li class="case">
+          <li class="case" data-case={c.group}>
             <div class="case__photo">
-              <Photo photo={c.photo} sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 959px) 50vw, 24rem" />
-              <span class="photo-note">{ILLUSTRATION_LABEL}</span>
+              <CaseGallery client:visible count={CASE_SHOTS} label={c.title}>
+                {Array.from({ length: CASE_SHOTS }, (_, i) => (
+                  <div slot={`shot${i}`} class="case__frame">
+                    <Photo photo={shotKey(c.group, i)} sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 959px) 50vw, 24rem" />
+                    <span class="photo-note">{ILLUSTRATION_LABEL}</span>
+                  </div>
+                ))}
+              </CaseGallery>
             </div>
             <p class="case__title">
               <Placeholder label={c.title} />
@@ -253,11 +263,82 @@ const CASE_SAMPLES: { photo: PhotoKey; title: string; meta: string }[] = [
   }
   .case__photo {
     position: relative;
-    aspect-ratio: 4 / 3;
     overflow: hidden;
     border-radius: var(--radius-l);
     background: var(--color-surface);
     box-shadow: var(--shadow-1);
+  }
+  /* Галерея: кадр 16:9; без гідратації видно перший кадр, решта — за ним (overflow). Острів малює розмітку сам — :global. */
+  .case__photo :global(.case__frame) {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .case__photo :global(.case__shot) {
+    width: 100%;
+    flex: none;
+  }
+  .case__photo :global(.case__shot > astro-slot),
+  .case__photo :global(.case__shot > div) {
+    display: block;
+  }
+  /* Мітка — угорі кадру: низ зайнятий навігацією галереї. */
+  .case__photo :global(.case__frame .photo-note) {
+    top: var(--space-xs);
+    bottom: auto;
+  }
+  /* До гідратації острів ще не керує розміткою: astro-island показує слоти підряд — обрізаємо до першого. */
+  .case__photo :global(astro-island:not([ssr])) {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .case__photo :global(.case__nav) {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs);
+    background: linear-gradient(transparent, rgb(13 20 36 / 0.55));
+  }
+  .case__photo :global(.case__arrow) {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(244 246 248 / 0.9);
+    color: var(--day-ink);
+    cursor: pointer;
+    transition: opacity var(--dur-fast);
+  }
+  .case__photo :global(.case__arrow:disabled) {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .case__photo :global(.case__dots) {
+    display: flex;
+    gap: 0.3rem;
+    padding: 0 var(--space-2xs);
+  }
+  .case__photo :global(.case__dot) {
+    width: 0.4rem;
+    height: 0.4rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(244 246 248 / 0.5);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast),
+      transform var(--dur) var(--ease-out);
+  }
+  .case__photo :global(.case__dot[aria-selected='true']) {
+    background: var(--color-accent);
+    transform: scale(1.4);
   }
   .case__title {
     margin: var(--space-xs) 0 var(--space-3xs);

@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 
 const sharp = createRequire(import.meta.url)('sharp');
 const RAW = fileURLToPath(new URL('../../sources/photos/raw/2026-10-14/', import.meta.url));
+// Кадри обʼєктів (D-061) — окрема тека за датою скачування.
+const RAW_CASES = fileURLToPath(new URL('../../sources/photos/raw/2026-10-15/', import.meta.url));
 const OUT = fileURLToPath(new URL('../public/img/photos/', import.meta.url));
 mkdirSync(OUT, { recursive: true });
 
@@ -16,7 +18,13 @@ mkdirSync(OUT, { recursive: true });
  */
 const HERO = { ratio: 4 / 3, widths: [640, 1280, 1920] };
 const PRODUCT = { ratio: 1, widths: [480, 960] };
+// Галереї обʼєктів (D-061): 16:9 (ТЗ §8.3), два розміри — картка 3-в-ряд і телефон; кадр цілком, центр.
+const CASE = { ratio: 16 / 9, widths: [640, 1280], raw: RAW_CASES };
+const cases = (group, n) => Array.from({ length: n }, (_, i) => ({ key: `case-${group}-${i + 1}`, src: `case-${group}-${i + 1}`, crop: [0, 0, 1, 1], ...CASE }));
 export const PHOTOS = [
+  ...cases('parking', 10),
+  ...cases('home', 10),
+  ...cases('biz', 10),
   { key: 'hero-dc-night', src: 'hero-dc-night', crop: [0, 0.06, 0.78, 0.88], ...HERO },
   { key: 'home-ac-wallbox', src: 'home-ac-wallbox', crop: [0.08, 0, 0.67, 1], ...HERO },
   { key: 'roof-solar', src: 'roof-solar', crop: [0, 0, 1, 1], ...HERO },
@@ -38,7 +46,7 @@ export const PHOTOS = [
 
 const only = new Set(process.argv.slice(2));
 for (const p of PHOTOS.filter((x) => only.size === 0 || only.has(x.key))) {
-  const file = join(RAW, `${p.src}.jpg`);
+  const file = join(p.raw ?? RAW, `${p.src}.jpg`);
   const { width, height } = await sharp(file).metadata();
   const [x, y, w, h] = p.crop;
   let left = Math.round(x * width), top = Math.round(y * height), cw = Math.round(w * width), ch = Math.round(h * height);

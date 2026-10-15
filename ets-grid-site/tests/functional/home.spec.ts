@@ -308,3 +308,25 @@ test.describe('SPEC-006/AC-35 доба по колу в першому екра�
     expect(under).toBe('text');
   });
 });
+
+test.describe('SPEC-006/AC-37 галереї «Обʼєкти» на Carousel (D-061)', () => {
+  test('стрілка показує другий кадр, точки відмічають поточний; до гортання видно лише перший', async ({ page }) => {
+    await page.goto('/');
+    const card = page.locator('[data-home-block="cases"] [data-case="parking"]');
+    await card.scrollIntoViewIfNeeded();
+    const gallery = card.locator('[data-case-gallery]');
+    await expect(gallery).toBeVisible({ timeout: 5000 });
+    const dots = gallery.getByRole('tab');
+    await expect(dots.first()).toHaveAttribute('aria-selected', 'true');
+    const first = card.locator('picture[data-photo="case-parking-1"]');
+    const second = card.locator('picture[data-photo="case-parking-2"]');
+    const box = (await card.locator('.case__photo').boundingBox())!;
+    const b1 = (await first.boundingBox())!;
+    expect(b1.x).toBeGreaterThanOrEqual(box.x - 1);
+    expect(b1.x + b1.width).toBeLessThanOrEqual(box.x + box.width + 1);
+    await gallery.getByRole('button', { name: /Наступний кадр/ }).click();
+    await expect(dots.nth(1)).toHaveAttribute('aria-selected', 'true', { timeout: 3000 });
+    await expect.poll(async () => (await second.boundingBox())!.x, { timeout: 3000 }).toBeLessThan(box.x + box.width);
+    await expect.poll(async () => (await second.boundingBox())!.x + (await second.boundingBox())!.width).toBeGreaterThan(box.x);
+  });
+});
