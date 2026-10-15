@@ -3,7 +3,7 @@
 import { useRef, useState } from "preact/hooks";
 import { add } from "../../lib/cart";
 import { COMPARE_LIMIT, remove } from "../../lib/compare";
-import type { LevelLink, ShopProduct } from "../../lib/shop-data";
+import type { LevelTile, ShopProduct } from "../../lib/shop-data";
 import { track } from "../../lib/track";
 import {
   DemoBadge,
@@ -16,7 +16,7 @@ import {
 
 interface Props {
   products: ShopProduct[];
-  levels: LevelLink[];
+  levels: LevelTile[];
 }
 
 interface Line {

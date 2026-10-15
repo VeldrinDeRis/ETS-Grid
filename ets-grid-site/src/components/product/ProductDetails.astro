@@ -9,6 +9,8 @@ import { formatUnit } from '../../lib/format';
 import type { LevelContent } from '../../lib/level-content';
 import { carCompatibility, crossTitle, fullRows } from '../../lib/product';
 import { routes } from '../../lib/routes';
+import { productThumb } from '../../lib/shop-data';
+import '../../styles/shop-ui.css';
 import type { Product } from '../../lib/schema';
 import ProductCard from '../catalog/ProductCard.astro';
 import Placeholder from '../ui/Placeholder.astro';
@@ -228,7 +230,7 @@ const composition = (productContent.composition as Record<string, string[]>)[com
   <p class="recent__empty" data-recent-empty>Тут зʼявляться товари, які ви переглядали.</p>
 </section>
 
-<script type="application/json" data-product-index set:html={JSON.stringify(Object.fromEntries((await getProductsBy()).map((p) => [p.slug, { name: p.name, url: routes.product(p.slug) }])))} />
+<script type="application/json" data-product-index set:html={JSON.stringify(Object.fromEntries((await getProductsBy()).map((p) => [p.slug, { name: p.name, url: routes.product(p.slug), thumb: productThumb(p) && { src: productThumb(p)!.src, illustrative: productThumb(p)!.illustrative } }])))} />
 <script type="application/json" data-adapter-names set:html={JSON.stringify(Object.fromEntries(adapters.map((a) => [a.slug, a.name])))} />
 
 <style>
@@ -342,6 +344,11 @@ const composition = (productContent.composition as Record<string, string[]>)[com
   .recent {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: var(--space-s);
+  }
+  .recent :global(li) {
+    display: flex;
+    align-items: flex-start;
     gap: var(--space-s);
   }
   .recent :global(a) {

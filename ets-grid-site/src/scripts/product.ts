@@ -5,6 +5,25 @@ import { formatUnit } from '../lib/format';
 
 const slug = document.querySelector<HTMLElement>('[data-product-slug]')?.dataset.productSlug;
 
+/** Мініатюра — та сама розмітка, що ProductThumb у магазині (SPEC-005 §3.8, src/styles/shop-ui.css). */
+function thumb(data: { src: string; illustrative: boolean } | null): HTMLElement {
+  const figure = document.createElement('figure');
+  figure.className = 'pthumb';
+  figure.dataset.productThumb = '';
+  const frame = document.createElement('span');
+  frame.className = 'pthumb__frame';
+  if (data) {
+    const img = Object.assign(document.createElement('img'), { src: data.src, alt: '', width: 96, height: 96, loading: 'lazy', decoding: 'async' });
+    frame.append(img);
+  } else {
+    const ph = Object.assign(document.createElement('span'), { className: 'placeholder', title: 'Дані надасть замовник', textContent: '[ФОТО]' });
+    frame.append(ph);
+  }
+  figure.append(frame);
+  if (data?.illustrative) figure.append(Object.assign(document.createElement('figcaption'), { className: 'pthumb__note', textContent: 'Ілюстративне фото' }));
+  return figure;
+}
+
 /* ---------- перемикач «Тільки обладнання / З монтажем під ключ» ---------- */
 const priceBlock = document.querySelector<HTMLElement>('[data-price-block]');
 for (const radio of document.querySelectorAll<HTMLInputElement>('[data-turnkey-toggle] input[name="turnkey"]')) {
@@ -88,7 +107,7 @@ if (sticky && priceBlock) {
 
 /* ---------- недавно переглянуті ---------- */
 if (slug) {
-  const index = JSON.parse(document.querySelector('[data-product-index]')?.textContent ?? '{}') as Record<string, { name: string; url: string }>;
+  const index = JSON.parse(document.querySelector('[data-product-index]')?.textContent ?? '{}') as Record<string, { name: string; url: string; thumb: { src: string; illustrative: boolean } | null }>;
   const items = list(4, slug).filter((s) => index[s]);
   const listEl = document.querySelector<HTMLElement>('[data-recent-list]');
   const empty = document.querySelector<HTMLElement>('[data-recent-empty]');
@@ -99,7 +118,7 @@ if (slug) {
         const a = document.createElement('a');
         a.href = index[s].url;
         a.textContent = index[s].name;
-        li.append(a);
+        li.append(thumb(index[s].thumb), a);
         return li;
       }),
     );

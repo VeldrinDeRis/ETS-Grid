@@ -13,7 +13,7 @@ import {
 import { routes } from "../../lib/routes";
 import type { ShopProduct } from "../../lib/shop-data";
 import { track } from "../../lib/track";
-import { DemoBadge, money, Placeholder, useCart } from "./shared";
+import { DemoBadge, money, Placeholder, Thumb, useCart } from "./shared";
 
 interface Props {
   products: ShopProduct[];
@@ -402,7 +402,8 @@ export default function Checkout({ products }: Props) {
                 : p.price_equipment;
             return (
               <li key={`${i.slug}:${i.turnkey}`}>
-                <span>
+                <Thumb product={p} />
+                <span class="co-items__name">
                   {p.name}
                   {i.turnkey ? ", з монтажем" : ""} × {i.qty}
                 </span>

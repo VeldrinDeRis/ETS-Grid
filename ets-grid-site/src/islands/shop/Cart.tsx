@@ -12,7 +12,7 @@ import {
 } from "../../lib/cart";
 import { list as recentList } from "../../lib/recent";
 import { routes } from "../../lib/routes";
-import type { LevelLink, ShopProduct } from "../../lib/shop-data";
+import type { LevelTile, ShopProduct } from "../../lib/shop-data";
 import type { CartItem } from "../../lib/storage";
 import { track } from "../../lib/track";
 import {
@@ -27,7 +27,7 @@ import {
 
 interface Props {
   products: ShopProduct[];
-  levels: LevelLink[];
+  levels: LevelTile[];
 }
 
 const ADAPTER = "cable-gbt-type2";

@@ -4,7 +4,7 @@ import NoJsNote from '../components/shop/NoJsNote.astro';
 import Section from '../components/ui/Section.astro';
 import Cart from '../islands/shop/Cart';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { levelLinks, shopProducts } from '../lib/shop-data';
+import { levelTiles, shopProducts } from '../lib/shop-data';
 
 const products = await shopProducts();
 ---
@@ -14,6 +14,6 @@ const products = await shopProducts();
   </Fragment>
   <Section seam="dawn">
     <NoJsNote text="Кошик працює з увімкненим JavaScript." />
-    <Cart client:load products={products} levels={levelLinks()} />
+    <Cart client:load products={products} levels={await levelTiles()} />
   </Section>
 </BaseLayout>

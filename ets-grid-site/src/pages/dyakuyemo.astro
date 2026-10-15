@@ -5,7 +5,8 @@ import Placeholder from '../components/ui/Placeholder.astro';
 import Section from '../components/ui/Section.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { routes } from '../lib/routes';
-import { levelLinks } from '../lib/shop-data';
+import { LevelTiles } from '../islands/shop/shared';
+import { levelTiles } from '../lib/shop-data';
 ---
 <BaseLayout title="Дякуємо" description="Заявку чи замовлення прийнято. Наступні кроки." crumbs={[{ label: 'Дякуємо' }]} robots="noindex, follow">
   <Fragment slot="top">
@@ -42,16 +43,11 @@ import { levelLinks } from '../lib/shop-data';
       <p class="thanks__demo">Демо: заявка нікуди не надсилається — у бойовій версії вона піде в CRM.</p>
     </div>
 
-    <ul role="list" class="thanks__links">
-      {
-        levelLinks().map((l) => (
-          <li>
-            <a href={l.url}>{l.name}</a>
-          </li>
-        ))
-      }
-      <li><a href={routes.home}>На головну</a></li>
-    </ul>
+    <!-- Плитки рівнів у граматиці героя, статичний HTML без острова (SPEC-005 §3.8, AC-14). -->
+    <div class="thanks__levels">
+      <LevelTiles levels={await levelTiles()} />
+    </div>
+    <p class="thanks__links"><a href={routes.home}>На головну</a></p>
   </Section>
 </BaseLayout>
 
@@ -114,11 +110,11 @@ import { levelLinks } from '../lib/shop-data';
   .thanks__demo {
     color: var(--color-placeholder);
   }
-  .thanks__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs) var(--space-m);
+  .thanks__levels {
     margin-top: var(--space-l);
+  }
+  .thanks__links {
+    margin-top: var(--space-s);
   }
   .thanks__links a {
     display: inline-flex;

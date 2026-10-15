@@ -5,8 +5,9 @@ import { useEffect, useState } from "preact/hooks";
 import { items } from "../../lib/cart";
 import { COMPARE_CHANGE_EVENT, list as compareList } from "../../lib/compare";
 import { formatPrice } from "../../lib/format";
-import type { LevelLink, ShopProduct } from "../../lib/shop-data";
+import type { LevelTile, ShopProduct, ThumbData } from "../../lib/shop-data";
 import { CART_CHANGE_EVENT, KEYS, type CartItem } from "../../lib/storage";
+import "../../styles/shop-ui.css";
 import "./shop.css";
 
 /** Стан зі сховища; null — ще до гідрації (сервер не знає вмісту localStorage). */
@@ -47,33 +48,61 @@ export function Placeholder({ label }: { label: string }) {
   );
 }
 
-export function Thumb({ product }: { product: ShopProduct }) {
+/** Мініатюра товару — одна на весь магазин (SPEC-005 §3.8, AC-13): кадр 1:1 і підпис «Ілюстративне фото» під ним.
+ *  Розмітку повторює src/scripts/product.ts для «Недавно переглянуті» (класи .pthumb — src/styles/shop-ui.css). */
+export function ProductThumb({ thumb }: { thumb: ThumbData | null }) {
   return (
-    <div class="shop-thumb">
-      {product.image ? (
-        <img
-          src={product.image.src}
-          alt=""
-          width="96"
-          height="96"
-          loading="lazy"
-          decoding="async"
-        />
-      ) : (
-        <span aria-hidden="true">{product.levelName}</span>
-      )}
-    </div>
+    <figure class="pthumb" data-product-thumb>
+      <span class="pthumb__frame">
+        {thumb ? (
+          <picture>
+            {thumb.avif && <source type="image/avif" srcset={thumb.avif} sizes="96px" />}
+            <img
+              src={thumb.src}
+              srcset={thumb.webp}
+              sizes={thumb.webp ? "96px" : undefined}
+              alt=""
+              width="96"
+              height="96"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        ) : (
+          <span class="placeholder" title="Дані надасть замовник">[ФОТО]</span>
+        )}
+      </span>
+      {thumb?.illustrative && <figcaption class="pthumb__note">Ілюстративне фото</figcaption>}
+    </figure>
   );
 }
 
-export function LevelTiles({ levels }: { levels: LevelLink[] }) {
+export const Thumb = ({ product }: { product: ShopProduct }) => <ProductThumb thumb={product.thumb} />;
+
+/** Плитки рівнів у граматиці героя (SPEC-005 §3.8, AC-14): іконка, назва, «від … ₴», вогник ::after. */
+export function LevelTiles({ levels }: { levels: LevelTile[] }) {
   return (
-    <ul role="list" class="shop-levels">
+    <ul role="list" class="shop-tiles">
       {levels.map((l) => (
         <li key={l.id}>
-          <a class="shop-level" href={l.url}>
-            <span class="shop-level__name">{l.name}</span>
-            <span class="shop-level__short">{l.short}</span>
+          <a class="shop-tile" href={l.url} data-shop-tile>
+            <svg
+              class="icon"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d={l.icon} />
+            </svg>
+            <span class="shop-tile__name">{l.name}</span>
+            <span class="shop-tile__price num">{l.from}</span>
           </a>
         </li>
       ))}

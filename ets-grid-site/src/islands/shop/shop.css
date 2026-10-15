@@ -89,26 +89,6 @@
   font-size: var(--step--1);
 }
 
-.shop-thumb {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 5.5rem;
-  aspect-ratio: 1;
-  overflow: hidden;
-  border-radius: var(--radius-m);
-  background: var(--day-bg);
-  color: var(--day-ink-muted);
-  font-size: 0.75rem;
-  line-height: 1.3;
-  text-align: center;
-}
-.shop-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
 .shop-check {
   display: inline-flex;
   align-items: center;
@@ -380,33 +360,6 @@
 .shop-empty p {
   margin: 0;
 }
-.shop-levels {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
-  gap: var(--space-xs);
-}
-.shop-level {
-  display: grid;
-  gap: var(--space-3xs);
-  height: 100%;
-  min-height: 5.5rem;
-  padding: var(--space-s);
-  border-radius: var(--radius-m);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-1);
-  text-decoration: none;
-}
-.shop-level:hover .shop-level__name {
-  text-decoration: underline;
-}
-.shop-level__name {
-  font-weight: 700;
-}
-.shop-level__short {
-  color: var(--color-ink-muted);
-  font-size: var(--step--1);
-}
-
 /* ---------- оформлення ---------- */
 .co-form {
   display: grid;
@@ -537,9 +490,11 @@
   font-size: var(--step--1);
 }
 .co-items li {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
   gap: var(--space-s);
+  --thumb: 3.5rem;
 }
 
 /* ---------- порівняння ---------- */
