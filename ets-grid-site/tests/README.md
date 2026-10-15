@@ -146,7 +146,7 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-002/AC-37 AnimateNumber «Знайдено» и счётчики | functional | `functional/catalog-rev5.spec.ts` | ✅ |
 | SPEC-002/AC-38 остров React, вес с островами | build | `build/catalog-rev5.test.ts`, `build/budget.test.ts` | ✅ |
 | SPEC-002/AC-39 axe и клавиатура ревизии 5 | a11y | `a11y/catalog.spec.ts` | ✅ |
-| SPEC-002/AC-40 эталоны листинга и уровня | visual | `visual/pages.spec.ts` | ⏳ после утверждения дизайна |
+| SPEC-002/AC-40 эталоны листинга и уровня | visual | `visual/templates.spec.ts` | ✅ |
 | SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |
 | SPEC-005/AC-01 корзина: setQty, setTurnkey, remove, clear, totals | unit | `unit/shop.test.ts` | ✅ |
 | SPEC-005/AC-02 сравнение, событие, recent | unit | `unit/shop.test.ts` | ✅ |
