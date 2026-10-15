@@ -10,16 +10,45 @@ const levelOf = (slug: string) => catalog.products.find((p) => p.slug === slug)!
 const variant = (id: string) => homeJson.hero.variants.find((v) => v.id === id)!;
 
 test.describe('SPEC-006/AC-04 рамки фото видно на обох екранах (D-031)', () => {
-  test('фото героя і навісу видимі; на 375 фото героя — після плиток рівнів', async ({ page }, info) => {
+  test('фото героя — тло всього блоку, фото навісу видиме (рев. 5, акт I)', async ({ page }) => {
     await page.goto('/');
     const heroPhoto = page.locator('.hero__photo');
     await expect(heroPhoto).toBeVisible();
     await expect(page.locator('.carport__photo')).toBeVisible();
+    const hero = (await page.locator('[data-home-block="hero"]').boundingBox())!;
+    const photo = (await heroPhoto.boundingBox())!;
+    expect(Math.abs(photo.y - hero.y)).toBeLessThanOrEqual(2);
+    expect(Math.abs(photo.height - hero.height)).toBeLessThanOrEqual(2);
+    expect(Math.abs(photo.width - hero.width)).toBeLessThanOrEqual(2);
+    await expect(heroPhoto.locator('img')).toHaveAttribute('fetchpriority', 'high');
+  });
+});
+
+test.describe('SPEC-006/AC-28 лампа-курсор над героєм (акт I)', () => {
+  test('desktop: після руху вказівника лампа видима і йде за ним; на 375 лампи нема', async ({ page }, info) => {
+    await page.goto('/');
+    const lamp = page.locator('[data-hero-lamp]');
     if (isMobile(info)) {
-      const tiles = await page.locator('.hero__tiles').boundingBox();
-      const photo = await heroPhoto.boundingBox();
-      expect(photo!.y).toBeGreaterThan(tiles!.y);
+      await expect(lamp).toBeHidden();
+      return;
     }
+    await page.mouse.move(900, 300);
+    await page.mouse.move(1000, 400);
+    await expect(lamp).toHaveCSS('opacity', '1', { timeout: 1500 });
+    const vars = await page.locator('[data-home-block="hero"]').evaluate((el) => [el.style.getPropertyValue('--lx'), el.style.getPropertyValue('--ly')]);
+    expect(vars[0]).toBe('1000px');
+    expect(parseFloat(vars[1])).toBeGreaterThan(0);
+    await page.mouse.move(700, 20);
+    await expect(lamp).toHaveCSS('opacity', '0', { timeout: 2000 });
+  });
+});
+
+test.describe('SPEC-006/AC-29 довіра і контакт у першому екрані 1440', () => {
+  test.beforeEach(({}, info) => test.skip(!isDesktop(info), 'тільки desktop'));
+  test('полоса довіри й контакти — в межах 900 px, лампа не акцентний елемент (AC-17)', async ({ page }) => {
+    await page.goto('/');
+    const box = (await page.locator('[data-home-block="hero"] .hero__trust').boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
   });
 });
 
@@ -148,8 +177,9 @@ test.describe('SPEC-006/AC-17 один акцентний елемент у пе
       hero.append(probe);
       const accent = getComputedStyle(probe).color;
       probe.remove();
+      // Дрібні індикатори (світлодіоди на стійках, D-056) — не в рахунок (SPEC-006 §5).
       return [...hero.querySelectorAll<HTMLElement>('*')]
-        .filter((el) => el.offsetParent !== null && getComputedStyle(el).backgroundColor === accent)
+        .filter((el) => el.offsetParent !== null && !el.hasAttribute('data-hero-led') && getComputedStyle(el).backgroundColor === accent)
         .map((el) => el.dataset.heroCta ?? el.className);
     });
     expect(accented).toEqual(['primary']);
@@ -206,5 +236,150 @@ test.describe('SPEC-006/AC-25 H1 без анімації', () => {
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
     await expect(page.locator('h1')).toHaveCSS('opacity', '1', { timeout: 1500 });
     await expect(page.locator('h1 .hero__word')).toHaveCount(0);
+  });
+});
+
+test.describe('SPEC-006/AC-30, AC-31 схема вмикається прокруткою (акт II)', () => {
+  test('desktop: до прокрутки вузли приглушені, наприкінці треку всі 5 увімкнені, числа докручені; mobile: вузол вмикається в кадрі', async ({ page }, info) => {
+    await page.goto('/');
+    const flow = page.locator('[data-energy-flow]');
+    const nodes = flow.locator('[data-node]');
+    await expect(nodes).toHaveCount(5);
+    if (isMobile(info)) {
+      await expect(nodes.nth(0)).not.toHaveAttribute('data-lit', '');
+      await nodes.nth(2).scrollIntoViewIfNeeded();
+      await expect(nodes.nth(2)).toHaveAttribute('data-lit', '', { timeout: 2000 });
+      return;
+    }
+    const box = (await flow.boundingBox())!;
+    expect(box.height).toBeGreaterThan(page.viewportSize()!.height * 2.5);
+    await page.evaluate((y) => window.scrollTo(0, y), box.y + 10);
+    await page.waitForTimeout(400);
+    await expect(nodes.nth(4)).not.toHaveAttribute('data-lit', '');
+    // Розряди AnimateNumber — aria-hidden, поточне значення — в його aria-label; статичне число приховане за [data-live].
+    const digits = nodes.nth(2).locator('.live-number [aria-label]');
+    await expect(digits).toHaveAttribute('aria-label', '0,00');
+    await expect(nodes.nth(2).locator('.flow__static')).toBeHidden();
+    await page.evaluate((y) => window.scrollTo(0, y), box.y + box.height - page.viewportSize()!.height - 2);
+    await page.waitForTimeout(900);
+    for (let i = 0; i < 5; i++) await expect(nodes.nth(i)).toHaveAttribute('data-lit', '');
+    await expect(digits).toHaveAttribute('aria-label', '10,24', { timeout: 3000 });
+    await expect(nodes.nth(2).locator('.flow__num .visually-hidden')).toHaveText('10,24');
+    await expect(flow.locator('[data-flow-spark][data-run]')).toHaveCount(4);
+  });
+});
+
+test.describe('SPEC-006/AC-33 вогники зарядки (D-056)', () => {
+  test('плитки: вогники загоряються по черзі (анімація з затримкою за --i); фото: світлодіоди на desktop у межах героя', async ({ page }, info) => {
+    await page.goto('/');
+    const delays = await page.locator('.hero__tile').evaluateAll((els) => els.map((el) => getComputedStyle(el, '::after').animationDelay));
+    expect(delays).toHaveLength(4);
+    expect(new Set(delays).size).toBe(4);
+    const leds = page.locator('[data-hero-led]:visible');
+    if (isMobile(info)) {
+      await expect(leds.first()).toBeHidden();
+      return;
+    }
+    // Позицію ставить скрипт після завантаження фото (translate); стійки під тінню колонки тексту приховані — видимих ≥ 2.
+    await expect(page.locator('[data-hero-led]').last()).toHaveAttribute('style', /translate\(/);
+    expect(await leds.count()).toBeGreaterThanOrEqual(2);
+    const hero = (await page.locator('[data-home-block="hero"]').boundingBox())!;
+    for (const led of await leds.all()) {
+      const b = (await led.boundingBox())!;
+      expect(b.x).toBeGreaterThan(hero.x);
+      expect(b.x + b.width).toBeLessThan(hero.x + hero.width);
+      expect(b.y).toBeGreaterThan(hero.y);
+      expect(b.y + b.height).toBeLessThan(hero.y + hero.height);
+    }
+  });
+});
+
+test.describe('SPEC-006/AC-35 доба по колу в першому екрані (D-059)', () => {
+  test('три шари неба крутяться 48 с по колу; у фазі «день» контраст тексту героя не падає', async ({ page }) => {
+    await page.goto('/');
+    const layers = page.locator('[data-hero-sky]');
+    await expect(layers).toHaveCount(3);
+    const anims = await layers.evaluateAll((els) => els.map((el) => { const cs = getComputedStyle(el); return [cs.animationName, cs.animationDuration, cs.animationIterationCount]; }));
+    expect(anims).toEqual([['sky-predawn', '48s', 'infinite'], ['sky-dawn', '48s', 'infinite'], ['sky-day', '48s', 'infinite']]);
+    // Перемотуємо добу в «день» (60 % циклу) і дивимось: шар дня видимий, текст героя лишається на ночі.
+    const dayOpacity = await layers.nth(2).evaluate((el) => { for (const a of el.getAnimations()) a.currentTime = 48000 * 0.6; return getComputedStyle(el).opacity; });
+    expect(parseFloat(dayOpacity)).toBeGreaterThan(0.9);
+    const under = await page.locator('.hero__subtitle').evaluate((el) => { const r = el.getBoundingClientRect(); const probe = document.elementFromPoint(r.left + 4, r.top + 4); return probe?.closest('.hero__text') ? 'text' : probe?.className; });
+    expect(under).toBe('text');
+  });
+});
+
+test.describe('SPEC-006/AC-37 галереї «Обʼєкти» на Carousel (D-061)', () => {
+  test('стрілка показує другий кадр, точки відмічають поточний; до гортання видно лише перший', async ({ page }) => {
+    await page.goto('/');
+    const card = page.locator('[data-home-block="cases"] [data-case="parking"]');
+    await card.scrollIntoViewIfNeeded();
+    const gallery = card.locator('[data-case-gallery]');
+    await expect(gallery).toBeVisible({ timeout: 5000 });
+    const dots = gallery.getByRole('tab');
+    await expect(dots.first()).toHaveAttribute('aria-selected', 'true');
+    const first = card.locator('picture[data-photo="case-parking-1"]');
+    const second = card.locator('picture[data-photo="case-parking-2"]');
+    const box = (await card.locator('.case__photo').boundingBox())!;
+    const b1 = (await first.boundingBox())!;
+    expect(b1.x).toBeGreaterThanOrEqual(box.x - 1);
+    expect(b1.x + b1.width).toBeLessThanOrEqual(box.x + box.width + 1);
+    await gallery.getByRole('button', { name: /Наступний кадр/ }).click();
+    await expect(dots.nth(1)).toHaveAttribute('aria-selected', 'true', { timeout: 3000 });
+    await expect.poll(async () => (await second.boundingBox())!.x, { timeout: 3000 }).toBeLessThan(box.x + box.width);
+    await expect.poll(async () => (await second.boundingBox())!.x + (await second.boundingBox())!.width).toBeGreaterThan(box.x);
+  });
+});
+
+test.describe('SPEC-006/AC-38 акт IV: карусель хітів і стики', () => {
+  test('1440: ≥ 3 картки в рамці, стрілка гортає, точки відмічають; стики — градієнт; Carport ≤ 720 px', async ({ page }, info) => {
+    await page.goto('/');
+    const block = page.locator('[data-home-block="hits"]');
+    await block.scrollIntoViewIfNeeded();
+    const nav = block.locator('.hits__nav');
+    await expect(nav).toBeVisible({ timeout: 5000 });
+    const seams = await page.evaluate(() => ['[data-seam="dawn"]', '[data-seam="dusk"]'].map((s) => getComputedStyle(document.querySelector(s)!, '::before').backgroundImage));
+    for (const bg of seams) expect(bg).toContain('linear-gradient');
+    if (isMobile(info)) return;
+    const track = (await block.locator('.hits__track').boundingBox())!;
+    const inFrame = async () => {
+      const boxes = await block.locator('.hits__item').evaluateAll((els) => els.map((e) => e.getBoundingClientRect()));
+      return boxes.filter((b) => b.left >= track.x - 1 && b.right <= track.x + track.width + 1).length;
+    };
+    expect(await inFrame()).toBeGreaterThanOrEqual(3);
+    const dots = nav.getByRole('tab');
+    await expect(dots.first()).toHaveAttribute('aria-selected', 'true');
+    await nav.getByRole('button', { name: 'Наступні товари' }).click();
+    await expect(dots.nth(1)).toHaveAttribute('aria-selected', 'true', { timeout: 3000 });
+    await expect.poll(async () => (await block.locator('.hits__item').first().boundingBox())!.x, { timeout: 3000 }).toBeLessThan(track.x);
+    const carport = (await page.locator('[data-home-block="carport"]').boundingBox())!;
+    expect(carport.height).toBeLessThanOrEqual(720);
+  });
+});
+
+test.describe('SPEC-006/AC-39 акт V: кроки-лінія, акордеон, форма праворуч', () => {
+  test('кроки вмикаються з прокруткою; FAQ відкривається кліком; на 1440 форма праворуч від довіри, на 375 — під нею', async ({ page }, info) => {
+    await page.goto('/');
+    const section = page.locator('#zayavka');
+    const steps = section.locator('[data-step]');
+    await expect(steps).toHaveCount(5);
+    await expect(steps.last()).not.toHaveAttribute('data-lit', '');
+    const sb = (await section.boundingBox())!;
+    const top = sb.y + (await page.evaluate(() => window.scrollY));
+    for (let y = top - 400; y < top + sb.height; y += 150) {
+      await page.evaluate((v) => window.scrollTo(0, v), y);
+      await page.waitForTimeout(60);
+    }
+    await expect(steps.last()).toHaveAttribute('data-lit', '', { timeout: 3000 });
+    const fills = await section.locator('[data-step-fill]').evaluateAll((els) => els.map((e) => (e as HTMLElement).style.transform));
+    for (const f of fills) expect(f).toBe('scaleY(1)');
+    const first = section.locator('[data-faq] details').first();
+    await first.locator('summary').click();
+    await expect(first).toHaveAttribute('open', '');
+    await expect(first.locator('p')).toBeVisible();
+    const trust = (await section.locator('[data-home-block="steps"]').boundingBox())!;
+    const form = (await section.locator('[data-home-block="final"]').boundingBox())!;
+    if (isMobile(info)) expect(form.y).toBeGreaterThan(trust.y + trust.height - 1);
+    else expect(form.x).toBeGreaterThan(trust.x + trust.width - 1);
   });
 });

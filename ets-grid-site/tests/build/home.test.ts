@@ -1,11 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import homeJson from '../../src/data/home-content.json';
 import { page } from '../helpers/dist';
 
 const doc = () => page('/').document;
-const ORDER = ['hero', 'systems', 'power', 'hits', 'flow', 'carport', 'steps', 'faq', 'cases', 'financing', 'final'];
+// Рев. 5 (D-053, D-055): блок 5 «схема» — перед блоком 2 «Що вам потрібно?» (ТЗ §6.1 допускає інший порядок з обґрунтуванням).
+const ORDER = ['hero', 'flow', 'systems', 'power', 'hits', 'carport', 'steps', 'faq', 'cases', 'financing', 'final'];
 
-describe('SPEC-006/AC-04 блоки 1–11 у порядку ТЗ §6.1', () => {
+describe('SPEC-006/AC-04 блоки 1–11 у порядку ТЗ §6.1 (рев. 5: схема перед сценаріями)', () => {
   test('порядок блоків', () => {
     const found = [...doc().querySelectorAll('[data-home-block]')].map((el) => el.getAttribute('data-home-block'));
     expect(found).toEqual(ORDER);
@@ -101,5 +103,71 @@ describe('SPEC-006/AC-08 схема потоку', () => {
 describe('SPEC-006/AC-09 плашка-маніфест', () => {
   test('рівно одна на сторінці', () => {
     expect(doc().querySelectorAll('[data-manifesto]')).toHaveLength(1);
+  });
+});
+
+describe('SPEC-006/AC-32 числа схеми — з каталогу (рев. 5, акт II)', () => {
+  test('кожен вузол: число з характеристики товару або складу системи, ціна з міткою демо', () => {
+    const nodes = [...doc().querySelectorAll('[data-home-block="flow"] [data-node]')];
+    expect(nodes).toHaveLength(5);
+    const values = nodes.map((n) => n.querySelector('[data-live-number]')?.getAttribute('data-live-number'));
+    expect(values).toEqual(['5', '10', '10.24', '22', '3']);
+    const units = nodes.map((n) => n.querySelector('.flow__unit')?.textContent);
+    expect(units).toEqual(['kWp', 'кВт', 'кВт·год', 'кВт', 'складові']);
+    // SSR показує кінцеве число (без JS — одразу), «10,24» — українським форматом.
+    expect(nodes[2].querySelector('.flow__num')?.textContent?.replace(/\s+/g, ' ')).toContain('10,24');
+    for (const n of nodes) expect(n.querySelector('.flow__price')?.textContent).toMatch(/₴/);
+    expect(nodes[4].querySelector('.flow__price')?.textContent).toContain('демо');
+  });
+});
+
+describe('SPEC-006/AC-37 міні-галереї «Обʼєкти» (D-061)', () => {
+  test('3 картки × 10 кадрів у HTML, кожен — <picture> з AVIF і міткою; 30 ключів у CREDITS.md', () => {
+    const cards = [...doc().querySelectorAll('[data-home-block="cases"] [data-case]')];
+    expect(cards.map((c) => c.getAttribute('data-case'))).toEqual(['parking', 'home', 'biz']);
+    const credits = readFileSync(new URL('../../public/img/CREDITS.md', import.meta.url), 'utf8');
+    for (const card of cards) {
+      const group = card.getAttribute('data-case');
+      const pics = [...card.querySelectorAll('picture[data-photo]')];
+      expect(pics.map((p) => p.getAttribute('data-photo'))).toEqual(Array.from({ length: 10 }, (_, i) => `case-${group}-${i + 1}`));
+      for (const pic of pics) {
+        expect(pic.querySelector('source[type="image/avif"]')).not.toBeNull();
+        expect(pic.querySelector('img')?.getAttribute('alt')).toMatch(/ілюстрація/);
+        expect(credits).toContain(`case-${group}-${pic.getAttribute('data-photo')!.split('-')[2]}-*`);
+      }
+      expect(card.querySelectorAll('.photo-note').length).toBe(10);
+    }
+  });
+});
+
+describe('SPEC-006/AC-38 акт IV: стики і Carport одним рядком', () => {
+  test('секція хітів — seam=dawn, заявка — seam=dusk; Carport — ряд із плашки, фото і конфігуратора', () => {
+    const hits = doc().querySelector('[data-home-block="hits"]')!.closest('section')!;
+    expect(hits.getAttribute('data-seam')).toBe('dawn');
+    expect(hits.getAttribute('data-surface')).toBe('day');
+    const final = doc().querySelector('[data-home-block="final"]')!.closest('section')!;
+    expect(final.getAttribute('data-seam')).toBe('dusk');
+    expect(final.getAttribute('data-surface')).toBe('night');
+    const row = doc().querySelector('[data-home-block="carport"] .carport__row')!;
+    expect(row.querySelector('[data-manifesto]')).not.toBeNull();
+    expect(row.querySelector('picture[data-photo="carport-charging"]')).not.toBeNull();
+    expect(row.querySelector('[data-picker="carport"], astro-island')).not.toBeNull();
+  });
+});
+
+describe('SPEC-006/AC-39 акт V: одна нічна секція довіри і дії', () => {
+  test('блоки 7–11 усередині #zayavka (night, dusk), порядок збережено; 5 кроків із лінією; FAQ — details з відповідями', () => {
+    const section = doc().querySelector('#zayavka')!;
+    expect(section.getAttribute('data-surface')).toBe('night');
+    expect(section.getAttribute('data-seam')).toBe('dusk');
+    const inside = [...section.querySelectorAll('[data-home-block]')].map((el) => el.getAttribute('data-home-block'));
+    expect(inside).toEqual(['steps', 'faq', 'cases', 'financing', 'final']);
+    expect(section.querySelectorAll('[data-step]')).toHaveLength(5);
+    expect(section.querySelectorAll('[data-step-fill]')).toHaveLength(4);
+    const faq = [...section.querySelectorAll('[data-faq] details')];
+    expect(faq.length).toBeGreaterThanOrEqual(4);
+    expect(faq.length).toBeLessThanOrEqual(6);
+    for (const d of faq) expect(d.querySelector('summary + p')?.textContent?.length).toBeGreaterThan(20);
+    expect(section.querySelector('form[data-lead-form][data-kind="final"]')).not.toBeNull();
   });
 });

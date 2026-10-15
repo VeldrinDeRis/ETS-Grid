@@ -20,8 +20,10 @@ const variant = activeVariant();
 >
   <HomeHero />
 
-  <Section label="Що вам потрібно?">
-    <div data-home-block="systems"><HomeSystems /></div>
+  <!-- Акт II «Система» (SPEC-006 §4.9, D-055): схема-сцена (блок 5) перед входом за сценарієм (блок 2), обидва на ночі. -->
+  <Section id="systema" label="Одна система" surface="night">
+    <div data-home-block="flow"><EnergyFlow /></div>
+    <div data-home-block="systems" class="systems-after-flow"><HomeSystems /></div>
   </Section>
 
   <Section id="potuzhnist" label="Чи вистачить потужності?" surface="night">
@@ -31,39 +33,59 @@ const variant = activeVariant();
     </div>
   </Section>
 
-  <Section label="Хіти каталогу">
+  <!-- Акт IV «Вітрина» (SPEC-006 §4.10, D-060): день входить через «світанок»; хіти — карусель, Carport одним рядком. -->
+  <Section label="Хіти каталогу" seam="dawn">
     <div data-home-block="hits"><HomeHits /></div>
-  </Section>
-
-  <Section label="Не тільки розетка" surface="night">
-    <div data-home-block="flow"><EnergyFlow /></div>
   </Section>
 
   <Section label="Solar Carport">
     <div data-home-block="carport"><HomeBlocks part="carport" /></div>
   </Section>
 
-  <Section label="Як ми працюємо">
-    <div data-home-block="steps"><HomeBlocks part="steps" /></div>
-  </Section>
-
-  <Section label="Незручні питання">
-    <div data-home-block="faq"><HomeBlocks part="faq" /></div>
-  </Section>
-
-  <Section label="Обʼєкти">
-    <div data-home-block="cases"><HomeBlocks part="cases" /></div>
-  </Section>
-
-  <Section label="Фінансування">
-    <div data-home-block="financing"><HomeBlocks part="financing" /></div>
-  </Section>
-
-  <Section id="zayavka" label="Заявка" surface="night">
-    <div data-home-block="final"><HomeBlocks part="final" /></div>
+  <!-- Акт V «Довіра і дія» (SPEC-006 §4.10, D-060): одна нічна секція — зліва довіра (блоки 7–10), праворуч форма (11). -->
+  <Section id="zayavka" label="Заявка" surface="night" seam="dusk">
+    <div class="trust-act" data-act="trust">
+      <div class="trust-act__trust">
+        <div data-home-block="steps"><HomeBlocks part="steps" /></div>
+        <div data-home-block="faq"><HomeBlocks part="faq" /></div>
+        <div data-home-block="cases"><HomeBlocks part="cases" /></div>
+        <div data-home-block="financing"><HomeBlocks part="financing" /></div>
+      </div>
+      <div class="trust-act__form" data-home-block="final"><HomeBlocks part="final" /></div>
+    </div>
   </Section>
 </BaseLayout>
 
 <script>
   import '../scripts/home';
 </script>
+
+<style>
+  /* Вхід за сценарієм — під сценою схеми, тихіше за акт. */
+  .systems-after-flow {
+    margin-top: var(--space-2xl);
+  }
+  /* Акт V: довіра зліва стовпцем, форма праворуч і липне, поки гортають довіру. На телефоні — довіра, потім форма. */
+  .trust-act {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: var(--space-2xl) var(--space-xl);
+    align-items: start;
+  }
+  .trust-act__trust {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+  .trust-act__form {
+    position: sticky;
+    top: calc(var(--header-h) + 3rem + var(--space-m));
+  }
+  @media (max-width: 959.98px) {
+    .trust-act {
+      grid-template-columns: 1fr;
+    }
+    .trust-act__form {
+      position: static;
+    }
+  }
+</style>

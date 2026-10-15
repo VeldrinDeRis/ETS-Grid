@@ -1,6 +1,7 @@
 // Поведінка головної (SPEC-006 §4.7): вкладки, фільтри хітів, варіант героя, аналітика, лінії енергії.
 import { splitText } from '@motionplus/core';
-import { animate, inView, stagger } from 'motion';
+import { animate, animateLayout, frame, inView, motionValue, scroll, stagger } from 'motion';
+import { HERO_LEDS } from '../lib/photos';
 import { track } from '../lib/track';
 
 /* ---------- вкладки блоку 2: WAI-ARIA Tabs ---------- */
@@ -68,30 +69,60 @@ document.addEventListener('click', (e) => {
   if (tile) track('level_tile_click', { level: tile.dataset.levelTile, source: 'hero' });
 });
 
-/* ---------- схема енергії (блок 5): «світло вмикається» один раз, лише transform/opacity ----------
-   У спокої схема горить (без JS і при reduced-motion так і лишається). Коли схема в кадрі — лампи
-   загоряються по черзі, лінія до наступної лампи заповнюється; без циклів (DESIGN.md → Рух). */
+/* ---------- Акт II · схема вмикається по черзі (SPEC-006 §4.9, D-055) ----------
+   Desktop: сцена прилипає (приклад Motion+ «Scroll pinning»), прогрес прокрутки треку вмикає вузли й заповнює лінію
+   (scroll()). Mobile: без прилипання — вузол вмикається, коли входить у кадр (inView, «Scroll highlight»).
+   Числа докручує острів LiveNumber: отримує подію etsgrid:node-lit. Без руху (reduced-motion) схема горить цілком.
+   Увімкнена лінія несе блик — енергія йде по системі (D-056). */
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const flow = document.querySelector<HTMLElement>('[data-energy-flow]');
 if (flow && !reduce) {
-  const dots = [...flow.querySelectorAll<HTMLElement>('[data-flow-dot]')];
-  const fills = [...flow.querySelectorAll<HTMLElement>('[data-flow-pulse]')];
-  const vertical = matchMedia('(max-width: 959.98px)').matches;
-  const off = vertical ? 'scaleY(0)' : 'scaleX(0)';
-  const on = vertical ? 'scaleY(1)' : 'scaleX(1)';
+  const desktop = matchMedia('(min-width: 960px)').matches;
+  const nodes = [...flow.querySelectorAll<HTMLElement>('[data-node]')];
+  const pulses = nodes.map((n) => n.querySelector<HTMLElement>('[data-flow-pulse]'));
+  const sparks = nodes.map((n) => n.querySelector<HTMLElement>('[data-flow-spark]'));
   const ease = [0.16, 1, 0.3, 1] as const;
-  const STEP = 0.32;
-  // Приглушений старт ставимо одразу, щоб на вході в кадр схема не блимала «увімкнена → вимкнена».
-  for (const dot of dots) Object.assign(dot.style, { opacity: '0.25', transform: 'scale(0.7)' });
-  for (const fill of fills) fill.style.transform = off;
-  inView(
-    flow,
-    () => {
-      dots.forEach((dot, i) => animate(dot, { opacity: [0.25, 1], transform: ['scale(0.7)', 'scale(1)'] }, { duration: 0.45, delay: i * STEP, ease }));
-      fills.forEach((fill, i) => animate(fill, { transform: [off, on] }, { duration: 0.4, delay: i * STEP + 0.18, ease }));
-    },
-    { amount: 0.4 },
-  );
+  const off = desktop ? 'scaleX(0)' : 'scaleY(0)';
+  const lit = nodes.map(() => false);
+  // Приглушений старт одразу, щоб не блимало «увімкнено → вимкнено».
+  for (const n of nodes) {
+    Object.assign(n.querySelector<HTMLElement>('[data-flow-dot]')!.style, { opacity: '0.25', transform: 'scale(0.7)' });
+    for (const part of n.querySelectorAll<HTMLElement>('.flow__link, .flow__body')) part.style.opacity = '0.35';
+  }
+  for (const p of pulses) if (p) p.style.transform = off;
+  const light = (i: number, on: boolean) => {
+    if (lit[i] === on) return;
+    lit[i] = on;
+    const n = nodes[i];
+    n.toggleAttribute('data-lit', on);
+    animate(n.querySelector<HTMLElement>('[data-flow-dot]')!, { opacity: on ? 1 : 0.25, transform: on ? 'scale(1)' : 'scale(0.7)' }, { duration: 0.45, ease });
+    animate(n.querySelectorAll<HTMLElement>('.flow__link, .flow__body'), { opacity: on ? 1 : 0.35 }, { duration: 0.45, ease });
+    n.dispatchEvent(new CustomEvent('etsgrid:node-lit', { detail: { on } }));
+    if (lit.every(Boolean)) flow.dataset.done = '';
+    if (!desktop && pulses[i]) animate(pulses[i]!, { transform: on ? 'scaleY(1)' : 'scaleY(0)' }, { duration: 0.4, delay: on ? 0.18 : 0, ease });
+    // Блик по лінії: запускається, коли лінія до наступного вузла ввімкнена.
+    sparks[i]?.toggleAttribute('data-run', on);
+  };
+  if (desktop) {
+    const segs = pulses.filter(Boolean).length;
+    const filled = pulses.map(() => 0);
+    scroll(
+      (progress: number) => {
+        // Перші 10 % треку — заголовок; далі кожен вузол займає рівну частку.
+        const p = Math.max(0, (progress - 0.1) / 0.8);
+        // Сцена односпрямована: що ввімкнулося — лишається (один прохід, DESIGN.md → Рух); лінія теж не відкочується.
+        nodes.forEach((_, i) => p >= i / nodes.length + 0.02 && light(i, true));
+        pulses.forEach((pulse, i) => {
+          if (!pulse) return;
+          filled[i] = Math.max(filled[i], Math.min(1, Math.max(0, p * segs - i)));
+          pulse.style.transform = `scaleX(${filled[i]})`;
+        });
+      },
+      { target: flow, offset: ['start start', 'end end'] },
+    );
+  } else {
+    nodes.forEach((n, i) => inView(n, () => light(i, true), { amount: 0.6 }));
+  }
 }
 
 /* ---------- H1 першого екрана: слова загоряються (SPEC-006 §4.8, D-045) ----------
@@ -114,4 +145,111 @@ if (heroTitle && document.documentElement.dataset.motion === 'on' && !reduce) {
       heroTitle.removeAttribute('aria-label');
     });
   });
+}
+
+/* ---------- Акт I · лампа-курсор над героєм (SPEC-006 §4.9, D-054) ----------
+   За прикладом Motion+ «Conic gradient pointer»: позиція вказівника → motionValue → frame.render, без читання
+   розмірів у кожному кадрі. Лише desktop із точним вказівником; при reduced-motion лампа не вмикається. */
+const heroBlock = document.querySelector<HTMLElement>('[data-home-block="hero"]');
+const heroLamp = heroBlock?.querySelector<HTMLElement>('[data-hero-lamp]');
+if (heroBlock && heroLamp && !reduce && matchMedia('(pointer: fine)').matches) {
+  const lx = motionValue(0);
+  const ly = motionValue(0);
+  let rect = heroBlock.getBoundingClientRect();
+  const measure = () => (rect = heroBlock.getBoundingClientRect());
+  const render = () => {
+    heroBlock.style.setProperty('--lx', `${lx.get()}px`);
+    heroBlock.style.setProperty('--ly', `${ly.get()}px`);
+  };
+  lx.on('change', () => frame.render(render));
+  ly.on('change', () => frame.render(render));
+  addEventListener('resize', () => frame.read(measure));
+  addEventListener('scroll', () => frame.read(measure), { passive: true });
+  heroBlock.addEventListener('pointermove', (e) => {
+    lx.set(e.clientX - rect.left);
+    ly.set(e.clientY - rect.top);
+  });
+  heroBlock.addEventListener('pointerenter', () => animate(heroLamp, { opacity: 1 }, { duration: 0.6, ease: [0.16, 1, 0.3, 1] }));
+  heroBlock.addEventListener('pointerleave', () => animate(heroLamp, { opacity: 0 }, { duration: 0.9, ease: [0.16, 1, 0.3, 1] }));
+}
+
+/* ---------- Акт I · вогники зарядки на стійках у кадрі (D-056) ----------
+   Точки — частки кадру HERO_LEDS; екранне положення рахуємо під object-fit: cover і object-position фото героя,
+   перераховуємо на зміну розміру. Лише desktop із рухом: на телефоні фото майже цілком під тінню. */
+const ledLayer = heroBlock?.querySelector<HTMLElement>('[data-hero-leds]');
+const heroImg = heroBlock?.querySelector<HTMLImageElement>('.hero__photo img');
+if (heroBlock && ledLayer && heroImg && !reduce && matchMedia('(min-width: 960px)').matches) {
+  const leds = HERO_LEDS.map((p, i) => {
+    const el = document.createElement('span');
+    el.className = 'hero__led';
+    el.dataset.heroLed = '';
+    el.style.setProperty('--i', String(i));
+    ledLayer.append(el);
+    return { el, p };
+  });
+  const place = () => {
+    const W = heroBlock.clientWidth;
+    const H = heroBlock.clientHeight;
+    const iw = heroImg.naturalWidth;
+    const ih = heroImg.naturalHeight;
+    if (!iw || !ih) return;
+    const s = Math.max(W / iw, H / ih);
+    const w = iw * s;
+    const h = ih * s;
+    const [px, py] = getComputedStyle(heroImg).objectPosition.split(' ').map((v) => parseFloat(v) / 100);
+    const x0 = (W - w) * px;
+    const y0 = (H - h) * py;
+    frame.render(() => {
+      for (const { el, p } of leds) {
+        const x = x0 + p.x * w;
+        // Стійки, що потрапили під щільну тінь зліва (колонка тексту), не підсвічуємо.
+        el.hidden = x < W * 0.55;
+        el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y0 + p.y * h)}px)`;
+      }
+    });
+  };
+  place();
+  if (!heroImg.complete) heroImg.addEventListener('load', place, { once: true });
+  new ResizeObserver(() => frame.read(place)).observe(heroBlock);
+}
+
+/* ---------- Акт V · кроки-лінія і FAQ-акордеон (SPEC-006 §4.10, D-060) ----------
+   Кроки: лінія від кроку до кроку заповнюється з прокруткою блоку (scroll(), як сцена схеми), крок вмикається,
+   коли лінія до нього дійшла; односпрямовано. FAQ: <details> працює без JS; з JS висота сусідів їде плавно
+   (animateLayout із motion, SPEC-002 §3.8). Без руху — все статично. */
+const stepsBlock = document.querySelector<HTMLElement>('[data-steps]');
+if (stepsBlock && !reduce) {
+  const steps = [...stepsBlock.querySelectorAll<HTMLElement>('[data-step]')];
+  const fills = steps.map((s) => s.querySelector<HTMLElement>('[data-step-fill]'));
+  const segs = fills.filter(Boolean).length;
+  const done = steps.map(() => false);
+  scroll(
+    (progress: number) => {
+      steps.forEach((step, i) => {
+        if (done[i] || progress < i / steps.length + 0.02) return;
+        done[i] = true;
+        step.toggleAttribute('data-lit', true);
+      });
+      fills.forEach((fill, i) => {
+        if (!fill) return;
+        const local = Math.min(1, Math.max(0, progress * segs - i));
+        const prev = parseFloat(fill.dataset.filled ?? '0');
+        if (local <= prev) return;
+        fill.dataset.filled = String(local);
+        fill.style.transform = `scaleY(${local})`;
+      });
+    },
+    { target: stepsBlock, offset: ['start 85%', 'end 55%'] },
+  );
+}
+
+const faqBlock = document.querySelector<HTMLElement>('[data-faq]');
+if (faqBlock && !reduce) {
+  for (const item of faqBlock.querySelectorAll<HTMLDetailsElement>('details')) {
+    const summary = item.querySelector('summary')!;
+    summary.addEventListener('click', (e) => {
+      e.preventDefault();
+      animateLayout(faqBlock, () => item.toggleAttribute('open'), { duration: 0.32, ease: [0.22, 1, 0.36, 1] });
+    });
+  }
 }

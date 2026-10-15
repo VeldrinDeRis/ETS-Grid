@@ -6,6 +6,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "ets-grid-site", "--", "--port", "4321"],
       "port": 4321
+    },
+    {
+      "name": "home-acts",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["ets-grid-site/node_modules/vite/bin/vite.js", "--config", "research/home-acts/vite.config.mjs"],
+      "port": 4330
     }
   ]
 }

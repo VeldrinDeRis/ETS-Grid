@@ -1,5 +1,6 @@
 ---
 // Секція з вертикальним ритмом і поверхнею day/night (ТЗ §8.1).
+// seam — стик поверхонь (SPEC-010 §4.1, D-046): «світанок» (ніч → день) або «сутінки» (день → ніч) у верхньому відступі.
 import Container from './Container.astro';
 
 interface Props {
@@ -7,20 +8,36 @@ interface Props {
   width?: 'default' | 'narrow';
   id?: string;
   label?: string;
+  seam?: 'dawn' | 'dusk';
 }
-const { surface = 'day', width = 'default', id, label } = Astro.props;
+const { surface = 'day', width = 'default', id, label, seam } = Astro.props;
 ---
-<section class="section" data-surface={surface} id={id} aria-label={label}>
+<section class="section" data-surface={surface} data-seam={seam} id={id} aria-label={label}>
   <Container width={width}><slot /></Container>
 </section>
 
 <style>
   .section {
+    position: relative;
     padding-block: var(--section-y);
   }
   /* Дві секції однієї поверхні поспіль — один проміжок між ними, а не подвійний (DESIGN.md → Layout). */
   .section[data-surface='day'] + .section[data-surface='day'],
   .section[data-surface='night'] + .section[data-surface='night'] {
     padding-top: 0;
+  }
+  /* Стик: смуга з наявних токенів у верхньому відступі, під вмістом, без JS; статична — reduced-motion не стосується. */
+  .section[data-seam]::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: var(--dawn-h, calc(var(--section-y) * 0.8));
+    pointer-events: none;
+  }
+  .section[data-seam='dawn']::before {
+    background: linear-gradient(in oklab, var(--night-bg), var(--night-surface) 25%, var(--day-ink-muted) 55%, var(--day-line) 80%, var(--day-bg));
+  }
+  .section[data-seam='dusk']::before {
+    background: linear-gradient(in oklab, var(--day-bg), var(--day-line) 20%, var(--day-ink-muted) 45%, var(--night-surface) 75%, var(--night-bg));
   }
 </style>

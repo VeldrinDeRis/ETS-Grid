@@ -19,12 +19,14 @@
     "test:all": "npm run build && vitest run && playwright test --pass-with-no-tests"
   },
   "devDependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.3.299",
     "@astrojs/check": "^0.9.10",
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.64.0",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "linkedom": "^0.18.13",
+    "motion-studio": "^2.1.0",
     "typescript": "^6.0.3",
     "vitest": "^5.0.4"
   },

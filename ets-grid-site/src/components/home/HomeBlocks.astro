@@ -1,6 +1,8 @@
 ---
 // Блоки 6, 7, 8, 10, 11 головної (SPEC-006 §4.2). Один компонент — частини за `part`.
+import CaseGallery from '../../islands/react/CaseGallery';
 import { home } from '../../lib/home';
+import { ILLUSTRATION_LABEL, type PhotoKey } from '../../lib/photos';
 import { routes } from '../../lib/routes';
 import LeadForm from '../forms/LeadForm.astro';
 import Picker from '../pickers/Picker.astro';
@@ -11,36 +13,52 @@ interface Props {
   part: 'carport' | 'steps' | 'faq' | 'cases' | 'financing' | 'final';
 }
 const { part } = Astro.props;
+// Блок 9 до реальних кейсів (D-058): фото прототипу з міткою «Ілюстративне фото», підписи — плейсхолдери.
+// Кожна картка — міні-галерея з 10 кадрів (D-061): ключі case-{group}-1…10 у src/lib/photos.ts.
+const CASE_SAMPLES: { group: string; title: string; meta: string }[] = [
+  { group: 'parking', title: '[Обʼєкт: паркінг із навісом]', meta: '[N] місць · [N] kWp' },
+  { group: 'home', title: '[Обʼєкт: дім із СЕС і батареєю]', meta: '[N] kWp · [N] кВт·год' },
+  { group: 'biz', title: '[Обʼєкт: СЕС і зарядки для бізнесу]', meta: '[N] kWp · [N] кВт·год' },
+];
+const CASE_SHOTS = 10;
+const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoKey;
 ---
 {
   part === 'carport' && (
     <div class="carport">
-      <h2>Solar Carport</h2>
-      <div class="carport__grid">
+      <div class="carport__head">
+        <h2>Solar Carport</h2>
+        <a class="carport__more" href={routes.level('solar-carport')}>Усе про Solar Carport</a>
+      </div>
+      {/* Одним рядком (SPEC-006 §4.10 акт IV): плашка-маніфест · фото · міні-конфігуратор із CTA. */}
+      <div class="carport__row">
         <aside class="manifesto" data-manifesto>
           <p class="manifesto__big" aria-hidden="true">4 в 1</p>
           <p class="manifesto__text">Навіс. Генерація. Зарядка. Накопичення. Одна конструкція над вашим паркінгом.</p>
         </aside>
         <div class="carport__photo">
-          <Photo photo="carport-charging" sizes="(max-width: 959px) calc(100vw - 2rem), 45vw" />
+          <Photo photo="carport-charging" sizes="(max-width: 959px) calc(100vw - 2rem), 30vw" />
+        </div>
+        <div class="carport__config">
+          <Picker kind="carport" mode="mini" />
         </div>
       </div>
-      <div class="carport__config">
-        <Picker kind="carport" mode="mini" />
-      </div>
-      <p>
-        <a class="carport__more" href={routes.level('solar-carport')}>Усе про Solar Carport</a>
-      </p>
     </div>
   )
 }
 {
   part === 'steps' && (
-    <div class="steps">
+    <div class="steps" data-steps>
       <h2>Як ми працюємо</h2>
+      {/* Кроки — лінія мнемосхеми: заповнюється з прокруткою (home.ts, scroll()), крок вмикається, коли лінія до нього дійшла. */}
       <ol class="steps__list">
-        {home.steps.map((s) => (
-          <li>
+        {home.steps.map((s, i) => (
+          <li data-step>
+            {i < home.steps.length - 1 && (
+              <span class="steps__line" aria-hidden="true">
+                <span class="steps__fill" data-step-fill />
+              </span>
+            )}
             <strong>{s.title}</strong>
             <Placeholder label={s.term} />
           </li>
@@ -51,11 +69,15 @@ const { part } = Astro.props;
 }
 {
   part === 'faq' && (
-    <div class="faq">
+    <div class="faq" data-faq>
       <h2>Незручні питання. Прямі відповіді</h2>
+      {/* Акордеон на <details>: без JS працює як є; з JS відкриття/закриття — плавна висота (home.ts, animateLayout). */}
       {home.faq.map((item) => (
-        <details class="faq__item">
-          <summary>{item.q}</summary>
+        <details class="faq__item" data-layout>
+          <summary>
+            {item.q}
+            <span class="faq__mark" aria-hidden="true" />
+          </summary>
           <p>{item.a}</p>
         </details>
       ))}
@@ -64,19 +86,42 @@ const { part } = Astro.props;
 }
 {
   part === 'cases' && (
-    <div class="cases">
-      <h2>Обʼєкти</h2>
-      <p class="cases-plate">Тут будуть реальні обʼєкти ETS GRID</p>
-      <p>
+    <div class="cases plate">
+      <div class="cases__head">
+        <h2 class="plate__title">Обʼєкти</h2>
         <a class="carport__more" href={routes.cases}>Сторінка обʼєктів</a>
-      </p>
+      </div>
+      <p class="cases-plate">Тут будуть реальні обʼєкти ETS GRID</p>
+      {/* Індикативні картки (D-058): фото прототипу з міткою, підписи — плейсхолдери; реальні кейси — від замовника. */}
+      <ul role="list" class="cases__list">
+        {CASE_SAMPLES.map((c) => (
+          <li class="case" data-case={c.group}>
+            <div class="case__photo">
+              <CaseGallery client:visible count={CASE_SHOTS} label={c.title}>
+                {Array.from({ length: CASE_SHOTS }, (_, i) => (
+                  <div slot={`shot${i}`} class="case__frame">
+                    <Photo photo={shotKey(c.group, i)} sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 959px) 50vw, 24rem" />
+                    <span class="photo-note">{ILLUSTRATION_LABEL}</span>
+                  </div>
+                ))}
+              </CaseGallery>
+            </div>
+            <p class="case__title">
+              <Placeholder label={c.title} />
+            </p>
+            <p class="case__meta">
+              <Placeholder label="[місто]" /> · <Placeholder label={c.meta} />
+            </p>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
 {
   part === 'financing' && (
-    <div class="financing">
-      <h2>{home.financing.title}</h2>
+    <div class="financing plate">
+      <h2 class="plate__title">{home.financing.title}</h2>
       <ul role="list" class="financing__list">
         {home.financing.items.map((item) => (
           <li>
@@ -102,11 +147,42 @@ const { part } = Astro.props;
 }
 
 <style>
-  .carport__grid {
+  .carport__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-l);
+  }
+  .carport__head h2 {
+    margin: 0;
+  }
+  .carport__row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr) minmax(0, 1.5fr);
     gap: var(--space-m);
-    margin-bottom: var(--space-l);
+    margin-top: var(--space-m);
+    align-items: start;
+  }
+  /* У третині ширини міні-конфігуратор — одним стовпцем, щільніше: питання над результатом, факти в один ряд. */
+  .carport__config :global(.pk) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-s);
+  }
+  .carport__config :global(.pk-result) {
+    padding: var(--space-m);
+    gap: var(--space-2xs);
+  }
+  .carport__config :global(.pk-grid) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2xs) var(--space-s);
+  }
+  /* «100 кВт·год» не ламаємо по літерах: число з одиницею — одним рядком. */
+  .carport__config :global(.pk-grid dd) {
+    white-space: nowrap;
+  }
+  .carport__photo {
+    align-self: stretch;
   }
   .manifesto {
     display: flex;
@@ -121,7 +197,7 @@ const { part } = Astro.props;
   .manifesto__big {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(4rem, 3rem + 6vw, 8rem);
+    font-size: clamp(3.5rem, 2.5rem + 4vw, 6rem);
     font-weight: 800;
     line-height: 0.9;
   }
@@ -132,6 +208,7 @@ const { part } = Astro.props;
   }
   .carport__photo {
     min-height: 14rem;
+    max-height: 32rem;
     overflow: hidden;
     border-radius: var(--radius-l);
     background: var(--color-surface);
@@ -143,11 +220,11 @@ const { part } = Astro.props;
     min-height: var(--tap);
     font-weight: 600;
   }
-  /* Кроки — послідовність на лінії мнемосхеми: номер у лампі, лінія до наступного кроку. */
+  /* Акт V (SPEC-006 §4.10): кроки — вертикальна лінія мнемосхеми, як у схемі енергії. Номер у лампі; лінія до
+     наступного кроку заповнюється з прокруткою (home.ts), крок «вмикається» — лампа янтарна. Без руху все горить. */
   .steps__list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-    gap: var(--space-m);
+    gap: 0;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -155,14 +232,20 @@ const { part } = Astro.props;
   }
   .steps__list li {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-2xs);
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: var(--space-s);
+    row-gap: var(--space-3xs);
+    padding-bottom: var(--space-m);
     counter-increment: step;
+  }
+  .steps__list li:last-child {
+    padding-bottom: 0;
   }
   .steps__list li::before {
     content: counter(step);
+    grid-row: 1 / 3;
     display: grid;
     place-items: center;
     width: 2.25rem;
@@ -172,40 +255,109 @@ const { part } = Astro.props;
     position: relative;
     z-index: 1;
     background: var(--color-bg);
+    color: var(--color-ink);
     font-weight: 700;
     font-variant-numeric: tabular-nums;
+    transition:
+      border-color var(--dur) var(--ease-out),
+      background-color var(--dur) var(--ease-out),
+      color var(--dur) var(--ease-out);
   }
-  .steps__list li:not(:last-child)::after {
-    content: '';
+  .steps__list li[data-lit]::before,
+  :global(html:not([data-motion='on'])) .steps__list li::before {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+  .steps__list li > strong {
+    font-family: var(--font-display);
+    font-size: var(--step-0);
+    line-height: 1.3;
+  }
+  .steps__line {
     position: absolute;
-    top: 1.125rem;
-    left: 2.25rem;
-    right: calc(-1 * var(--space-m));
-    height: 2px;
-    background: var(--color-line);
+    top: 2.25rem;
+    bottom: 0;
+    left: calc(1.125rem - 1px);
+    width: 2px;
+    background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+    overflow: hidden;
   }
-  @media (max-width: 959.98px) {
-    .steps__list li:not(:last-child)::after {
-      display: none;
-    }
+  .steps__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform-origin: center top;
+    transform: scaleY(0);
   }
-  .faq {
-    max-width: 52rem;
+  :global(html:not([data-motion='on'])) .steps__fill {
+    transform: none;
   }
+  /* FAQ — акордеон на <details>; маркер — «+», що обертається в «×». */
   .faq__item {
     border-bottom: 1px solid var(--color-line);
   }
   .faq__item summary {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
     min-height: 3.25rem;
     font-weight: 600;
     cursor: pointer;
+    list-style: none;
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__item > p {
+    margin: 0 0 var(--space-s);
+    color: var(--color-ink-muted);
+  }
+  .faq__mark {
+    position: relative;
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    transition: transform var(--dur) var(--ease-out);
+  }
+  .faq__mark::before,
+  .faq__mark::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 0.875rem;
+    height: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+  }
+  .faq__mark::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  .faq__item[open] .faq__mark {
+    transform: rotate(45deg);
+  }
+  /* Плашки «Обʼєкти» і «Фінансування» — тихі вікна на ночі. */
+  .plate {
+    padding: var(--space-m);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-l);
+  }
+  .plate__title {
+    font-size: var(--step-1);
+    margin-bottom: var(--space-s);
+  }
+  .cases__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-l);
   }
   .financing__list {
     display: grid;
     gap: var(--space-2xs);
-    font-size: var(--step-1);
+    font-size: var(--step-0);
   }
   .financing__checked {
     color: var(--color-ink-muted);
@@ -213,15 +365,117 @@ const { part } = Astro.props;
   }
   .cases-plate {
     max-width: none;
-    padding: var(--space-xl) var(--space-m);
+    padding: var(--space-2xs) var(--space-s);
+    font-size: var(--step--1);
     border: 1px dashed var(--color-placeholder);
-    border-radius: var(--radius-l);
+    border-radius: var(--radius-m);
     color: var(--color-placeholder);
-    font-size: var(--step-1);
     text-align: center;
   }
+  .cases__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-s);
+    margin: var(--space-s) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .case__photo {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-1);
+  }
+  /* Галерея: кадр 16:9; без гідратації видно перший кадр, решта — за ним (overflow). Острів малює розмітку сам — :global. */
+  .case__photo :global(.case__frame) {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .case__photo :global(.case__shot) {
+    width: 100%;
+    flex: none;
+  }
+  .case__photo :global(.case__shot > astro-slot),
+  .case__photo :global(.case__shot > div) {
+    display: block;
+  }
+  /* Мітка — угорі кадру: низ зайнятий навігацією галереї. */
+  .case__photo :global(.case__frame .photo-note) {
+    top: var(--space-xs);
+    bottom: auto;
+  }
+  /* До гідратації острів ще не керує розміткою: astro-island показує слоти підряд — обрізаємо до першого. */
+  .case__photo :global(astro-island:not([ssr])) {
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+  .case__photo :global(.case__nav) {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs);
+    background: linear-gradient(transparent, rgb(13 20 36 / 0.55));
+  }
+  .case__photo :global(.case__arrow) {
+    display: inline-grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(244 246 248 / 0.9);
+    color: var(--day-ink);
+    cursor: pointer;
+    transition: opacity var(--dur-fast);
+  }
+  .case__photo :global(.case__arrow:disabled) {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .case__photo :global(.case__dots) {
+    display: flex;
+    gap: 0.3rem;
+    padding: 0 var(--space-2xs);
+  }
+  .case__photo :global(.case__dot) {
+    width: 0.4rem;
+    height: 0.4rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgb(244 246 248 / 0.5);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast),
+      transform var(--dur) var(--ease-out);
+  }
+  .case__photo :global(.case__dot[aria-selected='true']) {
+    background: var(--color-accent);
+    transform: scale(1.4);
+  }
+  .case__title {
+    margin: var(--space-xs) 0 var(--space-3xs);
+    font-weight: 700;
+    font-size: var(--step--1);
+  }
+  .case__meta {
+    margin: 0;
+    color: var(--color-ink-muted);
+    font-size: var(--step--1);
+  }
   @media (max-width: 959.98px) {
-    .carport__grid {
+    .cases__list {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 959.98px) {
+    .carport__row {
       grid-template-columns: 1fr;
     }
   }

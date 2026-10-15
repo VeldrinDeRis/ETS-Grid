@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { presetStorage } from '../helpers/viewports';
+import { heroSettled, presetStorage } from '../helpers/viewports';
 
 for (const palette of ['a', 'b'] as const) {
   test.describe(`SPEC-006/AC-18 axe-core, палітра ${palette.toUpperCase()}`, () => {
@@ -8,9 +8,8 @@ for (const palette of ['a', 'b'] as const) {
       await presetStorage(page, { 'etsgrid:palette': palette });
       await page.goto('/');
       await expect(page.locator('html')).toHaveAttribute('data-palette', palette);
-      // Контраст перевіряємо в кінцевому стані: слова H1 загоряються ≈ 1,3 с (SPEC-006 AC-24).
-      await expect(page.locator('h1 .hero__word')).toHaveCount(0, { timeout: 2500 });
-      await expect(page.locator('h1')).toHaveCSS('opacity', '1');
+      // Контраст перевіряємо в кінцевому стані: H1 загорівся, схема акту II увімкнена (helpers/viewports heroSettled).
+      await heroSettled(page);
       const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
       const serious = result.violations
         .filter((v) => v.impact === 'serious' || v.impact === 'critical')
@@ -35,6 +34,14 @@ test.describe('SPEC-006/AC-19 вкладки без JS', () => {
 test.describe('SPEC-006/AC-20 reduced-motion', () => {
   test.use({ reducedMotion: 'reduce' });
 
+  test('SPEC-006/AC-28: лампа-курсор не вмикається', async ({ page }) => {
+    await page.goto('/');
+    await page.mouse.move(900, 300);
+    await page.mouse.move(1000, 400);
+    await page.waitForTimeout(500);
+    await expect(page.locator('[data-hero-lamp]')).not.toHaveCSS('opacity', '1');
+  });
+
   test('лінії енергії не анімуються', async ({ page }) => {
     await page.goto('/');
     const flow = page.locator('[data-energy-flow]');
@@ -44,5 +51,42 @@ test.describe('SPEC-006/AC-20 reduced-motion', () => {
       [...el.querySelectorAll<HTMLElement>('[data-flow-pulse]')].some((p) => p.style.transform !== '' || p.getAnimations().length > 0),
     );
     expect(animated).toBe(false);
+  });
+});
+
+test.describe('SPEC-006/AC-33 reduced-motion: без блимання (D-056)', () => {
+  test.use({ reducedMotion: 'reduce' });
+  test('світлодіодів нема, вогники плиток і блик лінії без анімацій, схема горить цілком', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('[data-hero-led]')).toHaveCount(0);
+    const tileAnims = await page.locator('.hero__tile').evaluateAll((els) => els.map((el) => getComputedStyle(el, '::after').animationName));
+    for (const a of tileAnims) expect(a).toBe('none');
+    const flow = page.locator('[data-energy-flow]');
+    await flow.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+    const dim = await flow.locator('.flow__body').evaluateAll((els) => els.filter((el) => parseFloat(getComputedStyle(el).opacity) < 1).length);
+    expect(dim).toBe(0);
+    await expect(flow.locator('[data-flow-spark][data-run]')).toHaveCount(0);
+  });
+});
+
+test.describe('SPEC-006/AC-35 reduced-motion: доба не крутиться (D-059)', () => {
+  test.use({ reducedMotion: 'reduce' });
+  test('шари неба без анімації і невидимі — статична ніч', async ({ page }) => {
+    await page.goto('/');
+    const anims = await page.locator('[data-hero-sky]').evaluateAll((els) => els.map((el) => [getComputedStyle(el).animationName, getComputedStyle(el).opacity]));
+    expect(anims).toEqual([['none', '0'], ['none', '0'], ['none', '0']]);
+  });
+});
+
+test.describe('SPEC-006/AC-39 reduced-motion: кроки горять цілком', () => {
+  test.use({ reducedMotion: 'reduce' });
+  test('лінії кроків заповнені без прокрутки, лампи янтарні', async ({ page }) => {
+    await page.goto('/');
+    const fills = await page.locator('#zayavka [data-step-fill]').evaluateAll((els) => els.map((e) => getComputedStyle(e).transform));
+    for (const f of fills) expect(f).toBe('none');
+    const accent = await page.evaluate(() => { const p = document.createElement('span'); p.style.color = 'var(--night-accent)'; document.body.append(p); const c = getComputedStyle(p).color; p.remove(); return c; });
+    const lamps = await page.locator('#zayavka [data-step]').evaluateAll((els) => els.map((e) => getComputedStyle(e, '::before').backgroundColor));
+    for (const l of lamps) expect(l).toBe(accent);
   });
 });

@@ -1,0 +1,56 @@
+{
+  "hash": "54aa3db4",
+  "configHash": "1e655879",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "06ac34bc",
+  "optimized": {
+    "@motionplus/core": {
+      "src": "../../../../ets-grid-site/node_modules/@motionplus/core/dist/es/index.mjs",
+      "file": "@motionplus_core.js",
+      "fileHash": "88c550f0",
+      "needsInterop": false
+    },
+    "@motionplus/core/react": {
+      "src": "../../../../ets-grid-site/node_modules/@motionplus/core/dist/es/react-entry.mjs",
+      "file": "@motionplus_core_react.js",
+      "fileHash": "1ec0c786",
+      "needsInterop": false
+    },
+    "motion": {
+      "src": "../../../../ets-grid-site/node_modules/motion/dist/es/index.mjs",
+      "file": "motion.js",
+      "fileHash": "baa931ba",
+      "needsInterop": false
+    },
+    "react-dom/client": {
+      "src": "../../../../ets-grid-site/node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "a9a72b8d",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../../../ets-grid-site/node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "dddf3052",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "es-CzJv5fVJ": {
+      "file": "es-CzJv5fVJ.js",
+      "isDynamicEntry": false
+    },
+    "react-dom-D8pswQzl": {
+      "file": "react-dom-D8pswQzl.js",
+      "isDynamicEntry": false
+    },
+    "rolldown-runtime-BPOCksWG": {
+      "file": "rolldown-runtime-BPOCksWG.js",
+      "isDynamicEntry": false
+    },
+    "wheel-Dcyxphb8": {
+      "file": "wheel-Dcyxphb8.js",
+      "isDynamicEntry": false
+    }
+  }
+}

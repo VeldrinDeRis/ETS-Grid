@@ -24,7 +24,19 @@ const levels = await Promise.all(
 const { phone, telegram, viber } = structure.contacts;
 const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v) => [v.id, v])));
 ---
+<!-- Акт I «Ніч» (SPEC-006 §4.9, D-054): фото — тло на всю ширину, ніч — тінню зліва; лампа-курсор — src/scripts/home.ts. -->
 <section class="hero" data-surface="night" aria-labelledby="hero-title" data-home-block="hero">
+  <div class="hero__photo">
+    <Photo photo="hero-dc-night" sizes="100vw" priority />
+  </div>
+  <!-- Небо над фото проходить добу по колу (D-059): три шари, анімується лише opacity; під тінню тексту майже не видно. -->
+  <div class="hero__sky hero__sky--predawn" aria-hidden="true" data-hero-sky="predawn"></div>
+  <div class="hero__sky hero__sky--dawn" aria-hidden="true" data-hero-sky="dawn"></div>
+  <div class="hero__sky hero__sky--day" aria-hidden="true" data-hero-sky="day"></div>
+  <div class="hero__shade" aria-hidden="true"></div>
+  <div class="hero__lamp" aria-hidden="true" data-hero-lamp></div>
+  <!-- Вогники зарядки на стійках у кадрі (D-056): точки додає home.ts за HERO_LEDS, лише desktop із рухом. -->
+  <div class="hero__leds" aria-hidden="true" data-hero-leds></div>
   <Container class="hero__inner">
     <div class="hero__text">
       <p class="hero__overline" data-hero-field="overline">{variant.overline}</p>
@@ -43,14 +55,11 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
         ))
       }
     </div>
-    <div class="hero__photo">
-      <Photo photo="hero-dc-night" sizes="(max-width: 959px) calc(100vw - 2rem), 38vw" priority />
-    </div>
     <ul role="list" class="hero__tiles" aria-label="Рівні каталогу">
       {
-        levels.map(({ level, from }) => (
+        levels.map(({ level, from }, i) => (
           <li>
-            <a class="hero__tile" href={routes.level(level.slug)} data-level-tile={level.key}>
+            <a class="hero__tile" href={routes.level(level.slug)} data-level-tile={level.key} style={`--i: ${i}`}>
               <Icon name={LEVEL_ICON[level.key]} size={28} />
               <span class="hero__tile-name">{level.name}</span>
               <span class="hero__tile-price num">{from}</span>
@@ -80,30 +89,132 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
 
 <style>
   .hero {
-    padding-block: var(--space-l) var(--space-m);
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    overflow: hidden;
+    /* Перший екран 1440×900 цілком (ТЗ §6.1): шапка на desktop — рядок --header-h плюс рядок рівнів 3rem. */
+    min-height: calc(100svh - var(--header-h) - 3rem);
+    --lx: 70%;
+    --ly: 40%;
   }
-  /* Одна сітка: desktop — текст | фото, нижче плитки й довіра; mobile — текст, плитки, довіра, фото (D-031: фото не ховаємо). */
+  /* Фото — тло всього блоку (ТЗ: LCP — статичне фото, fetchpriority=high у Photo). */
+  .hero__photo {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+  }
+  .hero__photo :global(img) {
+    object-position: 72% 50%;
+  }
+  /* Доба по колу (D-059): передсвітанок (синь) → світанок (тепле світло зверху) → день (світліше, прохолодніше) →
+     сутінки → ніч; 48 с, лише opacity. Лежить під тінню, тому колонка тексту лишається ніччю. */
+  .hero__sky {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .hero__sky--predawn {
+    background: linear-gradient(180deg, rgb(22 32 58 / 0.85), rgb(22 32 58 / 0.35) 55%, transparent);
+  }
+  .hero__sky--dawn {
+    background: linear-gradient(180deg, rgb(255 181 71 / 0.38), rgb(255 181 71 / 0.1) 45%, transparent 72%);
+    mix-blend-mode: screen;
+  }
+  .hero__sky--day {
+    background: linear-gradient(180deg, rgb(167 177 194 / 0.55), rgb(167 177 194 / 0.2) 55%, transparent 85%);
+    mix-blend-mode: screen;
+  }
+  :global(html[data-motion='on']) .hero__sky--predawn {
+    animation: sky-predawn 48s linear infinite;
+  }
+  :global(html[data-motion='on']) .hero__sky--dawn {
+    animation: sky-dawn 48s linear infinite;
+  }
+  :global(html[data-motion='on']) .hero__sky--day {
+    animation: sky-day 48s linear infinite;
+  }
+  @keyframes sky-predawn {
+    0%,
+    8% {
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    34%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes sky-dawn {
+    0%,
+    26% {
+      opacity: 0;
+    }
+    38% {
+      opacity: 1;
+    }
+    52% {
+      opacity: 0;
+    }
+    74% {
+      opacity: 0;
+    }
+    84% {
+      opacity: 0.6;
+    }
+    96%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes sky-day {
+    0%,
+    44% {
+      opacity: 0;
+    }
+    58% {
+      opacity: 1;
+    }
+    66% {
+      opacity: 1;
+    }
+    80%,
+    100% {
+      opacity: 0;
+    }
+  }
+  /* Ніч: зліва щільна під текст, праворуч фото видно; знизу темніє під плитки. */
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      linear-gradient(90deg, rgb(13 20 36 / 0.96) 0 34%, rgb(13 20 36 / 0.78) 52%, rgb(13 20 36 / 0.35) 76%, rgb(13 20 36 / 0.55) 100%),
+      linear-gradient(180deg, rgb(13 20 36 / 0.35), transparent 30%, transparent 55%, rgb(13 20 36 / 0.92) 100%);
+  }
+  /* Лампа-курсор: тепле світло за вказівником проявляє фото (home.ts ставить --lx/--ly, opacity). */
+  .hero__lamp {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    mix-blend-mode: screen;
+    background: radial-gradient(36rem circle at var(--lx) var(--ly), rgb(255 181 71 / 0.42), rgb(255 181 71 / 0.14) 36%, transparent 62%);
+  }
   .hero :global(.hero__inner) {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-    grid-template-areas:
-      'text photo'
-      'tiles tiles'
-      'trust trust';
-    column-gap: var(--space-xl);
-    align-items: center;
+    grid-template-rows: 1fr auto auto;
+    gap: var(--space-m);
+    padding-block: clamp(1.25rem, 3vh, 2rem) var(--space-m);
   }
   .hero__text {
-    grid-area: text;
-  }
-  .hero__photo {
-    grid-area: photo;
-  }
-  .hero__tiles {
-    grid-area: tiles;
-  }
-  .hero__trust {
-    grid-area: trust;
+    max-width: 40rem;
   }
   .hero__overline {
     margin-bottom: var(--space-xs);
@@ -115,7 +226,7 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     font-size: calc(var(--step-5) * var(--display-scale));
     line-height: 1.05;
     margin-bottom: var(--space-s);
-    max-width: 16ch;
+    max-width: 19ch;
   }
   /* SPEC-006 §4.8: до splitText H1 приглушений (не 0 — лишається кандидатом LCP);
      якщо home.ts не завантажився, через 1,2 с H1 сам повертається до opacity 1. */
@@ -129,15 +240,15 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     }
   }
   .hero__subtitle {
-    font-size: var(--step-1);
+    font-size: var(--step-0);
     color: var(--color-ink-muted);
-    max-width: 46ch;
+    max-width: 36rem;
   }
   .hero__ctas {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-xs);
-    margin-block: var(--space-m);
+    margin-block: var(--space-m) var(--space-s);
   }
   .hero__anchor {
     display: flex;
@@ -152,52 +263,147 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     margin: 0;
     color: var(--color-ink-muted);
   }
-  .hero__photo {
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    border-radius: var(--radius-l);
-    background: var(--color-surface);
-  }
   .hero__tiles {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-xs);
-    margin-top: var(--space-l);
   }
+  /* Плитка-лампа: скло на ночі, вогник праворуч угорі (::after — щоб акцентна лише CTA, AC-17). */
   .hero__tile {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3xs);
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-xs);
+    align-items: center;
     height: 100%;
+    min-height: 5.25rem;
     padding: var(--space-s) var(--space-m);
     border: 1px solid var(--color-line);
     border-radius: var(--radius-m);
+    background: rgb(13 20 36 / 0.55);
+    backdrop-filter: blur(10px);
     text-decoration: none;
+    transition:
+      border-color var(--dur) var(--ease-out),
+      background-color var(--dur) var(--ease-out),
+      transform var(--dur) var(--ease-out);
+  }
+  .hero__tile::after {
+    content: '';
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    opacity: 0.3;
+    transition:
+      opacity var(--dur),
+      box-shadow var(--dur);
   }
   .hero__tile :global(.icon) {
-    margin-bottom: var(--space-2xs);
-    color: var(--color-ink-muted);
+    grid-row: 1 / 3;
+    color: var(--color-ink);
   }
-  .hero__tile:hover {
-    border-color: var(--color-ink-muted);
+  .hero__tile:hover,
+  .hero__tile:focus-visible {
+    border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-line));
+    background: rgb(22 32 58 / 0.75);
+    transform: translateY(-2px);
   }
-  .hero__tile:hover .hero__tile-name {
-    text-decoration: underline;
+  .hero__tile:hover::after,
+  .hero__tile:focus-visible::after {
+    opacity: 1;
+    box-shadow: 0 0 0 5px rgb(255 181 71 / 0.18);
+  }
+  /* Вогники зарядки (D-056): після слів H1 загоряються по черзі, як індикатор зарядки, і лишаються тліти;
+     на наведенні — «дихають». Без руху — рівний вогник. */
+  :global(html[data-motion='on']) .hero__tile::after {
+    opacity: 0;
+    animation: tile-charge 0.7s var(--ease-out) both;
+    animation-delay: calc(1.3s + var(--i, 0) * 0.18s);
+  }
+  :global(html[data-motion='on']) .hero__tile:hover::after,
+  :global(html[data-motion='on']) .hero__tile:focus-visible::after {
+    animation: tile-breathe 1.6s ease-in-out infinite;
+  }
+  @keyframes tile-charge {
+    0% {
+      opacity: 0;
+    }
+    55% {
+      opacity: 1;
+      box-shadow: 0 0 0 6px rgb(255 181 71 / 0.22);
+    }
+    100% {
+      opacity: 0.35;
+      box-shadow: 0 0 0 0 rgb(255 181 71 / 0);
+    }
+  }
+  @keyframes tile-breathe {
+    0%,
+    100% {
+      opacity: 0.6;
+      box-shadow: 0 0 0 3px rgb(255 181 71 / 0.12);
+    }
+    50% {
+      opacity: 1;
+      box-shadow: 0 0 0 6px rgb(255 181 71 / 0.22);
+    }
+  }
+  /* Світлодіоди на стійках: позицію ставить скрипт (translate), тут — лише вигляд і миготіння. */
+  .hero__leds {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* Точки створює скрипт — без scoped-атрибута Astro, тому :global. */
+  .hero__leds :global(.hero__led) {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow:
+      0 0 0 3px rgb(255 181 71 / 0.25),
+      0 0 14px 4px rgb(255 181 71 / 0.45);
+    animation: led-charge 1.8s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 0.3s);
+  }
+  @keyframes led-charge {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
   }
   .hero__tile-name {
+    font-family: var(--font-display);
     font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
   .hero__tile-price {
     color: var(--color-ink-muted);
     font-size: var(--step--1);
   }
+  /* Довіра і контакт — одним рядком під плитками (макет, D-054). */
   .hero__trust {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: var(--space-xs) var(--space-l);
-    margin-top: var(--space-s);
+    padding-top: var(--space-xs);
+    border-top: 1px solid rgb(42 54 80 / 0.7);
     font-size: var(--step--1);
+    color: var(--color-ink-muted);
   }
   .hero__trust-list,
   .hero__contact {
@@ -213,18 +419,23 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
 
   @media (max-width: 959.98px) {
     .hero {
-      padding-top: var(--space-m);
+      min-height: auto;
     }
     .hero :global(.hero__inner) {
-      grid-template-columns: minmax(0, 1fr);
-      grid-template-areas:
-        'text'
-        'tiles'
-        'trust'
-        'photo';
+      padding-top: var(--space-l);
+    }
+    .hero__photo :global(img) {
+      object-position: 60% 50%;
+    }
+    .hero__shade {
+      background: linear-gradient(180deg, rgb(13 20 36 / 0.97) 0 42%, rgb(13 20 36 / 0.6) 62%, rgb(13 20 36 / 0.96) 100%);
+    }
+    .hero__lamp {
+      display: none;
     }
     .hero__title {
       font-size: calc(var(--step-4) * var(--display-scale));
+      max-width: none;
     }
     .hero__subtitle {
       font-size: var(--step-0);
@@ -235,21 +446,18 @@ const variantsJson = JSON.stringify(Object.fromEntries(home.hero.variants.map((v
     .hero__cta {
       flex: 1 1 100%;
     }
-    .hero__photo {
-      margin-top: var(--space-m);
-      aspect-ratio: 16 / 9;
-    }
     /* Плитки — горизонтальна стрічка. */
     .hero__tiles {
       display: flex;
       overflow-x: auto;
-      gap: var(--space-xs);
-      margin-top: var(--space-s);
-      padding-bottom: var(--space-3xs);
+      gap: var(--space-2xs);
+      margin-inline: calc(-1 * var(--gutter));
+      padding: 0 var(--gutter) var(--space-3xs);
       scroll-snap-type: x mandatory;
+      scrollbar-width: none;
     }
     .hero__tiles li {
-      flex: 0 0 70%;
+      flex: 0 0 72%;
       scroll-snap-align: start;
     }
   }

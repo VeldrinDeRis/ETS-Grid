@@ -1,37 +1,27 @@
 ---
-// Блок 4 — хіти каталогу: картки ProductCard, кнопки-фільтри за рівнем (SPEC-006 §4.2, ревізія 1).
+// Блок 4 — хіти каталогу як вітрина (SPEC-006 §4.10 акт IV, D-057): картки ProductCard у Carousel Motion+
+// (острів src/islands/react/HitsCarousel.tsx), кнопки-фільтри за рівнем усередині острова.
+// Картки — серверний HTML через іменовані слоти, тож без JS вони теж у документі.
+import HitsCarousel from '../../islands/react/HitsCarousel';
 import { getLevels, getProduct } from '../../lib/catalog';
 import { home } from '../../lib/home';
 import type { Product } from '../../lib/schema';
 import ProductCard from '../catalog/ProductCard.astro';
 
 const hits = (await Promise.all(home.hits.map((slug) => getProduct(slug)))).filter((p): p is Product => Boolean(p));
-const levels = getLevels().filter((l) => hits.some((p) => p.level === l.id));
+const levels = getLevels()
+  .filter((l) => hits.some((p) => p.level === l.id))
+  .map((l) => ({ id: l.id, name: l.name }));
 ---
-<div class="hits" data-hits>
+<div class="hits">
   <h2 id="hits-title">Хіти каталогу</h2>
-  <div class="hits__filters js-only" role="group" aria-labelledby="hits-title">
-    <button type="button" aria-pressed="true" data-hits-filter="all">Усі</button>
-    {
-      levels.map((l) => (
-        <button type="button" aria-pressed="false" data-hits-filter={String(l.id)}>
-          {l.name}
-        </button>
-      ))
-    }
-  </div>
-  <div class="hits__grid">
-    {
-      hits.map((p) => (
-        <div class="hits__item" data-hits-level={String(p.level)}>
-          <ProductCard product={p} />
-        </div>
-      ))
-    }
-  </div>
+  <HitsCarousel client:visible levels={levels} hits={hits.map((p) => ({ slug: p.slug, level: p.level }))}>
+    {hits.map((p, i) => <div slot={`card${i}`} class="hits__card"><ProductCard product={p} /></div>)}
+  </HitsCarousel>
 </div>
 
-<style>
+<style is:global>
+  /* Острів рендерить розмітку сам — стилі глобальні, обмежені .hits. */
   .hits__filters {
     display: flex;
     gap: var(--space-2xs);
@@ -55,15 +45,84 @@ const levels = getLevels().filter((l) => hits.some((p) => p.level === l.id));
     background: var(--color-ink);
     color: var(--color-bg);
   }
-  .hits__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-    gap: var(--space-m);
+  .hits__track {
+    position: relative;
+    padding-block: var(--space-2xs);
   }
-  .hits__item[hidden] {
-    display: none;
+  .hits__item {
+    width: clamp(15rem, calc((100% - 3rem) / 4), 18.5rem);
+    flex: none;
   }
-  .hits__item > :global(*) {
+  .hits__item > astro-slot,
+  .hits__card {
+    display: block;
     height: 100%;
+  }
+  /* До гідратації острів ще не керує розміткою: картки-слоти в ряд, зайве — за краєм. */
+  .hits astro-island:not([ssr]) {
+    display: flex;
+    gap: var(--space-s);
+    overflow: hidden;
+  }
+  .hits astro-island:not([ssr]) > .hits__card {
+    flex: 0 0 clamp(15rem, calc((100% - 3rem) / 4), 18.5rem);
+  }
+  .hits__nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-s);
+    margin-top: var(--space-m);
+  }
+  .hits__arrow {
+    display: inline-grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast),
+      opacity var(--dur-fast);
+  }
+  .hits__arrow:hover:not(:disabled) {
+    background: var(--color-bg);
+  }
+  .hits__arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .hits__dots {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  /* Точка-лампа сторінки: активна — янтар, решта — лінія. */
+  .hits__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--color-line);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast),
+      transform var(--dur) var(--ease-out);
+  }
+  .hits__dot[aria-selected='true'] {
+    background: var(--color-accent);
+    transform: scale(1.3);
+  }
+  @media (max-width: 959.98px) {
+    .hits__item,
+    .hits astro-island:not([ssr]) > .hits__card {
+      width: 78vw;
+      max-width: 20rem;
+      flex-basis: 78vw;
+    }
   }
 </style>

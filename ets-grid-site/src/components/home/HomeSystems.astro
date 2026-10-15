@@ -38,7 +38,7 @@ const MIN = 3;
             {list.map((s) => {
               const price = systemPrice(s, products);
               return (
-                <li class="systems__item">
+                <li class="systems__item" data-surface="day">
                   <h4 class="systems__name">{s.name}</h4>
                   <p class="systems__result">{s.result}</p>
                   <p class="systems__price num">
