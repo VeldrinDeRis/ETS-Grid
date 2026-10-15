@@ -18,8 +18,10 @@ interface Props {
   headingLevel?: 2 | 3 | 4;
   /** Міні-галерея з 5 ілюстративних кадрів (§3.10); у хітах головної й compact — лише перший кадр. */
   gallery?: boolean;
+  /** Перший ряд лістингу: перший кадр eager + fetchpriority="high" (SPEC-002 §3.10.1, D-069). */
+  priority?: boolean;
 }
-const { product, variant = 'listing', headingLevel = 3, gallery = variant === 'listing' } = Astro.props;
+const { product, variant = 'listing', headingLevel = 3, gallery = variant === 'listing', priority = false } = Astro.props;
 const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
 const image = productImage(product);
 const badge = cardBadge(product);
@@ -37,17 +39,17 @@ const showGallery = !image && gallery && frames.length > 1;
       image ? (
         <img src={image.src} alt={image.alt} width="400" height="400" loading="lazy" decoding="async" />
       ) : showGallery ? (
-        <CardGallery client:visible count={frames.length} label={product.name}>
+        <CardGallery client:intent count={frames.length} label={product.name}>
           {frames.map((key, i) => (
             <div slot={`shot${i}`} class="product-card__frame">
-              <Photo photo={key} sizes="(max-width: 639px) calc(100vw - 3rem), 18rem" class="product-card__illustration" />
+              <Photo photo={key} sizes="(max-width: 639px) calc(100vw - 3rem), 18rem" class="product-card__illustration" priority={priority && i === 0} />
               <span class="photo-note">{ILLUSTRATION_LABEL}</span>
             </div>
           ))}
         </CardGallery>
       ) : illustration ? (
         <>
-          <Photo photo={illustration} sizes="(max-width: 639px) calc(100vw - 3rem), 18rem" class="product-card__illustration" />
+          <Photo photo={illustration} sizes="(max-width: 639px) calc(100vw - 3rem), 18rem" class="product-card__illustration" priority={priority} />
           <span class="photo-note">{ILLUSTRATION_LABEL}</span>
         </>
       ) : (
@@ -197,23 +199,32 @@ const showGallery = !image && gallery && frames.length > 1;
   }
   .product-card__photo--gallery :global(.pgal__dots) {
     display: flex;
-    gap: 0.3rem;
+    gap: 0;
     padding: 0 var(--space-2xs);
   }
   /* Точка активного кадру — янтарна лампа (The Lit Chip Rule), решта — скло. */
+  /* Кнопка 24×24 (WCAG 2.5.8, D-069), видимий кружок 6 px — у ::before. */
   .product-card__photo--gallery :global(.pgal__dot) {
-    width: 0.4rem;
-    height: 0.4rem;
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
     padding: 0;
     border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .product-card__photo--gallery :global(.pgal__dot::before) {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
     border-radius: 50%;
     background: rgb(244 246 248 / 0.5);
-    cursor: pointer;
     transition:
       background-color var(--dur-fast),
       transform var(--dur) var(--ease-out);
   }
-  .product-card__photo--gallery :global(.pgal__dot[aria-selected='true']) {
+  .product-card__photo--gallery :global(.pgal__dot[aria-selected='true']::before) {
     background: var(--color-accent);
     transform: scale(1.4);
   }

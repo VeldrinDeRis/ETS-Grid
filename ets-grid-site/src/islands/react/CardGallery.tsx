@@ -3,7 +3,7 @@
 // стрілки, точки-лампи. Кадри — серверний HTML <picture> (Photo.astro) через слоти shot0…shot4: без JS усі кадри
 // в документі, видно перший; острів лише додає гортання. Мітка «Ілюстративне фото» — у кожному кадрі, бейдж — поверх.
 import { Carousel, useCarousel } from '@motionplus/core/react';
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 interface Props {
   count: number;
@@ -21,11 +21,20 @@ function Arrow({ dir }: { dir: 'prev' | 'next' }) {
   );
 }
 
-function Controls({ label }: { label: string }) {
-  const { nextPage, prevPage, isNextActive, isPrevActive, currentPage, totalPages, gotoPage } = useCarousel();
+/** Навігація. До монтування (серверний HTML, client:intent) Carousel ще не знає сторінок —
+ *  показуємо ту саму розмітку на count кадрів, щоб розкладка не стрибала, а клік директива повторить. */
+function Controls({ label, count }: { label: string; count: number }) {
+  const carousel = useCarousel();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const totalPages = mounted ? carousel.totalPages : count;
+  const currentPage = mounted ? carousel.currentPage : 0;
+  const isPrevActive = mounted ? carousel.isPrevActive : false;
+  const isNextActive = mounted ? carousel.isNextActive : count > 1;
+  const { nextPage, prevPage, gotoPage } = carousel;
   if (totalPages <= 1) return null;
   return (
-    <div className="pgal__nav">
+    <div className="pgal__nav" data-intent-wait="" data-intent-ready={mounted && carousel.totalPages > 1 ? '' : undefined}>
       <button type="button" className="pgal__arrow" aria-label={`Попередній кадр: ${label}`} onClick={prevPage} disabled={!isPrevActive}>
         <Arrow dir="prev" />
       </button>
@@ -50,7 +59,7 @@ export default function CardGallery({ count, label, ...slots }: Props) {
   return (
     <div className="pgal" data-card-gallery>
       <Carousel className="pgal__track" items={items} gap={0} snap="page" loop={false} itemSize="fill">
-        <Controls label={label} />
+        <Controls label={label} count={count} />
       </Carousel>
     </div>
   );

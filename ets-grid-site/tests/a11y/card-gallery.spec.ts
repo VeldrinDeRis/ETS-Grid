@@ -9,7 +9,7 @@ test.describe('SPEC-002/AC-44 міні-галерея картки доступ�
     const catalog = new CatalogPage(page);
     await catalog.open('/zaryadni-stantsii/dlya-domu/');
     await expect(page.locator('[data-card-gallery]').first()).toBeVisible();
-    const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+    const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
     expect(result.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical').map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`)).toEqual([]);
   });
 

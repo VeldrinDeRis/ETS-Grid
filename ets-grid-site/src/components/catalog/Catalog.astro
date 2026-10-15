@@ -57,8 +57,8 @@ const poolInfo = Object.fromEntries(
       levelKey={level.key}
       preset={preset}
     >
-      {products.map((p) => (
-        <ProductCard product={p} headingLevel={headingLevel} />
+      {products.map((p, i) => (
+        <ProductCard product={p} headingLevel={headingLevel} priority={i < 3} />
       ))}
     </CatalogFilters>
   )

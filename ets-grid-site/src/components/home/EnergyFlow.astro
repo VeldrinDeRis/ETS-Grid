@@ -303,4 +303,11 @@ const nodes = home.flow.map((node) => {
       display: none;
     }
   }
+  /* Невключений вузол сцени: назва — ink-muted (контраст ≥ 4.5), включений — ink (SPEC-006 §4.11). */
+  :global([data-flow-dim]) .flow__node:not([data-lit]) .flow__label {
+    color: var(--color-ink-muted);
+  }
+  .flow__label {
+    transition: color var(--dur-fast) var(--ease-out);
+  }
 </style>

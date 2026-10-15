@@ -123,19 +123,28 @@ const levels = getLevels()
     gap: var(--space-2xs);
   }
   /* Точка-лампа сторінки: активна — янтар, решта — лінія. */
+  /* Кнопка 24×24 (WCAG 2.5.8, D-069), видимий кружок — у ::before. */
   .hits__dot {
-    width: 0.5rem;
-    height: 0.5rem;
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
     padding: 0;
     border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .hits__dot::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
     background: var(--color-line);
-    cursor: pointer;
     transition:
       background-color var(--dur-fast),
       transform var(--dur) var(--ease-out);
   }
-  .hits__dot[aria-selected='true'] {
+  .hits__dot[aria-selected='true']::before {
     background: var(--color-accent);
     transform: scale(1.3);
   }

@@ -31,7 +31,9 @@ test.describe('SPEC-002/AC-43 гортання міні-галереї карт�
     const card = catalog.visibleCards().first();
     const box = (await card.locator('.product-card__photo').boundingBox())!;
     const y = box.y + box.height / 2;
+    // client:intent (D-069): перший дотик оживляє галерею, далі свайп листає.
     await page.mouse.move(box.x + box.width * 0.8, y);
+    await expect(card.locator('astro-island')).not.toHaveAttribute('ssr', '');
     await page.mouse.down();
     for (let i = 1; i <= 8; i++) await page.mouse.move(box.x + box.width * (0.8 - 0.075 * i), y);
     await page.mouse.up();

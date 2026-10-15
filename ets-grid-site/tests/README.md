@@ -159,6 +159,12 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-001/AC-29 эталоны всех шаблонов | visual | `visual/templates.spec.ts` | ✅ |
 | SPEC-002/AC-45 порог уровня и листинга | build | `build/night-threshold.test.ts` | ✅ |
 | SPEC-002/AC-46 витрина в первом экране | functional | `functional/night-threshold.spec.ts` | ✅ |
+| SPEC-002/AC-47 галерея client:intent, первый ряд eager | build | `build/lcp-a11y.test.ts` | ✅ |
+| SPEC-002/AC-48 гидратация по намерению, клик не теряется | functional | `functional/lcp-a11y.spec.ts` | ✅ |
+| SPEC-002/AC-49 точки 24 px, axe wcag22aa | a11y | `a11y/lcp-a11y.spec.ts` | ✅ |
+| SPEC-002/AC-50 замер LCP и Lighthouse листинга | вручную | `qa/README.md` | ✅ |
+| SPEC-006/AC-41 текст сцены не гаснет | a11y, functional | `a11y/lcp-a11y.spec.ts`, `functional/lcp-a11y.spec.ts` | ✅ |
+| SPEC-006/AC-42 точки главной 24 px, Lighthouse 100 | a11y, вручную | `a11y/lcp-a11y.spec.ts`, `qa/README.md` | ✅ |
 | SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |
 | SPEC-005/AC-01 корзина: setQty, setTurnkey, remove, clear, totals | unit | `unit/shop.test.ts` | ✅ |
 | SPEC-005/AC-02 сравнение, событие, recent | unit | `unit/shop.test.ts` | ✅ |

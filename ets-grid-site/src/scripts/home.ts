@@ -84,10 +84,10 @@ if (flow && !reduce) {
   const ease = [0.16, 1, 0.3, 1] as const;
   const off = desktop ? 'scaleX(0)' : 'scaleY(0)';
   const lit = nodes.map(() => false);
-  // Приглушений старт одразу, щоб не блимало «увімкнено → вимкнено».
+  // Приглушений старт одразу: гасне лише лампа й лінія, підписи й ціни — повною яскравістю (SPEC-006 §4.11, D-069).
+  flow.setAttribute('data-flow-dim', '');
   for (const n of nodes) {
     Object.assign(n.querySelector<HTMLElement>('[data-flow-dot]')!.style, { opacity: '0.25', transform: 'scale(0.7)' });
-    for (const part of n.querySelectorAll<HTMLElement>('.flow__link, .flow__body')) part.style.opacity = '0.35';
   }
   for (const p of pulses) if (p) p.style.transform = off;
   const light = (i: number, on: boolean) => {
@@ -96,7 +96,6 @@ if (flow && !reduce) {
     const n = nodes[i];
     n.toggleAttribute('data-lit', on);
     animate(n.querySelector<HTMLElement>('[data-flow-dot]')!, { opacity: on ? 1 : 0.25, transform: on ? 'scale(1)' : 'scale(0.7)' }, { duration: 0.45, ease });
-    animate(n.querySelectorAll<HTMLElement>('.flow__link, .flow__body'), { opacity: on ? 1 : 0.35 }, { duration: 0.45, ease });
     n.dispatchEvent(new CustomEvent('etsgrid:node-lit', { detail: { on } }));
     if (lit.every(Boolean)) flow.dataset.done = '';
     if (!desktop && pulses[i]) animate(pulses[i]!, { transform: on ? 'scaleY(1)' : 'scaleY(0)' }, { duration: 0.4, delay: on ? 0.18 : 0, ease });

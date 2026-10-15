@@ -6,7 +6,7 @@ import { isDesktop, isMobile, presetStorage } from '../helpers/viewports';
 const PAGES = ['/zaryadni-stantsii/', '/zaryadni-stantsii/dlya-domu/', '/zaryadni-stantsii/dlya-domu/gbt/', '/sonyachni-paneli/kriplennya/', '/batarei/'];
 
 async function serious(page: Page, include?: string) {
-  let builder = new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']);
+  let builder = new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']);
   if (include) builder = builder.include(include);
   const result = await builder.analyze();
   return result.violations

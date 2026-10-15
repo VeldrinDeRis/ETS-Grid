@@ -4,6 +4,17 @@ import preact from '@astrojs/preact';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import { motionStudio } from 'motion-studio';
+import { fileURLToPath } from 'node:url';
+
+// client:intent — острів оживає при першому намірі (SPEC-002 §3.10.1, D-069).
+/** @type {import('astro').AstroIntegration} */
+const clientIntent = {
+  name: 'etsgrid-client-intent',
+  hooks: {
+    'astro:config:setup': ({ addClientDirective }) =>
+      addClientDirective({ name: 'intent', entrypoint: fileURLToPath(new URL('./src/directives/intent.ts', import.meta.url)) }),
+  },
+};
 
 // Службові сторінки не йдуть у sitemap (SPEC-008 §3.3); список дублює NOINDEX_PATHS із src/lib/seo.ts — тест звіряє.
 const NOINDEX = ['/koshyk/', '/oformlennya/', '/dyakuyemo/', '/porivnyannya/', '/poshuk/'];
@@ -20,6 +31,7 @@ export default defineConfig({
   },
   // Острови — Preact; React — лише для островів Motion+ у src/islands/react/ (D-044), файли з прагмою @jsxImportSource react.
   integrations: [
+    clientIntent,
     preact({ include: ['**/src/islands/**/*.{ts,tsx}'], exclude: ['**/src/islands/react/**'] }),
     react({ include: ['**/src/islands/react/**/*.{ts,tsx}'] }),
     sitemap({ filter: (page) => !NOINDEX.some((p) => new URL(page).pathname === p) && !page.includes('404') }),
