@@ -238,17 +238,17 @@
   display: none;
 }
 
-/* Маркер «+», у відкритого — «×» поворотом на 45° (як FAQ на головній). */
+/* Маркер «+» у згорнутого, «−» у відкритого: «×» у колонці фільтрів читався б як «прибрати». */
 .cf-facet summary::after {
   content: '+';
   margin-left: auto;
   color: var(--color-ink-muted);
   font-weight: 400;
-  transition: transform var(--dur) var(--ease-out);
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 
 .cf-facet[open] > summary::after {
-  transform: rotate(45deg);
+  content: '−';
 }
 
 /* «Ще N фільтрів»: згорнуті фасети одним блоком; усередині — ті самі фасети, без власної лінії зверху. */
@@ -494,4 +494,6 @@
 
 .cf-show {
   flex: 1;
+  /* AnimateNumber усередині кнопки: вужча маска, щоб число не відривалося від слова. */
+  --mask-width: 0.2em;
 }
