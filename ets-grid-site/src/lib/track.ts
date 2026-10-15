@@ -4,6 +4,7 @@ export type TrackEvent =
   | 'hero_cta_click'
   | 'level_tile_click'
   | 'filter_apply'
+  | 'filter_more'
   | 'picker_complete'
   | 'add_to_cart'
   | 'begin_checkout'

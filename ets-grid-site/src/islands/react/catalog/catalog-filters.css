@@ -1,4 +1,4 @@
-/* Острів фільтрів (SPEC-002). Тільки токени. */
+/* Острів фільтрів (SPEC-002, ревізія 5 §3.9). Тільки токени. Вогник — єдине місце акценту (The One Lamp Rule). */
 
 .cf-vh {
   position: absolute;
@@ -11,14 +11,110 @@
 
 .cf-primary {
   display: flex;
-  gap: var(--space-2xs);
-  margin-bottom: var(--space-m);
+  gap: var(--space-xs);
+  margin-bottom: var(--space-l);
   overflow-x: auto;
   padding-bottom: var(--space-3xs);
+  scroll-snap-type: x mandatory;
   scrollbar-width: thin;
 }
 
-.cf-chip,
+@media (min-width: 960px) {
+  .cf-primary {
+    flex-wrap: wrap;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+}
+
+/* Плитка-лампа: іконка ліворуч, підпис і лічильник; вогник праворуч угорі. Вибрана — рамка ink і запалений вогник. */
+.cf-tile {
+  position: relative;
+  flex: none;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: var(--space-xs);
+  align-items: center;
+  width: 9rem;
+  min-height: 4.5rem;
+  padding: var(--space-xs) var(--space-m) var(--space-xs) var(--space-s);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-m);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  text-align: left;
+  scroll-snap-align: start;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+@media (min-width: 960px) {
+  .cf-tile {
+    flex: 0 1 auto;
+    width: auto;
+    min-width: 10rem;
+  }
+}
+
+.cf-tile .icon {
+  grid-row: 1 / 3;
+  flex: none;
+}
+
+.cf-tile__label {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.cf-tile__count {
+  font-size: var(--step--1);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink-muted);
+}
+
+.cf-tile::after {
+  content: '';
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  opacity: 0.3;
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.cf-tile:hover,
+.cf-tile:focus-visible {
+  border-color: var(--color-ink-muted);
+}
+
+.cf-tile[aria-pressed='true'] {
+  border-color: var(--color-ink);
+  box-shadow: inset 0 0 0 1px var(--color-ink);
+}
+
+.cf-tile[aria-pressed='true']::after {
+  opacity: 1;
+  box-shadow: 0 0 10px var(--color-accent);
+}
+
+.cf-tile[aria-disabled='true'] {
+  border-color: var(--color-line);
+  color: var(--color-ink-muted);
+  cursor: not-allowed;
+}
+
+.cf-tile[aria-disabled='true']::after {
+  opacity: 0.15;
+}
+
 .cf-option,
 .cf-selected__chip,
 .cf-reset,
@@ -40,33 +136,48 @@
   transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 
-.cf-chip {
-  flex: none;
-  font-weight: 600;
-}
-
 /* Приховані підписи всередині кнопок не мають виходити за стрічку чипів і розтягувати сторінку. */
-.cf-chip,
 .cf-option,
 .cf-selected__chip {
   position: relative;
 }
 
-.cf-chip[aria-pressed='true'],
-.cf-option[aria-pressed='true'] {
+/* Вогник чипа: 6 px акценту, у спокої тліє на 0,3; вибраний — горить з ореолом. Лише opacity і box-shadow. */
+.cf-option::before,
+.cf-selected__chip::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  opacity: 0.3;
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.cf-option[aria-pressed='true'],
+.cf-selected__chip {
   border-color: var(--color-ink);
-  background: var(--color-ink);
-  color: var(--color-bg);
+  font-weight: 700;
+}
+
+.cf-option[aria-pressed='true']::before,
+.cf-selected__chip::before {
+  opacity: 1;
+  box-shadow: 0 0 8px var(--color-accent);
 }
 
 /* Недоступний варіант: суцільна тонка рамка й приглушений текст (пунктир — лише «дані надасть замовник»). */
-.cf-chip[aria-disabled='true'],
 .cf-option[aria-disabled='true'] {
   border-color: var(--color-line);
   color: var(--color-ink-muted);
   cursor: not-allowed;
 }
-.cf-chip[aria-disabled='true'] .cf-option__count,
+.cf-option[aria-disabled='true']::before {
+  opacity: 0.12;
+}
 .cf-option[aria-disabled='true'] .cf-option__count {
   opacity: 0.7;
 }
@@ -100,7 +211,12 @@
 }
 
 .cf-sidebar {
+  position: sticky;
+  top: calc(var(--header-h) + var(--space-m));
   align-self: start;
+  max-height: calc(100dvh - var(--header-h) - 2 * var(--space-m));
+  overflow: hidden auto;
+  scrollbar-width: thin;
 }
 
 .cf-facet {
@@ -111,27 +227,58 @@
 .cf-facet summary {
   display: flex;
   align-items: center;
+  gap: var(--space-2xs);
   min-height: var(--tap);
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  list-style: none;
 }
 
-.cf-facet--missing {
+.cf-facet summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Маркер «+» у згорнутого, «−» у відкритого: «×» у колонці фільтрів читався б як «прибрати». */
+.cf-facet summary::after {
+  content: '+';
+  margin-left: auto;
+  color: var(--color-ink-muted);
+  font-weight: 400;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.cf-facet[open] > summary::after {
+  content: '−';
+}
+
+/* «Ще N фільтрів»: згорнуті фасети одним блоком; усередині — ті самі фасети, без власної лінії зверху. */
+.cf-more > summary {
+  font-weight: 600;
   color: var(--color-ink-muted);
 }
 
-.cf-facet__title {
-  display: flex;
-  align-items: center;
-  min-height: var(--tap);
-  margin: 0;
-  font-weight: 600;
+.cf-more__body {
+  padding-left: var(--space-xs);
+  border-left: 1px solid var(--color-line);
 }
 
-.cf-missing {
-  margin: 0 0 var(--space-2xs);
+.cf-more__body .cf-facet:last-child {
+  border-bottom: 0;
+}
+
+/* Одна плашка фасетів без даних: пунктир — «дані надасть замовник» (The Dashed Means Missing Rule). */
+.cf-missing-plate {
+  margin-top: var(--space-s);
+  padding: var(--space-xs) var(--space-s);
+  border: 1px dashed var(--color-placeholder);
+  border-radius: var(--radius-m);
   color: var(--color-placeholder);
   font-size: var(--step--1);
+  line-height: 1.4;
+}
+
+.cf-missing-plate [data-missing-facet] {
+  white-space: nowrap;
 }
 
 .cf-options {
@@ -193,6 +340,13 @@
 
 .cf-total {
   margin: 0 auto 0 0;
+  font-size: var(--step-1);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cf-total strong {
+  display: inline-block;
 }
 
 .cf-sort {
@@ -340,4 +494,6 @@
 
 .cf-show {
   flex: 1;
+  /* AnimateNumber усередині кнопки: вужча маска, щоб число не відривалося від слова. */
+  --mask-width: 0.2em;
 }

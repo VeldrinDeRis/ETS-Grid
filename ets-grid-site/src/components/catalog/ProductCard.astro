@@ -25,7 +25,7 @@ const level = getLevelById(product.level);
 const inStock = product.stock === 'in_stock';
 const illustration = image ? undefined : PRODUCT_ILLUSTRATION[product.slug];
 ---
-<article class:list={['product-card', `product-card--${variant}`]} data-product-card data-slug={product.slug}>
+<article class:list={["product-card", `product-card--${variant}`]} data-product-card data-layout data-slug={product.slug}>
   <div class="product-card__photo">
     {
       image ? (

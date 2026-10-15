@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import { gzipSync } from 'node:zlib';
 import { describe, expect, test } from 'vitest';
 import { DIST, distFiles, pages } from '../helpers/dist';
+import { hasReactIsland } from '../helpers/islands';
 
 const KB = 1024;
 /** Контентні сторінки (ТЗ §11). */
@@ -47,7 +48,6 @@ function pageJsGz(p: ReturnType<typeof pages>[number]): number {
 }
 
 type Page = ReturnType<typeof pages>[number];
-const hasReactIsland = (p: Page) => [...p.document.querySelectorAll('astro-island')].some((i) => /"value":"react"/.test(i.getAttribute('opts') ?? ''));
 const isCatalogPage = (p: Page) => p.html.includes('CatalogFilters') || p.html.includes('data-picker-kind');
 const limitFor = (p: Page) => (hasReactIsland(p) ? REACT_LIMIT : isCatalogPage(p) ? CATALOG_LIMIT : CONTENT_LIMIT);
 
@@ -56,7 +56,7 @@ describe('SPEC-001/AC-20, AC-24, SPEC-002/AC-18, SPEC-006/AC-27 бюджети J
     expect(pageJsGz(p)).toBeLessThanOrEqual(limitFor(p));
   });
 
-  test('AC-24: острови враховано — головна важить більше за свої <script src>, React лише на головній', () => {
+  test('AC-24: острови враховано — головна важить більше за свої <script src>; React лише на головній і в каталозі (D-062, D-063)', () => {
     const home = pages().find((p) => p.url === '/')!;
     const scriptsOnly = [...home.document.querySelectorAll('script[src]')].reduce((sum, s) => {
       let t = 0;
@@ -64,7 +64,9 @@ describe('SPEC-001/AC-20, AC-24, SPEC-002/AC-18, SPEC-006/AC-27 бюджети J
       return sum + t;
     }, 0);
     expect(pageJsGz(home)).toBeGreaterThan(scriptsOnly + 50 * KB);
-    expect(pages().filter(hasReactIsland).map((p) => p.url)).toEqual(['/']);
+    const react = pages().filter(hasReactIsland).map((p) => p.url);
+    expect(react).toContain('/');
+    expect(react.filter((u) => u !== '/' && !isCatalogPage(pages().find((p) => p.url === u)!))).toEqual([]);
   });
 
   test('острів фільтрів є на сторінках каталогу', () => {
