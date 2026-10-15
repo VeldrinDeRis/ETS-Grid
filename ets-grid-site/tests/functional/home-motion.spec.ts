@@ -27,6 +27,12 @@ test.describe('SPEC-006/AC-43 рух без зайвого перемальов�
     const lamp = page.locator('[data-hero-lamp]');
     await expect.poll(() => lamp.evaluate((el) => el.style.transform)).toBe('translate(600px, 300px)');
     expect(await hero.evaluate((el) => el.style.getPropertyValue('--lx'))).toBe('');
+    // Прокрутка всередині героя не зсуває пляму відносно вказівника.
+    await page.mouse.wheel(0, 100);
+    await expect.poll(() => page.evaluate(() => scrollY)).toBe(100);
+    await page.mouse.move(box.x + 610, box.y + 300);
+    await page.mouse.move(box.x + 600, box.y + 300);
+    await expect.poll(() => lamp.evaluate((el) => el.style.transform)).toBe('translate(600px, 400px)');
   });
 
   test('після [data-done] риска підказки без анімації', async ({ page }) => {

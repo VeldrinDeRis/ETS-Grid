@@ -237,6 +237,10 @@ const nodes = home.flow.map((node) => {
   .flow[data-done] .flow__hint::before {
     animation: none;
   }
+  /* Три подихи — коли сцену видно, а не під час завантаження поза кадром. */
+  .flow[data-offscreen] .flow__hint::before {
+    animation-play-state: paused;
+  }
   @keyframes flow-hint {
     to {
       transform: scaleX(1);

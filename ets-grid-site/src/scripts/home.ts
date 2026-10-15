@@ -1,7 +1,7 @@
 // Поведінка головної (SPEC-006 §4.7): вкладки, фільтри хітів, варіант героя, аналітика, лінії енергії.
 import { splitText } from '@motionplus/core';
 import { animate, animateLayout, frame, inView, motionValue, scroll, stagger } from 'motion';
-import { DUR, DUR_FAST, DUR_SLOW, EASE_SPRING } from '../lib/motion-tokens';
+import { DUR, DUR_FAST, DUR_SLOW, EASE_OUT, EASE_SPRING } from '../lib/motion-tokens';
 import { HERO_LEDS } from '../lib/photos';
 import { track } from '../lib/track';
 
@@ -82,7 +82,7 @@ if (flow && !reduce) {
   const nodes = [...flow.querySelectorAll<HTMLElement>('[data-node]')];
   const pulses = nodes.map((n) => n.querySelector<HTMLElement>('[data-flow-pulse]'));
   const sparks = nodes.map((n) => n.querySelector<HTMLElement>('[data-flow-spark]'));
-  const ease = [0.16, 1, 0.3, 1] as const;
+  const ease = EASE_SPRING;
   const off = desktop ? 'scaleX(0)' : 'scaleY(0)';
   const lit = nodes.map(() => false);
   // Приглушений старт одразу: гасне лише лампа й лінія, підписи й ціни — повною яскравістю (SPEC-006 §4.11, D-069).
@@ -150,15 +150,19 @@ if (heroTitle && document.documentElement.dataset.motion === 'on' && !reduce) {
 /* ---------- Акт I · лампа-курсор над героєм (SPEC-006 §4.9, D-054) ----------
    За прикладом Motion+ «Conic gradient pointer»: позиція вказівника → motionValue → frame.render, без читання
    розмірів у кожному кадрі. Пляма фіксованого розміру їде transform: translate() — без перемальовування градієнта
-   й успадкованих змінних на .hero (D-072). Зсув блоку міряємо на вході вказівника й на зміну розміру, не на кожну
-   прокрутку. Лише desktop із точним вказівником; при reduced-motion лампа не вмикається. */
+   й успадкованих змінних на .hero (D-072). Положення блоку на сторінці міряємо на вході вказівника й на зміну розміру,
+   а вказівник беремо в координатах сторінки (pageX/pageY) — прокрутка всередині героя не зсуває пляму. Лише desktop із точним вказівником; при reduced-motion лампа не вмикається. */
 const heroBlock = document.querySelector<HTMLElement>('[data-home-block="hero"]');
 const heroLamp = heroBlock?.querySelector<HTMLElement>('[data-hero-lamp]');
 if (heroBlock && heroLamp && !reduce && matchMedia('(pointer: fine)').matches) {
   const lx = motionValue(0);
   const ly = motionValue(0);
-  let rect = heroBlock.getBoundingClientRect();
-  const measure = () => (rect = heroBlock.getBoundingClientRect());
+  let origin = { x: 0, y: 0 };
+  const measure = () => {
+    const r = heroBlock.getBoundingClientRect();
+    origin = { x: r.left + scrollX, y: r.top + scrollY };
+  };
+  measure();
   const render = () => {
     heroLamp.style.transform = `translate(${lx.get()}px, ${ly.get()}px)`;
   };
@@ -166,13 +170,13 @@ if (heroBlock && heroLamp && !reduce && matchMedia('(pointer: fine)').matches) {
   ly.on('change', () => frame.render(render));
   addEventListener('resize', () => frame.read(measure));
   heroBlock.addEventListener('pointermove', (e) => {
-    lx.set(e.clientX - rect.left);
-    ly.set(e.clientY - rect.top);
+    lx.set(e.pageX - origin.x);
+    ly.set(e.pageY - origin.y);
   });
   heroBlock.addEventListener('pointerenter', (e) => {
     measure();
-    lx.set(e.clientX - rect.left);
-    ly.set(e.clientY - rect.top);
+    lx.set(e.pageX - origin.x);
+    ly.set(e.pageY - origin.y);
     animate(heroLamp, { opacity: 1 }, { duration: DUR_SLOW, ease: EASE_SPRING });
   });
   heroBlock.addEventListener('pointerleave', () => animate(heroLamp, { opacity: 0 }, { duration: DUR_SLOW, ease: EASE_SPRING }));
@@ -254,7 +258,7 @@ if (faqBlock && !reduce) {
     const summary = item.querySelector('summary')!;
     summary.addEventListener('click', (e) => {
       e.preventDefault();
-      animateLayout(faqBlock, () => item.toggleAttribute('open'), { duration: 0.32, ease: [0.22, 1, 0.36, 1] });
+      animateLayout(faqBlock, () => item.toggleAttribute('open'), { duration: DUR, ease: EASE_OUT });
     });
   }
 }
