@@ -12,8 +12,10 @@ const products = await getProductsBy();
 const index = await searchIndex();
 ---
 <BaseLayout title="Пошук" description="Пошук по каталогу ETS GRID: назва, артикул, розʼєм." crumbs={[{ label: 'Пошук' }]} robots="noindex, follow">
-  <Section>
+  <Fragment slot="top">
     <h1>Пошук по каталогу</h1>
+  </Fragment>
+  <Section seam="dawn">
     <form class="sp-form" role="search" action={routes.search} method="get">
       <label for="search-q">Назва, артикул або розʼєм</label>
       <div class="sp-form__row">

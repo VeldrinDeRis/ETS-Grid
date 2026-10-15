@@ -10,9 +10,11 @@ import '../../styles/content.css';
 const pages = content.services.pages as Record<string, { short: string }>;
 ---
 <BaseLayout title="Послуги" description="Доставка, монтаж, проєкт і техумови, сервіс і гарантія від ETS GRID." crumbs={[{ label: 'Послуги' }]}>
-  <Section>
+  <Fragment slot="top">
     <h1>Послуги</h1>
     <p class="cp-lead">{content.services.lead}</p>
+  </Fragment>
+  <Section seam="dawn">
     <ul role="list" class="cp-cards" data-content-block="services-list">
       {
         structure.services.map((s) => (

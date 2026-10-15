@@ -26,9 +26,11 @@ const page = content.services.pages[service.slug as ServiceSlug];
   description={`${service.name} від ETS GRID: що входить, строки, вартість. Київ і вся Україна.`}
   crumbs={[{ label: 'Послуги', href: routes.services }, { label: service.name }]}
 >
-  <Section>
+  <Fragment slot="top">
     <h1>{service.name}</h1>
     <p class="cp-lead">{page.lead}</p>
+  </Fragment>
+  <Section seam="dawn">
 
     {
       page.packages && (

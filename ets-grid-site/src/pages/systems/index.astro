@@ -19,9 +19,11 @@ const products = await getProductsBy();
   description="Готові енергосистеми під ключ: дім без відключень, дім + авто, паркінг, що заробляє, АЗС на слабкому вводі."
   crumbs={[{ label: 'Готові системи' }]}
 >
-  <Section>
+  <Fragment slot="top">
     <h1>Готові системи</h1>
     <p class="cp-lead">{content.systems.lead}</p>
+  </Fragment>
+  <Section seam="dawn">
     <ul role="list" class="cp-cards" data-content-block="systems-list">
       {
         systems.map((s) => {

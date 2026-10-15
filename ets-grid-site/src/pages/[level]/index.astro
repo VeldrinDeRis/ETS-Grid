@@ -37,15 +37,14 @@ const products = await getProductsBy({ level: level.key });
   metaTitle={seoTitle.level(level.name)}
   description={`${level.name}: ${text.value} Київ і вся Україна.`}
   crumbs={[{ label: level.name }]}
-  jsonLd={ld(faqPage(text.faq))}
->
-  <Section>
+  jsonLd={ld(faqPage(text.faq))} threshold="rich">
+  <Fragment slot="top">
     <div data-level-block="hero">
       <LevelHero title={level.name} value={text.value} pickerHref="#pidbir" photo={LEVEL_PHOTO[level.key]} />
     </div>
-  </Section>
+  </Fragment>
 
-  <Section label="Розділи">
+  <Section label="Розділи" seam="dawn">
     <div data-level-block="tiles">
       <h2>Розділи</h2>
       <CategoryTiles levelSlug={level.slug} categories={categories} products={products} />

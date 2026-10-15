@@ -9,8 +9,10 @@ import { levelLinks, shopProducts } from '../lib/shop-data';
 const products = await shopProducts();
 ---
 <BaseLayout title="Кошик" description="Кошик ETS GRID: обладнання і монтаж під ключ." crumbs={[{ label: 'Кошик' }]} robots="noindex, follow">
-  <Section>
+  <Fragment slot="top">
     <h1>Кошик</h1>
+  </Fragment>
+  <Section seam="dawn">
     <NoJsNote text="Кошик працює з увімкненим JavaScript." />
     <Cart client:load products={products} levels={levelLinks()} />
   </Section>

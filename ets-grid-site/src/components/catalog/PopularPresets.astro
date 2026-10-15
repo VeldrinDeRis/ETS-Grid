@@ -37,7 +37,6 @@ const presets = (filtersJson as unknown as FiltersFile).presets.filter((p) => p.
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2xs) var(--space-s);
-    margin-bottom: var(--space-m);
     font-size: var(--step--1);
   }
   .presets__label {
@@ -48,13 +47,33 @@ const presets = (filtersJson as unknown as FiltersFile).presets.filter((p) => p.
     flex-wrap: wrap;
     gap: var(--space-2xs) var(--space-s);
   }
+  /* Добірки — пігулки з рамкою line (у нічному порозі — night-line, SPEC-002 §3.11). */
   .presets a {
     display: inline-flex;
     align-items: center;
     min-height: var(--tap);
+    padding: 0 var(--space-s);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    color: var(--color-ink);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: border-color var(--dur-fast) var(--ease-out);
+  }
+  .presets a:hover {
+    border-color: var(--color-ink-muted);
   }
   .presets a[aria-current='page'] {
+    border-color: var(--color-ink);
     font-weight: 700;
-    text-decoration: none;
+  }
+  /* Телефон: пігулки в один ряд із прокруткою, поріг не росте. */
+  @media (max-width: 639.98px) {
+    .presets__list {
+      flex-wrap: nowrap;
+      max-width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
   }
 </style>

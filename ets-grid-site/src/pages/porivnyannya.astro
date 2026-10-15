@@ -14,8 +14,10 @@ const products = await shopProducts({ rows: true });
   crumbs={[{ label: 'Порівняння' }]}
   robots="noindex, follow"
 >
-  <Section>
+  <Fragment slot="top">
     <h1>Порівняння товарів</h1>
+  </Fragment>
+  <Section seam="dawn">
     <NoJsNote text="Порівняння працює з увімкненим JavaScript." />
     <Compare client:load products={products} levels={levelLinks()} />
   </Section>

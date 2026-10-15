@@ -152,6 +152,13 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-002/AC-42 мини-галерея в HTML, compact и хиты без неё | build | `build/card-gallery.test.ts` | ✅ |
 | SPEC-002/AC-43 гортание кадров, drag, без JS, фильтр | functional | `functional/card-gallery.spec.ts` | ✅ |
 | SPEC-002/AC-44 axe и клавиатура галереи | a11y | `a11y/card-gallery.spec.ts` | ✅ |
+| SPEC-001/AC-25 шапка ночью на всех страницах | build | `build/night-threshold.test.ts` | ✅ |
+| SPEC-001/AC-26 ночной порог, стык dawn, витрина вне порога | build | `build/night-threshold.test.ts` | ✅ |
+| SPEC-001/AC-27 высота порога | functional | `functional/night-threshold.spec.ts` | ✅ |
+| SPEC-001/AC-28 axe на ночной шапке и пороге | a11y | `a11y/*.spec.ts` (общие проверки страниц) | ✅ |
+| SPEC-001/AC-29 эталоны всех шаблонов | visual | `visual/templates.spec.ts` | ⏳ после приёмки дизайна |
+| SPEC-002/AC-45 порог уровня и листинга | build | `build/night-threshold.test.ts` | ✅ |
+| SPEC-002/AC-46 витрина в первом экране | functional | `functional/night-threshold.spec.ts` | ✅ |
 | SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |
 | SPEC-005/AC-01 корзина: setQty, setTurnkey, remove, clear, totals | unit | `unit/shop.test.ts` | ✅ |
 | SPEC-005/AC-02 сравнение, событие, recent | unit | `unit/shop.test.ts` | ✅ |

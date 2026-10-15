@@ -8,12 +8,14 @@ import { routes } from '../lib/routes';
 import { levelLinks } from '../lib/shop-data';
 ---
 <BaseLayout title="Дякуємо" description="Заявку чи замовлення прийнято. Наступні кроки." crumbs={[{ label: 'Дякуємо' }]} robots="noindex, follow">
-  <Section width="narrow">
+  <Fragment slot="top">
     <h1>
       <span data-thanks-heading="general">Дякуємо!</span>
       <span data-thanks-heading="order" hidden>Замовлення № <span class="num" data-thanks-order-id></span> прийнято</span>
       <span data-thanks-heading="lead" hidden>Заявка № <span class="num" data-thanks-id></span> прийнята</span>
     </h1>
+  </Fragment>
+  <Section width="narrow" seam="dawn">
     <div class="thanks" data-thanks-general>
       <p>Ми отримали ваше звернення. Поки чекаєте на дзвінок — подивіться каталог:</p>
     </div>

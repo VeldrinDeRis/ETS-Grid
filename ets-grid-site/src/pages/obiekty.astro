@@ -14,8 +14,10 @@ const c = content.cases;
   description="Реальні обʼєкти ETS GRID: зарядні станції, СЕС, накопичувачі та Solar Carport."
   crumbs={[{ label: 'Обʼєкти' }]}
 >
-  <Section>
+  <Fragment slot="top">
     <h1>Обʼєкти</h1>
+  </Fragment>
+  <Section seam="dawn">
     <p class="cp-plate" data-content-block="plate">{c.plate}</p>
 
     <section class="case-template" aria-labelledby="case-template-title" data-content-block="case-template">

@@ -12,9 +12,11 @@ import '../styles/content.css';
   crumbs={[{ label: 'Сторінку не знайдено' }]}
   robots="noindex, follow"
 >
-  <Section>
+  <Fragment slot="top">
     <h1>Сторінку не знайдено</h1>
     <p class="cp-lead">Можливо, адресу змінено. Знайдіть товар пошуком або почніть з розділу.</p>
+  </Fragment>
+  <Section seam="dawn">
     <form class="nf-search" role="search" action={routes.search} method="get" data-content-block="search">
       <label for="nf-q">Пошук по каталогу</label>
       <div class="nf-search__row">

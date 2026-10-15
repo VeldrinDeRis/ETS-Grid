@@ -29,13 +29,15 @@ const crumbs = [
 ];
 ---
 <BaseLayout title={title} metaTitle={metaTitle} description={description} crumbs={crumbs} jsonLd={ld(itemList(Astro.site!, products))}>
-  <Section>
+  <Fragment slot="top">
     <h1>{h1}</h1>
     {category.hint && !preset && <p class="listing__hint">{category.hint}</p>}
     <PopularPresets level={level.key} levelSlug={level.slug} category={category.slug} current={preset?.slug} />
     <p class="listing__picker">
       <a href={level.picker_href}>Не знаєте, що обрати? Підбір за 3 питання</a>
     </p>
+  </Fragment>
+  <Section seam="dawn">
     <h2 class="listing__results-title">Товари</h2>
     <Catalog
       products={products}
@@ -47,7 +49,11 @@ const crumbs = [
 
 <style>
   .listing__hint {
+    margin: 0;
     color: var(--color-ink-muted);
+  }
+  .listing__picker {
+    margin: 0;
   }
   .listing__picker a {
     display: inline-flex;

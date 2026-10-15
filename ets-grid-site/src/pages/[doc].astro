@@ -18,8 +18,10 @@ const { doc } = Astro.props;
 const d = content.documents;
 ---
 <BaseLayout title={doc.name} description={`${doc.name} ETS GRID — умови для покупців сайту-магазину зарядних станцій, сонячних панелей і батарей.`} crumbs={[{ label: doc.name }]}>
-  <Section width="narrow">
+  <Fragment slot="top">
     <h1>{doc.name}</h1>
+  </Fragment>
+  <Section width="narrow" seam="dawn">
     <p class="cp-card__muted" data-content-block="edition"><Text value={d.edition} /></p>
     <p>{d.note}</p>
     <div class="cp-frame" data-content-block="document-body"><Text value={d.body} /></div>

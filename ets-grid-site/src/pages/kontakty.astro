@@ -27,9 +27,11 @@ const rows: [string, string][] = [
   crumbs={[{ label: 'Контакти' }]}
   jsonLd={ld(localBusiness(Astro.site!, structure.contacts))}
 >
-  <Section>
+  <Fragment slot="top">
     <h1>Контакти</h1>
     <p class="cp-lead">{content.contacts.lead}</p>
+  </Fragment>
+  <Section seam="dawn">
     <div class="ct">
       <div>
         <dl class="ct-list" data-content-block="contacts">

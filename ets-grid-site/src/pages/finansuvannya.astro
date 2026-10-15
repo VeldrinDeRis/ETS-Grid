@@ -15,9 +15,11 @@ const f = content.financing;
   description="Кредит на СЕС і накопичувачі, компенсації для дому, гранти для бізнесу, покупка частинами. Умови з датою перевірки."
   crumbs={[{ label: 'Фінансування' }]}
 >
-  <Section>
+  <Fragment slot="top">
     <h1>Фінансування</h1>
     <p class="cp-lead">{f.lead}</p>
+  </Fragment>
+  <Section seam="dawn">
     <p class="fin-checked" data-content-block="checked"><Text value={f.checked} /></p>
 
     <div class="fin">

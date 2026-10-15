@@ -15,8 +15,10 @@ const products = await shopProducts();
   crumbs={[{ label: 'Кошик', href: routes.cart }, { label: 'Оформлення' }]}
   robots="noindex, follow"
 >
-  <Section>
+  <Fragment slot="top">
     <h1>Оформлення замовлення</h1>
+  </Fragment>
+  <Section seam="dawn">
     <NoJsNote text="Оформлення працює з увімкненим JavaScript. Або залиште заявку — менеджер оформить замовлення за вас." levels={false} />
     <p class="nojs-quote"><a href={routes.quote}>Залишити заявку</a></p>
     <Checkout client:load products={products} />

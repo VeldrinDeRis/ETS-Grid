@@ -45,7 +45,7 @@ const faq = (levelContentJson as Partial<LevelContent>)[level.key as keyof Level
     { label: product.name },
   ]}
 >
-  <Section>
+  <Section seam="dawn">
     <div data-product-slug={product.slug}>
       <ProductTop product={product} levelKey={level.key} />
       <ProductDetails product={product} levelKey={level.key} levelSlug={level.slug} />

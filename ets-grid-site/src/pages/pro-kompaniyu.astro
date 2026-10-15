@@ -15,9 +15,11 @@ const levels = levelLinks();
   description="ETS GRID: зарядні станції, сонячна енергія й накопичувачі під ключ. Київ і вся Україна."
   crumbs={[{ label: 'Про компанію' }]}
 >
-  <Section>
+  <Fragment slot="top">
     <h1>Про компанію</h1>
     <p class="cp-lead">{a.lead}</p>
+  </Fragment>
+  <Section seam="dawn">
     {
       a.sections.map((s) => (
         <section class="cp-section" data-content-block={s.levels ? 'what-we-do' : 'section'}>

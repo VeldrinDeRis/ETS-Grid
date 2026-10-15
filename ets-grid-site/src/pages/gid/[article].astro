@@ -32,7 +32,7 @@ const related = (await getProductsBy({ level: article.level })).filter((p) => p.
   ogType="article"
   jsonLd={ld(articleLd(Astro.site!, article.title, routes.guideArticle(article.slug), text.value), faqPage(text.faq))}
 >
-  <Section width="narrow">
+  <Section width="narrow" seam="dawn">
     <article>
       <h1>{article.title}</h1>
       <p class="cp-lead" data-content-block="intro">{text.value}</p>

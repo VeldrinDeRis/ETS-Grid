@@ -31,8 +31,10 @@ const scheme = [...items].sort((a, b) => FLOW[a.level] - FLOW[b.level]);
   description={`Готова система «${system.name}»: склад, результат, ціна під ключ, строки й фінансування.`}
   crumbs={[{ label: 'Готові системи', href: routes.systems }, { label: system.name }]}
 >
-  <Section>
+  <Fragment slot="top">
     <h1>{system.name}</h1>
+  </Fragment>
+  <Section seam="dawn">
 
     <section class="sys-result" aria-labelledby="sys-result-title" data-content-block="result">
       <h2 id="sys-result-title">Що ви отримуєте</h2>

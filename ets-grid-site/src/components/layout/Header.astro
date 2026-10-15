@@ -1,5 +1,5 @@
 ---
-// Шапка (SPEC-001 §3.4). Без JS: рівні — звичайні посилання, мобільне меню — <details>.
+// Шапка (SPEC-001 §3.4; нічна на всіх сторінках — §3.10, D-067). Без JS: рівні — звичайні посилання, мобільне меню — <details>.
 // З JS (src/scripts/header.ts): мега-меню за зразком WAI-ARIA disclosure, лічильник кошика.
 import { getLevels, getCategories, getProduct, structure } from '../../lib/catalog';
 import { routes } from '../../lib/routes';
@@ -19,7 +19,7 @@ const levels = await Promise.all(
 );
 const phone = structure.contacts.phone;
 ---
-<header class="site-header" data-surface="day">
+<header class="site-header" data-surface="night">
   <Container class="site-header__top">
     <a class="brand" href={routes.home} aria-label="ETS GRID — на головну">ETS&nbsp;GRID</a>
 
@@ -63,7 +63,7 @@ const phone = structure.contacts.phone;
           <Icon name="menu" />
           <span>Меню</span>
         </summary>
-        <div class="mobile-menu__panel" data-surface="day">
+        <div class="mobile-menu__panel" data-surface="night">
           <nav aria-label="Меню розділів">
             <ul role="list" class="mobile-menu__levels">
               {

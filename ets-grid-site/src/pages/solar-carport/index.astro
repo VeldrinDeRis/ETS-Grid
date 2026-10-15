@@ -38,15 +38,14 @@ const stages = ['Заявка', 'Обстеження', 'Проєкт', 'Мон�
   title="Solar Carport"
   metaTitle={seoTitle.level('Solar Carport')}
   description="Solar Carport: навіс із сонячними панелями, зарядними станціями й накопичувачем. Конфігуратор і проєкт під ваш паркінг."
-  crumbs={[{ label: level.name }]}
->
-  <Section>
+  crumbs={[{ label: level.name }]} threshold="rich">
+  <Fragment slot="top">
     <div data-carport-block="hero">
       <LevelHero title={level.name} value="Навіс, сонячна станція, зарядка й накопичувач в одній конструкції над паркінгом." pickerHref="#konfigurator" photo="carport-below" />
     </div>
-  </Section>
+  </Fragment>
 
-  <Section label="4 функції в одній площі">
+  <Section label="4 функції в одній площі" seam="dawn">
     <div data-carport-block="functions">
       <h2>4 функції в одній площі</h2>
       <ul role="list" class="functions">

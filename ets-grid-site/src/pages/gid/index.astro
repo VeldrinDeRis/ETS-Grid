@@ -9,9 +9,11 @@ import '../../styles/content.css';
 const g = content.guide;
 ---
 <BaseLayout title={g.title} description="Гід покупця ETS GRID: як обрати зарядну станцію, сонячну станцію чи батарею." crumbs={[{ label: g.title }]}>
-  <Section>
+  <Fragment slot="top">
     <h1>{g.title}</h1>
     <p class="cp-lead">{g.lead}</p>
+  </Fragment>
+  <Section seam="dawn">
     <ul role="list" class="cp-cards" data-content-block="articles">
       {
         g.articles.map((a) => (
