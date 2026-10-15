@@ -80,6 +80,7 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-002/AC-16 карточка | unit, build | `unit/card.test.ts`, `build/catalog.test.ts` | ✅ |
 | SPEC-002/AC-17 пустая категория | build | `build/catalog.test.ts` | ✅ |
 | SPEC-002/AC-18 JS ≤ 150 КБ | build | `build/budget.test.ts` | ✅ |
+| D-066 zod не в клиентском JS | build | `build/budget.test.ts` | ✅ |
 | SPEC-002/AC-19 выбор значения | functional | `functional/catalog.spec.ts` | ✅ |
 | SPEC-002/AC-20 снятие фильтров | functional | `functional/catalog.spec.ts` | ✅ |
 | SPEC-002/AC-21 состояние из URL | functional | `functional/catalog.spec.ts` | ✅ |
