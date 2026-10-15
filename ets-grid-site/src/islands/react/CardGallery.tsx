@@ -27,14 +27,17 @@ function Controls({ label, count }: { label: string; count: number }) {
   const carousel = useCarousel();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const totalPages = mounted ? carousel.totalPages : count;
-  const currentPage = mounted ? carousel.currentPage : 0;
-  const isPrevActive = mounted ? carousel.isPrevActive : false;
-  const isNextActive = mounted ? carousel.isNextActive : count > 1;
+  // Поки Carousel не порахував сторінки, лишаємо ту саму розмітку на count кадрів: вузли кнопок
+  // не перемонтовуються, і фокус з клавіатури не губиться в момент гідратації (D-069).
+  const live = mounted && carousel.totalPages > 1;
+  const totalPages = live ? carousel.totalPages : count;
+  const currentPage = live ? carousel.currentPage : 0;
+  const isPrevActive = live ? carousel.isPrevActive : false;
+  const isNextActive = live ? carousel.isNextActive : count > 1;
   const { nextPage, prevPage, gotoPage } = carousel;
   if (totalPages <= 1) return null;
   return (
-    <div className="pgal__nav" data-intent-wait="" data-intent-ready={mounted && carousel.totalPages > 1 ? '' : undefined}>
+    <div className="pgal__nav" data-intent-wait="" data-intent-ready={live ? '' : undefined}>
       <button type="button" className="pgal__arrow" aria-label={`Попередній кадр: ${label}`} onClick={prevPage} disabled={!isPrevActive}>
         <Arrow dir="prev" />
       </button>

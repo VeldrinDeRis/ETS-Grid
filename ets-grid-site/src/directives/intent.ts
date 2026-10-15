@@ -1,7 +1,9 @@
 // Клієнтська директива client:intent (SPEC-002 §3.10.1, D-069): острів оживає при першому намірі —
 // наведення, натиск, дотик або фокус на ньому. Поки його немає, острів — серверний HTML: так кадри
-// галереї не перемальовуються під час завантаження сторінки і не зсувають LCP. Клік по кнопці до
-// гідратації не губиться: директива запам'ятовує, яку кнопку натиснули, і повторює клік після гідратації.
+// галереї не перемальовуються під час завантаження сторінки і не зсувають LCP.
+// Клік по кнопці, поки острів не готовий (ще не гідратований або ще міряє себе — немає мітки
+// [data-intent-ready] при наявній [data-intent-wait]), не губиться: директива запам'ятовує кнопку
+// і повторює клік, щойно острів готовий (до 2 с).
 import type { ClientDirective } from 'astro';
 
 const INTENT = ['pointerenter', 'pointerdown', 'touchstart', 'focusin'] as const;
@@ -15,16 +17,44 @@ const intent: ClientDirective = (load, _opts, el) => {
   let started = false;
   let hydrated = false;
   let pending: Pending | null = null;
+  let replaying = false;
+
+  const ready = () => hydrated && (!el.querySelector('[data-intent-wait]') || !!el.querySelector('[data-intent-ready]'));
+
+  const replay = () => {
+    if (replaying || !pending) return;
+    replaying = true;
+    const until = performance.now() + 2000;
+    const tick = () => {
+      const target = pending;
+      if (!target) return void (replaying = false);
+      const button = el.querySelectorAll<HTMLButtonElement>(`button.${target.cls}`)[target.index];
+      if (ready() && button && !button.disabled) {
+        pending = null;
+        replaying = false;
+        el.removeEventListener('click', onClick, true);
+        button.click();
+        return;
+      }
+      if (performance.now() < until) requestAnimationFrame(tick);
+      else replaying = false;
+    };
+    requestAnimationFrame(tick);
+  };
 
   const onClick = (e: Event) => {
-    if (hydrated) return;
+    if (ready() && !pending) {
+      el.removeEventListener('click', onClick, true);
+      return;
+    }
     const button = (e.target as Element | null)?.closest?.('button');
     if (!button || !el.contains(button)) return;
     e.preventDefault();
     e.stopPropagation();
     const cls = button.classList[0];
     if (cls) pending = { cls, index: [...el.querySelectorAll(`button.${cls}`)].indexOf(button) };
-    start();
+    if (hydrated) replay();
+    else start();
   };
 
   const start = async () => {
@@ -34,20 +64,7 @@ const intent: ClientDirective = (load, _opts, el) => {
     const hydrate = await load();
     await hydrate();
     hydrated = true;
-    el.removeEventListener('click', onClick, true);
-    if (!pending) return;
-    const { cls, index } = pending;
-    pending = null;
-    // Острів після гідратації ще міряє себе (Carousel рахує сторінки): чекаємо мітку готовності
-    // [data-intent-ready], якщо острів її ставить, і потрібну кнопку — до 2 с, потім повторюємо клік.
-    const until = performance.now() + 2000;
-    const replay = () => {
-      const button = el.querySelectorAll<HTMLButtonElement>(`button.${cls}`)[index];
-      const ready = !el.querySelector('[data-intent-wait]') || el.querySelector('[data-intent-ready]');
-      if (button && ready && !button.disabled) return button.click();
-      if (performance.now() < until) requestAnimationFrame(replay);
-    };
-    requestAnimationFrame(replay);
+    replay();
   };
 
   for (const type of INTENT) el.addEventListener(type, start, { once: true, passive: true });
