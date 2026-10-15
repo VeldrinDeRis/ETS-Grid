@@ -12,7 +12,7 @@ for (const palette of ['a', 'b'] as const) {
         await presetStorage(page, { 'etsgrid:palette': palette });
         await page.goto(url);
         await expect(page.locator('html')).toHaveAttribute('data-palette', palette);
-        const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+        const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']).analyze();
         const serious = result.violations
           .filter((v) => v.impact === 'serious' || v.impact === 'critical')
           .map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(', ')}`);

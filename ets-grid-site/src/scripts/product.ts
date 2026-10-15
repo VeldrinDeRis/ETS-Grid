@@ -1,6 +1,5 @@
 // Поведінка картки товару (SPEC-003 §3.1, §4): перемикач «з монтажем», сумісність з авто,
 // збільшення фото, липка панель, акордеон, недавно переглянуті.
-import { animateLayout } from 'motion';
 import { DUR, EASE_OUT } from '../lib/motion-tokens';
 import { push, list } from '../lib/recent';
 import { formatUnit } from '../lib/format';
@@ -108,13 +107,22 @@ if (sticky && priceBlock) {
 }
 
 /* ---------- акордеон смуги 2 (SPEC-003 §3.5) ----------
-   Як FAQ головної: сусіди з'їжджають animateLayout, без руху — звичайні <details>. */
+   Як FAQ головної: сусіди з'їжджають animateLayout, без руху — звичайні <details>. animateLayout (≈ 33 КБ gz) не
+   потрібен при відкритті сторінки — вантажимо за наміром (наведення, фокус, дотик); до того пункт відкривається
+   звичайним <details> без анімації. */
 const accordion = document.querySelector<HTMLElement>('[data-product-accordion]');
 if (accordion && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  let layout: typeof import('motion').animateLayout | null = null;
+  const load = () => {
+    for (const type of ['pointerenter', 'focusin', 'touchstart'] as const) accordion.removeEventListener(type, load);
+    import('motion').then((m) => (layout = m.animateLayout));
+  };
+  for (const type of ['pointerenter', 'focusin', 'touchstart'] as const) accordion.addEventListener(type, load, { passive: true });
   for (const item of accordion.querySelectorAll<HTMLDetailsElement>(':scope > details')) {
     item.querySelector(':scope > summary')!.addEventListener('click', (e) => {
+      if (!layout) return;
       e.preventDefault();
-      animateLayout(accordion, () => item.toggleAttribute('open'), { duration: DUR, ease: EASE_OUT });
+      layout(accordion, () => item.toggleAttribute('open'), { duration: DUR, ease: EASE_OUT });
     });
   }
 }

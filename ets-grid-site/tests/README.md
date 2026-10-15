@@ -165,6 +165,15 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-002/AC-50 замер LCP и Lighthouse листинга | вручную | `qa/README.md` | ✅ |
 | SPEC-006/AC-41 текст сцены не гаснет | a11y, functional | `a11y/lcp-a11y.spec.ts`, `functional/lcp-a11y.spec.ts` | ✅ |
 | SPEC-006/AC-42 точки главной 24 px, Lighthouse 100 | a11y, вручную | `a11y/lcp-a11y.spec.ts`, `qa/README.md` | ✅ |
+| SPEC-006/AC-43 рух лише opacity/transform, три цикли, пауза поза кадром | build, functional | `build/home-motion.test.ts`, `functional/home-motion.spec.ts` | ✅ |
+| SPEC-006/AC-44 MotionScore ≥ A, карусель при reduced-motion | вручную, functional | `qa/motion-audit-2026-10-15-rev63.md`, `functional/home-motion.spec.ts` | ✅ |
+| SPEC-005/AC-13 мініатюра ProductThumb | build, functional | `build/shop-thumbs.test.ts`, `functional/shop-thumbs.spec.ts` | ✅ |
+| SPEC-005/AC-14 плитки рівнів, axe wcag22aa | build, functional, a11y | `build/shop-thumbs.test.ts`, `functional/shop-thumbs.spec.ts`, `a11y/shop-thumbs.spec.ts` | ✅ |
+| SPEC-003/AC-14 галерея з набору кадрів | build, functional | `build/product-rev1.test.ts`, `functional/product-rev1.spec.ts` | ✅ |
+| SPEC-003/AC-15 прилиплий блок покупки, нижня плашка | functional | `functional/product-rev1.spec.ts` | ✅ |
+| SPEC-003/AC-16 три смуги, висота без підвалу, акордеон без JS | build, functional | `build/product-rev1.test.ts`, `functional/product-rev1.spec.ts` | ✅ |
+| SPEC-003/AC-17 axe wcag22aa, LCP товару ≤ 2,5 с | a11y, вручную | `a11y/product.spec.ts`, `qa/README.md` | ✅ |
+| D-074 перший кадр каруселі видно до гідратації | functional | `functional/carousel-ssr.spec.ts` | ✅ |
 | SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |
 | SPEC-004/AC-21 подборщики на React | build | `build/pickers-react.test.ts` | ✅ |
 | SPEC-004/AC-22 числа через LiveNumber | functional | `functional/pickers-live.spec.ts` | ✅ |
