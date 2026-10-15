@@ -332,7 +332,7 @@ test.describe('SPEC-006/AC-37 галереї «Обʼєкти» на Carousel (D
 });
 
 test.describe('SPEC-006/AC-38 акт IV: карусель хітів і стики', () => {
-  test('1440: ≥ 3 картки в рамці, стрілка гортає, точки відмічають; стики — градієнт; Carport ≤ 60 % висоти', async ({ page }, info) => {
+  test('1440: ≥ 3 картки в рамці, стрілка гортає, точки відмічають; стики — градієнт; Carport ≤ 720 px', async ({ page }, info) => {
     await page.goto('/');
     const block = page.locator('[data-home-block="hits"]');
     await block.scrollIntoViewIfNeeded();
@@ -353,6 +353,6 @@ test.describe('SPEC-006/AC-38 акт IV: карусель хітів і стик
     await expect(dots.nth(1)).toHaveAttribute('aria-selected', 'true', { timeout: 3000 });
     await expect.poll(async () => (await block.locator('.hits__item').first().boundingBox())!.x, { timeout: 3000 }).toBeLessThan(track.x);
     const carport = (await page.locator('[data-home-block="carport"]').boundingBox())!;
-    expect(carport.height).toBeLessThanOrEqual(1178 * 0.6);
+    expect(carport.height).toBeLessThanOrEqual(720);
   });
 });

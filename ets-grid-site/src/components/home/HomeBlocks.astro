@@ -164,8 +164,12 @@ const shotKey = (group: string, i: number) => `case-${group}-${i + 1}` as PhotoK
     gap: var(--space-2xs);
   }
   .carport__config :global(.pk-grid) {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-2xs) var(--space-s);
+  }
+  /* «100 кВт·год» не ламаємо по літерах: число з одиницею — одним рядком. */
+  .carport__config :global(.pk-grid dd) {
+    white-space: nowrap;
   }
   .carport__photo {
     align-self: stretch;
