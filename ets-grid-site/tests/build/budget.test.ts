@@ -5,22 +5,26 @@ import { describe, expect, test } from 'vitest';
 import { DIST, distFiles, pages } from '../helpers/dist';
 
 const KB = 1024;
+/** Контентні сторінки (ТЗ §11). */
 const CONTENT_LIMIT = 100 * KB;
+/** Каталог і підбірники без React (SPEC-002 AC-18, SPEC-004 AC-11). */
 const CATALOG_LIMIT = 150 * KB;
+/** Сторінки з React-островами Motion+ (D-045 → D-062): лише головна. */
+const REACT_LIMIT = 250 * KB;
 
-/** Файл модуля та всі його статичні імпорти. */
+const importSpec = (spec: string, from: string) => (spec.startsWith('/') ? join(DIST, spec) : join(dirname(from), spec));
+
+/** Файл модуля та всі його імпорти — статичні й динамічні (SPEC-001 AC-24). */
 function moduleGraph(entry: string, seen = new Set<string>()): Set<string> {
   if (seen.has(entry) || !existsSync(entry)) return seen;
   seen.add(entry);
   const code = readFileSync(entry, 'utf8');
-  for (const m of code.matchAll(/(?:import|export)\s*(?:[^'"]*?from\s*)?["']([^"']+\.m?js)["']/g)) {
-    const spec = m[1];
-    const next = spec.startsWith('/') ? join(DIST, spec) : join(dirname(entry), spec);
-    moduleGraph(next, seen);
-  }
+  for (const m of code.matchAll(/(?:import|export)\s*(?:[^'"]*?from\s*)?["']([^"']+\.m?js)["']/g)) moduleGraph(importSpec(m[1], entry), seen);
+  for (const m of code.matchAll(/import\(\s*["']([^"']+\.m?js)["']\s*\)/g)) moduleGraph(importSpec(m[1], entry), seen);
   return seen;
 }
 
+/** Увесь JS сторінки: <script src>, інлайн-скрипти та острови (component-url, renderer-url) з їхніми імпортами, кожен файл раз. */
 function pageJsGz(p: ReturnType<typeof pages>[number]): number {
   let total = 0;
   const files = new Set<string>();
@@ -32,17 +36,35 @@ function pageJsGz(p: ReturnType<typeof pages>[number]): number {
       total += gzipSync(s.textContent ?? '').length;
     }
   }
+  for (const island of p.document.querySelectorAll('astro-island')) {
+    for (const attr of ['component-url', 'renderer-url']) {
+      const url = island.getAttribute(attr);
+      if (url) for (const f of moduleGraph(join(DIST, url))) files.add(f);
+    }
+  }
   for (const f of files) total += gzipSync(readFileSync(f)).length;
   return total;
 }
 
-/** Сторінки каталогу й підбірників мають бюджет 150 КБ (SPEC-002 AC-18, SPEC-004 AC-11). */
-const isCatalogPage = (p: ReturnType<typeof pages>[number]) =>
-  p.html.includes('CatalogFilters') || p.html.includes('data-picker-kind');
+type Page = ReturnType<typeof pages>[number];
+const hasReactIsland = (p: Page) => [...p.document.querySelectorAll('astro-island')].some((i) => /"value":"react"/.test(i.getAttribute('opts') ?? ''));
+const isCatalogPage = (p: Page) => p.html.includes('CatalogFilters') || p.html.includes('data-picker-kind');
+const limitFor = (p: Page) => (hasReactIsland(p) ? REACT_LIMIT : isCatalogPage(p) ? CATALOG_LIMIT : CONTENT_LIMIT);
 
-describe('SPEC-001/AC-20, SPEC-002/AC-18 бюджети JS і шрифтів', () => {
-  test.each(pages().map((p) => [p.url, p] as const))('%s: JS ≤ 100/150 КБ gz', (_url, p) => {
-    expect(pageJsGz(p)).toBeLessThanOrEqual(isCatalogPage(p) ? CATALOG_LIMIT : CONTENT_LIMIT);
+describe('SPEC-001/AC-20, AC-24, SPEC-002/AC-18, SPEC-006/AC-27 бюджети JS і шрифтів', () => {
+  test.each(pages().map((p) => [p.url, p] as const))('%s: JS з островами ≤ 100/150/250 КБ gz', (_url, p) => {
+    expect(pageJsGz(p)).toBeLessThanOrEqual(limitFor(p));
+  });
+
+  test('AC-24: острови враховано — головна важить більше за свої <script src>, React лише на головній', () => {
+    const home = pages().find((p) => p.url === '/')!;
+    const scriptsOnly = [...home.document.querySelectorAll('script[src]')].reduce((sum, s) => {
+      let t = 0;
+      for (const f of moduleGraph(join(DIST, s.getAttribute('src')!))) t += gzipSync(readFileSync(f)).length;
+      return sum + t;
+    }, 0);
+    expect(pageJsGz(home)).toBeGreaterThan(scriptsOnly + 50 * KB);
+    expect(pages().filter(hasReactIsland).map((p) => p.url)).toEqual(['/']);
   });
 
   test('острів фільтрів є на сторінках каталогу', () => {
