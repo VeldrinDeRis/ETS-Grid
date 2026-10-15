@@ -4,7 +4,8 @@ import carsJson from '../../src/data/cars.json';
 import filtersJson from '../../src/data/filters.json';
 import levelContent from '../../src/data/level-content.json';
 import structure from '../../src/data/structure.json';
-import { applyFilters, carSchema, filtersFileSchema, resolveFacets, type Car, type FiltersFile } from '../../src/lib/filters';
+import { applyFilters, resolveFacets, type Car, type FiltersFile } from '../../src/lib/filters';
+import { carSchema, filtersFileSchema } from '../../src/lib/filters/schema';
 import { levelContentSchema } from '../../src/lib/level-content';
 import type { Product } from '../../src/lib/schema';
 

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import calcJson from '../../src/data/calc.json';
-import { calcFileSchema } from '../../src/lib/calc';
+import { calcFileSchema } from '../../src/lib/calc/schema';
 
 describe('SPEC-004/AC-08 calc.json', () => {
   test('проходить схему', () => {
