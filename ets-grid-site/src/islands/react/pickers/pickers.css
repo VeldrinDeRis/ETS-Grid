@@ -165,7 +165,8 @@
   line-height: 1.15;
 }
 
-.pk-result--ok .pk-result__title span[aria-hidden] {
+/* Лише світлодіод статусу, не розряди живих чисел (SPEC-004 рев. 2). */
+.pk-result--ok .pk-result__title .pk-led {
   color: var(--color-status-ok);
 }
 

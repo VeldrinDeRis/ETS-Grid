@@ -1,11 +1,11 @@
-/** @jsxImportSource preact */
+/** @jsxImportSource react */
 // Спільні частини підбірників (SPEC-004 §3.3).
-import type { ComponentChildren } from 'preact';
-import { useEffect, useRef, useState } from 'preact/hooks';
-import { clamp } from '../../lib/calc/formulas';
-import { formatNumber } from '../../lib/format';
-import { routes } from '../../lib/routes';
-import { track } from '../../lib/track';
+import type { ReactNode } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { clamp } from '../../../lib/calc/formulas';
+import { formatNumber } from '../../../lib/format';
+import { routes } from '../../../lib/routes';
+import { track } from '../../../lib/track';
 import './pickers.css';
 
 export interface ProductInfo {
@@ -42,11 +42,11 @@ export function NumberSlider(props: {
   };
 
   return (
-    <div class="pk-slider">
-      <label class="pk-label" for={`${id}-num`}>
+    <div className="pk-slider">
+      <label className="pk-label" htmlFor={`${id}-num`}>
         {unit ? `${label}, ${unit}` : label}
       </label>
-      <div class="pk-slider__row">
+      <div className="pk-slider__row">
         <input
           type="range"
           id={`${id}-range`}
@@ -55,24 +55,28 @@ export function NumberSlider(props: {
           step={step}
           value={value}
           aria-label={`${label}, повзунок`}
-          onInput={(e) => commit((e.target as HTMLInputElement).value)}
+          onChange={(e) => commit(e.target.value)}
         />
         <input
           type="number"
           id={`${id}-num`}
-          class="pk-number"
+          className="pk-number"
           inputMode="decimal"
           min={min}
           max={max}
           step={step}
           value={draft}
-          onInput={(e) => setDraft((e.target as HTMLInputElement).value)}
-          onChange={(e) => commit((e.target as HTMLInputElement).value)}
+          // React onChange = подія input: чернетка; підтвердження — на blur і Enter (як change у Preact).
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={(e) => commit(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') commit((e.target as HTMLInputElement).value);
+          }}
           aria-describedby={hint ? `${id}-hint` : undefined}
         />
       </div>
       {hint && (
-        <p class="pk-hint" id={`${id}-hint`}>
+        <p className="pk-hint" id={`${id}-hint`}>
           Від {formatNumber(min)} до {formatNumber(max)}
           {unit ? ` ${unit}` : ''}
         </p>
@@ -90,11 +94,11 @@ export function Choice<T extends string | number>(props: {
   onChange: (v: T) => void;
 }) {
   return (
-    <fieldset class="pk-fieldset">
-      <legend class="pk-label">{props.legend}</legend>
-      <div class="pk-options">
+    <fieldset className="pk-fieldset">
+      <legend className="pk-label">{props.legend}</legend>
+      <div className="pk-options">
         {props.options.map((o) => (
-          <label class="pk-option">
+          <label className="pk-option">
             <input
               type="radio"
               name={props.name}
@@ -111,19 +115,19 @@ export function Choice<T extends string | number>(props: {
 }
 
 /** Блок результату: role=status, оголошення не частіше ніж раз на 300 мс. */
-export function Result(props: { summary: string; tone?: 'ok' | 'warn' | 'neutral'; children?: ComponentChildren }) {
+export function Result(props: { summary: string; tone?: 'ok' | 'warn' | 'neutral'; children?: ReactNode }) {
   const [announced, setAnnounced] = useState(props.summary);
   useEffect(() => {
     const t = setTimeout(() => setAnnounced(props.summary), 300);
     return () => clearTimeout(t);
   }, [props.summary]);
   return (
-    <div class={`pk-result pk-result--${props.tone ?? 'neutral'}`}>
-      <p class="pk-vh" role="status" aria-live="polite">
+    <div className={`pk-result pk-result--${props.tone ?? 'neutral'}`}>
+      <p className="pk-vh" role="status" aria-live="polite">
         {announced}
       </p>
       {props.children}
-      <p class="pk-disclaimer">{DISCLAIMER}</p>
+      <p className="pk-disclaimer">{DISCLAIMER}</p>
     </div>
   );
 }
@@ -131,11 +135,11 @@ export function Result(props: { summary: string; tone?: 'ok' | 'warn' | 'neutral
 export function ProductLinks(props: { items: ProductInfo[] }) {
   if (props.items.length === 0) return null;
   return (
-    <ul class="pk-products" role="list">
+    <ul className="pk-products" role="list">
       {props.items.map((p) => (
         <li>
           <a href={p.url}>{p.name}</a>
-          <span class="pk-products__price">{p.price}</span>
+          <span className="pk-products__price">{p.price}</span>
         </li>
       ))}
     </ul>
@@ -164,13 +168,13 @@ export function Cta(props: { label: string; picker: string; params: Record<strin
   const href = routes.quoteWith({ picker: props.picker, ...props.params });
   if (props.disabled) {
     return (
-      <span class="btn pk-cta" aria-disabled="true">
+      <span className="btn pk-cta" aria-disabled="true">
         {props.label}
       </span>
     );
   }
   return (
-    <a class="btn btn--primary pk-cta" href={href} onClick={() => track('picker_complete', { picker: props.picker, ...props.params, via: 'cta' })}>
+    <a className="btn btn--primary pk-cta" href={href} onClick={() => track('picker_complete', { picker: props.picker, ...props.params, via: 'cta' })}>
       {props.label}
     </a>
   );

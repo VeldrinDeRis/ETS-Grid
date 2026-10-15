@@ -1,11 +1,12 @@
-/** @jsxImportSource preact */
+/** @jsxImportSource react */
 // Підбірник батарей: 3 питання ТЗ §7, формула 03 §3.2; «вікна загоряються» (концепція §4.1, H-011).
-import { animate } from 'motion';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { batteryPicker, type Calc } from '../../lib/calc';
-import { formatUnit } from '../../lib/format';
-import { plural } from '../../lib/plural';
-import type { Product } from '../../lib/schema';
+import { animate } from '../../../lib/motion-dom';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import LiveNumber from './LiveNumber';
+import { batteryPicker, type Calc } from '../../../lib/calc';
+import { formatUnit } from '../../../lib/format';
+import { plural } from '../../../lib/plural';
+import type { Product } from '../../../lib/schema';
 import { Choice, Cta, NumberSlider, ProductLinks, Result, usePickerComplete, useReady, type ProductInfo } from './shared';
 
 interface Props {
@@ -30,8 +31,8 @@ function House({ lit }: { lit: number }) {
   }, [lit]);
   const cells = Array.from({ length: WINDOWS }, (_, i) => ({ x: 30 + (i % 3) * 34, y: 58 + Math.floor(i / 3) * 30 }));
   return (
-    <svg ref={ref} class="pk-house" viewBox="0 0 160 130" width="160" height="130" aria-hidden="true">
-      <path d="M10 60 L80 12 L150 60 V122 H10 Z" fill="var(--color-surface)" stroke="currentColor" stroke-width="2" />
+    <svg ref={ref} className="pk-house" viewBox="0 0 160 130" width="160" height="130" aria-hidden="true">
+      <path d="M10 60 L80 12 L150 60 V122 H10 Z" fill="var(--color-surface)" stroke="currentColor" strokeWidth="2" />
       {cells.map((c, i) => (
         <rect data-window x={c.x} y={c.y} width="22" height="18" rx="2" fill="var(--color-accent)" style={{ opacity: i < lit ? 1 : 0.12 }} />
       ))}
@@ -65,16 +66,16 @@ export default function BatteryPicker({ batteries, info, calc }: Props) {
   usePickerComplete('battery', params, touched && r.loadW > 0);
 
   return (
-    <div class="pk" data-picker="battery" data-ready={ready ? 'true' : undefined}>
-      <form class="pk-form" onSubmit={(e) => e.preventDefault()}>
-        <fieldset class="pk-fieldset">
-          <legend class="pk-label">1. Що має працювати</legend>
-          <div class="pk-options">
+    <div className="pk" data-picker="battery" data-ready={ready ? 'true' : undefined}>
+      <form className="pk-form" onSubmit={(e) => e.preventDefault()}>
+        <fieldset className="pk-fieldset">
+          <legend className="pk-label">1. Що має працювати</legend>
+          <div className="pk-options">
             {calc.battery.loads.map((l) => (
-              <label class="pk-option">
+              <label className="pk-option">
                 <input type="checkbox" checked={loads.includes(l.id)} onChange={() => toggleLoad(l.id)} />
                 <span>
-                  {l.label} <span class="pk-muted">{formatUnit(l.w, 'Вт')}</span>
+                  {l.label} <span className="pk-muted">{formatUnit(l.w, 'Вт')}</span>
                 </span>
               </label>
             ))}
@@ -109,23 +110,27 @@ export default function BatteryPicker({ batteries, info, calc }: Props) {
 
       <Result summary={summary} tone={r.loadW === 0 ? 'neutral' : 'ok'}>
         {r.loadW === 0 ? (
-          <p class="pk-result__title">Оберіть, що має працювати</p>
+          <p className="pk-result__title">Оберіть, що має працювати</p>
         ) : (
-          <div class="pk-battery">
+          <div className="pk-battery">
             <House lit={lit} />
             <div>
-              {product && <p class="pk-result__title">{hoursText}</p>}
-              <ul class="pk-facts" role="list">
-                <li>Навантаження: {formatUnit(r.loadW, 'Вт')}</li>
-                <li>Потрібна ємність: {formatUnit(Math.round(r.neededKwh * 10) / 10, 'кВт·год')}</li>
+              {product && r.hoursWithIt ? (
+                <p className="pk-result__title">
+                  ≈ <LiveNumber value={Math.round(r.hoursWithIt)} /> {plural(Math.round(r.hoursWithIt), ['година', 'години', 'годин'])} світла
+                </p>
+              ) : null}
+              <ul className="pk-facts" role="list">
+                <li>Навантаження: <LiveNumber value={r.loadW} unit="Вт" digits={0} /></li>
+                <li>Потрібна ємність: <LiveNumber value={Math.round(r.neededKwh * 10) / 10} unit="кВт·год" digits={1} /></li>
                 {product && r.modules > 1 && (
                   <li>
-                    {r.modules} модулі по {formatUnit(Number(r.product!.attrs.capacity_kwh), 'кВт·год')} = {formatUnit(Math.round(r.totalKwh * 100) / 100, 'кВт·год')}
+                    <LiveNumber value={r.modules} /> модулі по {formatUnit(Number(r.product!.attrs.capacity_kwh), 'кВт·год')} = <LiveNumber value={Math.round(r.totalKwh * 100) / 100} unit="кВт·год" />
                   </li>
                 )}
               </ul>
               {product ? <ProductLinks items={[product]} /> : <p>Такої ємності в каталозі немає — підберемо систему під розрахунок.</p>}
-              <p class="pk-muted">
+              <p className="pk-muted">
                 {hasSolar === 'yes'
                   ? 'З панелями батарея заряджається вдень від сонця — перевіримо сумісність інвертора.'
                   : 'Додайте сонячні панелі, щоб батарея заряджалася вдень.'}

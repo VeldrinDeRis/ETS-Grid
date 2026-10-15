@@ -1,10 +1,11 @@
-/** @jsxImportSource preact */
+/** @jsxImportSource react */
 // Конфігуратор Solar Carport: 3 питання ТЗ §7, формула 03 §3.4 (SPEC-004 §3.3, H-012).
-import { useMemo, useState } from 'preact/hooks';
-import { carportConfig, type Calc } from '../../lib/calc';
-import { formatNumber, formatUnit } from '../../lib/format';
-import { routes } from '../../lib/routes';
-import type { Product } from '../../lib/schema';
+import { useMemo, useState } from 'react';
+import LiveNumber from './LiveNumber';
+import { carportConfig, type Calc } from '../../../lib/calc';
+import { formatNumber, formatUnit } from '../../../lib/format';
+import { routes } from '../../../lib/routes';
+import type { Product } from '../../../lib/schema';
 import { Choice, Cta, NumberSlider, ProductLinks, Result, usePickerComplete, useReady, type ProductInfo } from './shared';
 
 interface Props {
@@ -32,8 +33,8 @@ export default function CarportConfigurator({ carports, info, calc, mode = 'full
   usePickerComplete('carport', params, touched);
 
   return (
-    <div class="pk" data-picker="carport" data-ready={ready ? 'true' : undefined}>
-      <form class="pk-form" onSubmit={(e) => e.preventDefault()}>
+    <div className="pk" data-picker="carport" data-ready={ready ? 'true' : undefined}>
+      <form className="pk-form" onSubmit={(e) => e.preventDefault()}>
         <NumberSlider
           id="cc-places"
           label="1. Кількість машиномісць"
@@ -48,7 +49,7 @@ export default function CarportConfigurator({ carports, info, calc, mode = 'full
           }}
         />
         {mode === 'mini' ? (
-          <p class="pk-muted">
+          <p className="pk-muted">
             Розрахунок — із зарядками й накопичувачем. <a href={`${routes.level('solar-carport')}#konfigurator`}>Повний конфігуратор</a>
           </p>
         ) : (
@@ -84,31 +85,31 @@ export default function CarportConfigurator({ carports, info, calc, mode = 'full
       </form>
 
       <Result summary={summary}>
-        <p class="pk-result__title">
-          <span class="pk-big">{formatNumber(r.kwp)}</span> kWp
+        <p className="pk-result__title">
+          <span className="pk-big"><LiveNumber value={r.kwp} digits={1} /></span> kWp
         </p>
-        <dl class="pk-grid">
+        <dl className="pk-grid">
           <div>
             <dt>Панелей</dt>
-            <dd>{formatNumber(r.panels)}</dd>
+            <dd><LiveNumber value={r.panels} /></dd>
           </div>
           <div>
             <dt>Портів зарядки</dt>
-            <dd>{formatNumber(r.evPorts)}</dd>
+            <dd><LiveNumber value={r.evPorts} /></dd>
           </div>
           <div>
             <dt>Накопичувач</dt>
-            <dd>{formatUnit(r.storageKwh, 'кВт·год')}</dd>
+            <dd><LiveNumber value={r.storageKwh} unit="кВт·год" /></dd>
           </div>
           <div>
             <dt>CO₂ на рік*</dt>
-            <dd>{formatNumber(r.co2TYear)}{' '}т</dd>
+            <dd><LiveNumber value={r.co2TYear} digits={1} />{' '}т</dd>
           </div>
         </dl>
-        <p class="pk-muted">*орієнтовно. Ціна — за розрахунком після обстеження ділянки.</p>
+        <p className="pk-muted">*орієнтовно. Ціна — за розрахунком після обстеження ділянки.</p>
         {nearest && (
           <>
-            <p class="pk-result__label">Схожа конфігурація в каталозі:</p>
+            <p className="pk-result__label">Схожа конфігурація в каталозі:</p>
             <ProductLinks items={[nearest]} />
           </>
         )}

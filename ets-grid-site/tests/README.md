@@ -166,6 +166,10 @@ Lighthouse — через MCP Chrome DevTools, отчёты и скриншот�
 | SPEC-006/AC-41 текст сцены не гаснет | a11y, functional | `a11y/lcp-a11y.spec.ts`, `functional/lcp-a11y.spec.ts` | ✅ |
 | SPEC-006/AC-42 точки главной 24 px, Lighthouse 100 | a11y, вручную | `a11y/lcp-a11y.spec.ts`, `qa/README.md` | ✅ |
 | SPEC-004/AC-20 «рахунок, ₴» неактивен до тарифа | functional | `functional/pickers.spec.ts` | ✅ |
+| SPEC-004/AC-21 подборщики на React | build | `build/pickers-react.test.ts` | ✅ |
+| SPEC-004/AC-22 числа через LiveNumber | functional | `functional/pickers-live.spec.ts` | ✅ |
+| SPEC-004/AC-23 быстрые изменения — последнее значение | functional | `functional/pickers-live.spec.ts` | ✅ |
+| SPEC-004/AC-24 reduced-motion — текст | functional | `functional/pickers-live.spec.ts` | ✅ |
 | SPEC-005/AC-01 корзина: setQty, setTurnkey, remove, clear, totals | unit | `unit/shop.test.ts` | ✅ |
 | SPEC-005/AC-02 сравнение, событие, recent | unit | `unit/shop.test.ts` | ✅ |
 | SPEC-005/AC-03 поиск: «ets home», «gbt», «інвертр» | unit | `unit/shop.test.ts` | ✅ |

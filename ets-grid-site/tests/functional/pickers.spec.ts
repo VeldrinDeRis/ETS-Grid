@@ -31,18 +31,18 @@ test.describe('SPEC-004/AC-12 підбірники реагують одразу
 
   test('СЕС: 400 → 4,2 kWp; 800 → 8,3 kWp', async ({ page }) => {
     const root = await openPicker(page, '/sonyachni-paneli/', 'solar');
-    await expect(root.locator('.pk-big')).toHaveText('4,2');
+    await expect(root.locator('.pk-big .pk-vh')).toHaveText('4,2');
     const field = root.getByLabel('Споживання на місяць, кВт·год');
     await field.fill('800');
     await field.blur();
-    await expect(root.locator('.pk-big')).toHaveText('8,3');
+    await expect(root.locator('.pk-big .pk-vh')).toHaveText('8,3');
   });
 
   test('Carport: 20 місць → 66 kWp; без зарядок порти 0', async ({ page }) => {
     const root = await openPicker(page, '/solar-carport/', 'carport');
-    await expect(root.locator('.pk-big')).toHaveText('66');
+    await expect(root.locator('.pk-big .pk-vh')).toHaveText('66');
     await root.locator('fieldset', { hasText: 'Потрібні зарядки?' }).getByLabel('Ні').check();
-    await expect(root.locator('dd').nth(1)).toHaveText('0');
+    await expect(root.locator('dd').nth(1).locator('.pk-vh')).toHaveText('0');
   });
 });
 
@@ -91,7 +91,8 @@ test.describe('SPEC-004/AC-15 повзунок і поле синхронні, �
     await expect(root.locator('input[type="range"]')).toHaveValue('300');
     await expect(root.locator('.pk-hint')).toContainText('Від 3 до 300');
     await root.locator('input[type="range"]').evaluate((el: HTMLInputElement) => {
-      el.value = '120';
+      // React-контрольоване поле: значення через нативний сетер, інакше React не побачить подію (SPEC-004 рев. 2).
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(el, '120');
       el.dispatchEvent(new Event('input', { bubbles: true }));
     });
     await expect(field).toHaveValue('120');

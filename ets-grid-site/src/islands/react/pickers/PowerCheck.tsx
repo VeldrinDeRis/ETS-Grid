@@ -1,9 +1,10 @@
-/** @jsxImportSource preact */
+/** @jsxImportSource react */
 // «Чи вистачить потужності?» (SPEC-004 §3.3, ТЗ §6.1 блок 3, 03 §3.1).
-import { useMemo, useState } from 'preact/hooks';
-import { powerCheck, type Calc } from '../../lib/calc';
-import { formatUnit } from '../../lib/format';
-import type { Product } from '../../lib/schema';
+import { useMemo, useState, type ReactNode } from 'react';
+import LiveNumber from './LiveNumber';
+import { powerCheck, type Calc } from '../../../lib/calc';
+import { formatUnit } from '../../../lib/format';
+import type { Product } from '../../../lib/schema';
 import { Cta, NumberSlider, ProductLinks, Result, usePickerComplete, useReady, type ProductInfo } from './shared';
 
 interface Props {
@@ -40,19 +41,36 @@ export default function PowerCheck({ stations, info, calc, idPrefix = 'pc' }: Pr
     text = `Додаємо накопичувач ≈ ${formatUnit(r.batteryKwh!, 'кВт·год')}: він заряджається від ваших ${kw(gridKw)} між сесіями.`;
   }
   const summary = `${title}. ${text}`;
+  // Ті самі рядки, але обчислені числа — живі (SPEC-004 §3.7): дефіцит, запас, менша AC, ємність накопичувача.
+  const kwN = (n: number) => <LiveNumber value={Math.round(n * 10) / 10} unit="кВт" digits={1} />;
+  let titleNode: ReactNode = title;
+  let textNode: ReactNode = text;
+  if (r.outcome === 'ok') {
+    textNode = <>Станцію можна підключити напряму. Запас по вводу: {kwN(r.reserveKw!)}.</>;
+  } else if (r.outcome === 'ac_deficit') {
+    titleNode = <>Не вистачає {kwN(r.deficit)}</>;
+    if (r.smallerKw) textNode = <>Варіанти: станція {kwN(r.smallerKw)} з балансуванням навантаження або збільшення потужності за техумовами.</>;
+  } else if (r.outcome !== 'none') {
+    titleNode = <>Не вистачає {kwN(r.deficit)}</>;
+    textNode = (
+      <>
+        Додаємо накопичувач ≈ <LiveNumber value={r.batteryKwh!} unit="кВт·год" digits={1} />: він заряджається від ваших {kw(gridKw)} між сесіями.
+      </>
+    );
+  }
   const alt = r.batteryStation ? info[r.batteryStation.slug] : null;
 
   const params = { need_kw: needKw, grid_kw: gridKw, outcome: r.outcome, station: r.station?.slug, battery_kwh: r.batteryKwh };
   usePickerComplete('power', params, touched);
 
   return (
-    <div class="pk" data-picker="power" data-ready={ready ? 'true' : undefined}>
-      <form class="pk-form" onSubmit={(e) => e.preventDefault()}>
-        <fieldset class="pk-fieldset">
-          <legend class="pk-label">Потрібна потужність зарядки</legend>
-          <div class="pk-options">
+    <div className="pk" data-picker="power" data-ready={ready ? 'true' : undefined}>
+      <form className="pk-form" onSubmit={(e) => e.preventDefault()}>
+        <fieldset className="pk-fieldset">
+          <legend className="pk-label">Потрібна потужність зарядки</legend>
+          <div className="pk-options">
             {calc.power.need_options_kw.map((v) => (
-              <label class="pk-option">
+              <label className="pk-option">
                 <input
                   type="radio"
                   name={`${idPrefix}-need`}
@@ -83,14 +101,14 @@ export default function PowerCheck({ stations, info, calc, idPrefix = 'pc' }: Pr
       </form>
 
       <Result summary={summary} tone={r.outcome === 'ok' ? 'ok' : r.outcome === 'none' ? 'neutral' : 'warn'}>
-        <p class="pk-result__title">
-          <span aria-hidden="true" class={r.outcome === 'ok' ? 'pk-led' : 'pk-led pk-led--warn'} />
-          {title}
+        <p className="pk-result__title">
+          <span aria-hidden="true" className={r.outcome === 'ok' ? 'pk-led' : 'pk-led pk-led--warn'} />
+          {titleNode}
         </p>
-        <p>{text}</p>
+        <p>{textNode}</p>
         {station && (
           <>
-            <p class="pk-result__label">
+            <p className="pk-result__label">
               Станція: вхід від {kw(Number(r.station!.attrs.input_min_kw))}
             </p>
             <ProductLinks items={[station]} />
@@ -98,7 +116,7 @@ export default function PowerCheck({ stations, info, calc, idPrefix = 'pc' }: Pr
         )}
         {alt && (
           <>
-            <p class="pk-result__label">Або станція з накопичувачем — працює від вашого вводу:</p>
+            <p className="pk-result__label">Або станція з накопичувачем — працює від вашого вводу:</p>
             <ProductLinks items={[alt]} />
           </>
         )}

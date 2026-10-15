@@ -1,10 +1,11 @@
-/** @jsxImportSource preact */
+/** @jsxImportSource react */
 // Підбірник СЕС: 3 питання ТЗ §7, формула 03 §3.3 (SPEC-004 §3.3).
-import { useMemo, useState } from 'preact/hooks';
-import { solarSize, type Calc } from '../../lib/calc';
-import { formatNumber, formatPrice, formatUnit } from '../../lib/format';
-import { plural } from '../../lib/plural';
-import type { Product } from '../../lib/schema';
+import { useMemo, useState } from 'react';
+import LiveNumber from './LiveNumber';
+import { solarSize, type Calc } from '../../../lib/calc';
+import { formatNumber, formatPrice, formatUnit } from '../../../lib/format';
+import { plural } from '../../../lib/plural';
+import type { Product } from '../../../lib/schema';
 import { Choice, Cta, NumberSlider, Result, usePickerComplete, useReady } from './shared';
 
 interface Props {
@@ -36,8 +37,8 @@ export default function SolarPicker({ kits, calc }: Props) {
   usePickerComplete('solar', params, touched);
 
   return (
-    <div class="pk" data-picker="solar" data-ready={ready ? 'true' : undefined}>
-      <form class="pk-form" onSubmit={(e) => e.preventDefault()}>
+    <div className="pk" data-picker="solar" data-ready={ready ? 'true' : undefined}>
+      <form className="pk-form" onSubmit={(e) => e.preventDefault()}>
         <Choice
           name="sp-purpose"
           legend="1. Дім чи бізнес"
@@ -48,14 +49,14 @@ export default function SolarPicker({ kits, calc }: Props) {
             { value: 'business', label: 'Бізнес' },
           ]}
         />
-        <fieldset class="pk-fieldset">
-          <legend class="pk-label">2. Як рахуємо споживання</legend>
-          <div class="pk-options">
-            <label class="pk-option">
+        <fieldset className="pk-fieldset">
+          <legend className="pk-label">2. Як рахуємо споживання</legend>
+          <div className="pk-options">
+            <label className="pk-option">
               <input type="radio" name="sp-mode" checked={mode === 'kwh'} onChange={() => touch(setMode)('kwh')} />
               <span>кВт·год на місяць</span>
             </label>
-            <label class="pk-option" data-bill-option aria-disabled={tariff ? undefined : 'true'}>
+            <label className="pk-option" data-bill-option aria-disabled={tariff ? undefined : 'true'}>
               <input
                 type="radio"
                 name="sp-mode"
@@ -68,7 +69,7 @@ export default function SolarPicker({ kits, calc }: Props) {
             </label>
           </div>
           {!tariff && (
-            <p class="pk-hint" id="sp-bill-note" data-bill-note>
+            <p className="pk-hint" id="sp-bill-note" data-bill-note>
               Тариф надасть замовник — поки рахуємо за кВт·год.
             </p>
           )}
@@ -100,15 +101,23 @@ export default function SolarPicker({ kits, calc }: Props) {
       </form>
 
       <Result summary={summary}>
-        <p class="pk-result__title">
-          <span class="pk-big">{formatNumber(r.kwp)}</span> kWp
+        <p className="pk-result__title">
+          <span className="pk-big"><LiveNumber value={r.kwp} digits={1} /></span> kWp
         </p>
-        <ul class="pk-facts" role="list">
-          <li>{panelsText}</li>
-          <li>Площа ≈ {formatUnit(r.areaM2, 'м²')}{mount === 'roof' ? ' даху' : ' ділянки'}</li>
+        <ul className="pk-facts" role="list">
           <li>
-            {priceText}
-            {r.priceFrom && r.priceDemo && <span class="pk-demo">демо-ціна</span>}
+            <LiveNumber value={r.panels} /> {plural(r.panels, ['панель', 'панелі', 'панелей'])} по {formatUnit(calc.solar.panel_w, 'Вт')}
+          </li>
+          <li>Площа ≈ <LiveNumber value={r.areaM2} unit="м²" digits={1} />{mount === 'roof' ? ' даху' : ' ділянки'}</li>
+          <li>
+            {r.priceFrom ? (
+              <>
+                ≈ <LiveNumber value={r.priceFrom} unit="₴" digits={0} /> під ключ
+              </>
+            ) : (
+              priceText
+            )}
+            {r.priceFrom && r.priceDemo && <span className="pk-demo">демо-ціна</span>}
           </li>
         </ul>
         <Cta label="Отримати розрахунок" picker="solar" params={params} />

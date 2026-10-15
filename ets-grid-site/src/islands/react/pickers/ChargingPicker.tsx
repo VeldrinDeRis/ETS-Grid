@@ -1,10 +1,11 @@
-/** @jsxImportSource preact */
+/** @jsxImportSource react */
 // Підбірник зарядних станцій: 3 питання ТЗ §7 (SPEC-004 §3.3).
-import { useMemo, useState } from 'preact/hooks';
-import { chargingPicker, type Calc, type Where } from '../../lib/calc';
-import type { Car } from '../../lib/filters';
-import { formatUnit } from '../../lib/format';
-import type { Product } from '../../lib/schema';
+import { useMemo, useState } from 'react';
+import LiveNumber from './LiveNumber';
+import { chargingPicker, type Calc, type Where } from '../../../lib/calc';
+import type { Car } from '../../../lib/filters';
+import { formatUnit } from '../../../lib/format';
+import type { Product } from '../../../lib/schema';
 import { Choice, Cta, NumberSlider, ProductLinks, Result, usePickerComplete, useReady, type ProductInfo } from './shared';
 
 interface Props {
@@ -50,6 +51,17 @@ export default function ChargingPicker({ stations, info, cars, connectors, calc 
         ? `${more.station.name} потребує вводу від ${kw(Number(more.station.attrs.input_min_kw))}: бракує ${kw(c.deficit)}, додаємо накопичувач ≈ ${formatUnit(c.batteryKwh!, 'кВт·год')}.`
         : `${more.station.name} потребує вводу від ${kw(Number(more.station.attrs.input_min_kw))}: бракує ${kw(c.deficit)} — балансування або збільшення потужності за техумовами.`;
   }
+  const kwN = (n: number) => <LiveNumber value={Math.round(n * 10) / 10} unit="кВт" digits={1} />;
+  const moreNode = more ? (
+    <>
+      {more.station.name} потребує вводу від {kwN(Number(more.station.attrs.input_min_kw))}: бракує {kwN(more.check.deficit)}
+      {more.check.outcome === 'dc_deficit' ? (
+        <>, додаємо накопичувач ≈ <LiveNumber value={more.check.batteryKwh!} unit="кВт·год" digits={1} />.</>
+      ) : (
+        ' — балансування або збільшення потужності за техумовами.'
+      )}
+    </>
+  ) : null;
   const summary = [title, fits.map((f) => f.name).join(', '), moreText].filter(Boolean).join('. ');
 
   const params = {
@@ -64,8 +76,8 @@ export default function ChargingPicker({ stations, info, cars, connectors, calc 
   usePickerComplete('charging', params, touched);
 
   return (
-    <div class="pk" data-picker="charging" data-ready={ready ? 'true' : undefined}>
-      <form class="pk-form" onSubmit={(e) => e.preventDefault()}>
+    <div className="pk" data-picker="charging" data-ready={ready ? 'true' : undefined}>
+      <form className="pk-form" onSubmit={(e) => e.preventDefault()}>
         <Choice
           name="cp-where"
           legend="1. Де заряджати"
@@ -77,21 +89,21 @@ export default function ChargingPicker({ stations, info, cars, connectors, calc 
             { value: 'highway', label: 'Траса / АЗС' },
           ]}
         />
-        <fieldset class="pk-fieldset">
-          <legend class="pk-label">2. Ваше авто або розʼєм</legend>
-          <div class="pk-options">
-            <label class="pk-option">
+        <fieldset className="pk-fieldset">
+          <legend className="pk-label">2. Ваше авто або розʼєм</legend>
+          <div className="pk-options">
+            <label className="pk-option">
               <input type="radio" name="cp-mode" checked={mode === 'connector'} onChange={() => touch(setMode)('connector')} />
               <span>Знаю розʼєм</span>
             </label>
-            <label class="pk-option">
+            <label className="pk-option">
               <input type="radio" name="cp-mode" checked={mode === 'car'} onChange={() => touch(setMode)('car')} />
               <span>Оберу авто</span>
             </label>
           </div>
           {mode === 'connector' ? (
-            <label class="pk-select">
-              <span class="pk-vh">Розʼєм</span>
+            <label className="pk-select">
+              <span className="pk-vh">Розʼєм</span>
               <select value={connector} onChange={(e) => touch(setConnector)((e.target as HTMLSelectElement).value)}>
                 {connectors.map(([v, l]) => (
                   <option value={v}>{l}</option>
@@ -99,8 +111,8 @@ export default function ChargingPicker({ stations, info, cars, connectors, calc 
               </select>
             </label>
           ) : (
-            <label class="pk-select">
-              <span class="pk-vh">Авто</span>
+            <label className="pk-select">
+              <span className="pk-vh">Авто</span>
               <select value={carId} onChange={(e) => touch(setCarId)((e.target as HTMLSelectElement).value)}>
                 {cars.map((c) => (
                   <option value={c.id}>
@@ -133,9 +145,9 @@ export default function ChargingPicker({ stations, info, cars, connectors, calc 
       </form>
 
       <Result summary={summary} tone={fits.length ? 'ok' : more ? 'warn' : 'neutral'}>
-        <p class="pk-result__title">{title}</p>
+        <p className="pk-result__title">{title}</p>
         <ProductLinks items={fits} />
-        {more && <p>{moreText}</p>}
+        {more && <p>{moreNode}</p>}
         {!fits.length && !more && <p>Під ваші умови готової моделі немає — підберемо індивідуально.</p>}
         <Cta label="Отримати розрахунок" picker="charging" params={params} />
       </Result>
