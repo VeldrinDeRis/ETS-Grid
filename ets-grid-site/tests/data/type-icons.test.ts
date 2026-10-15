@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import { TYPE_ICON } from '../../src/lib/filters/icons';
+import { TYPE_ICON, type TypeIconLevel } from '../../src/lib/filters/icons';
 import { ICON_PATHS } from '../../src/lib/icons';
 import { filters } from '../fixtures/catalog';
 
@@ -9,9 +9,9 @@ const ICON_ASTRO = new URL('../../src/components/layout/Icon.astro', import.meta
 describe('SPEC-002/AC-34 іконки головного фільтра (ревізія 5)', () => {
   test('у кожного значення primary кожного рівня є іконка, і вона є в наборі', () => {
     for (const [level, cfg] of Object.entries(filters.levels)) {
-      const icons = TYPE_ICON[level as keyof typeof TYPE_ICON];
+      const icons = TYPE_ICON[level as TypeIconLevel] as Record<string, string>;
       expect(icons, level).toBeDefined();
-      for (const [token] of cfg.primary.values) {
+      for (const [token] of cfg.primary.values ?? []) {
         const name = icons[token];
         expect(name, `${level}.${token}`).toBeDefined();
         expect(ICON_PATHS, `${level}.${token} → ${name}`).toHaveProperty(name);

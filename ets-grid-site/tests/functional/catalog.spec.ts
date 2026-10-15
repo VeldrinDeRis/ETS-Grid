@@ -25,11 +25,12 @@ test.describe('SPEC-002/AC-19 вибір значення', () => {
     const catalog = new CatalogPage(page);
     await catalog.open(LEVEL);
     const ccs = catalog.option('Розʼєм', 'CCS2');
-    // Позиція відносно документа: клік може прокрутити сторінку.
+    // Позиція відносно колонки: колонка липка (ревізія 5), а клік може прокрутити сторінку.
     const position = () =>
       ccs.evaluate((el) => {
         const r = el.getBoundingClientRect();
-        return { x: Math.round(r.left + scrollX), y: Math.round(r.top + scrollY) };
+        const s = el.closest('.cf-sidebar')!.getBoundingClientRect();
+        return { x: Math.round(r.left - s.left), y: Math.round(r.top - s.top) };
       });
     const before = await position();
     await catalog.chip('Настінна AC').click();
@@ -126,7 +127,7 @@ test.describe('SPEC-002/AC-23 кожне значення головного ф�
       }
       const catalog = new CatalogPage(page);
       await expect(page.locator('.cf-total')).toBeVisible();
-      const chips = page.locator('.cf-primary .cf-chip');
+      const chips = page.locator('.cf-primary .cf-tile');
       const n = await chips.count();
       for (let i = 0; i < n; i++) {
         const chip = chips.nth(i);
@@ -158,7 +159,8 @@ test.describe('SPEC-002/AC-24 шторка фільтрів (375)', () => {
 
     await open.click();
     await catalog.option('Розʼєм', 'GB/T AC', '.cf-sheet').click();
-    await expect(sheet.locator('.cf-show')).toHaveText('Показати 2 товари');
+    await expect(sheet.locator('.cf-show [data-show-total]')).toHaveAttribute('data-show-total', '2');
+    await expect(sheet.locator('.cf-show')).toContainText('товари');
     await sheet.locator('.cf-show').click();
     await expect(sheet).toBeHidden();
     await expect(catalog.visibleCards()).toHaveCount(2);
@@ -194,18 +196,17 @@ test.describe('SPEC-002/AC-25 кошик і порівняння з картки
   });
 });
 
-test.describe('SPEC-002/AC-29 пробіли видно (D-031)', () => {
-  test('фасети рівня без даних — неактивні з поміткою; «Новинки» — неактивна', async ({ page }, info) => {
+test.describe('SPEC-002/AC-29 пробіли видно (D-031; ревізія 5 — одна плашка, AC-36)', () => {
+  test('фасети рівня без даних — у плашці; «Новинки» — неактивна', async ({ page }, info) => {
     const catalog = new CatalogPage(page);
     await catalog.open('/batarei/');
     const scope = isDesktop(info) ? page.locator('.cf-sidebar') : page.locator('.cf-sheet');
     if (!isDesktop(info)) await page.getByRole('button', { name: /^Фільтри/ }).click();
-    for (const label of ['Сумісні інвертори', 'Бренд', 'Гарантія']) {
-      const facet = scope.locator('[data-missing-facet]', { hasText: label });
-      await expect(facet).toBeVisible();
-      await expect(facet).toContainText('Дані надасть замовник');
-      await expect(facet).toHaveAttribute('aria-disabled', 'true');
-    }
+    const plate = scope.locator('.cf-missing-plate');
+    await expect(plate).toBeVisible();
+    await expect(plate).toContainText('з даними замовника');
+    await expect(plate).toHaveAttribute('aria-disabled', 'true');
+    for (const label of ['Сумісні інвертори', 'Бренд', 'Гарантія']) await expect(plate.locator('[data-missing-facet]', { hasText: label })).toBeVisible();
     const newest = page.locator('.cf-sort option[value="new"]');
     await expect(newest).toHaveText('Новинки — немає дати появи товару');
     // toBeDisabled для <option> у Playwright ненадійний — перевіряємо атрибут і властивість напряму.

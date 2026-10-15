@@ -3,7 +3,7 @@
 // Порожній набір товарів — серверний екран порожньої видачі.
 import carsJson from '../../data/cars.json';
 import filtersJson from '../../data/filters.json';
-import CatalogFilters from '../../islands/catalog/CatalogFilters';
+import CatalogFilters from '../../islands/react/catalog/CatalogFilters';
 import { getLevelById, getProductsBy } from '../../lib/catalog';
 import { intervalBounds, missingFacets, resolveFacets, visibleFacets, type Car, type FiltersFile } from '../../lib/filters';
 import { priceView } from '../../lib/price';
@@ -54,6 +54,7 @@ const poolInfo = Object.fromEntries(
       bounds={bounds}
       cars={cars}
       levelId={levelId}
+      levelKey={level.key}
       preset={preset}
     >
       {products.map((p) => (
