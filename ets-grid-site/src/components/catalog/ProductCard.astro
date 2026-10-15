@@ -162,8 +162,8 @@ const showGallery = !image && gallery && frames.length > 1;
   .product-card__photo--gallery :global(.pgal__shot > div) {
     display: block;
   }
-  /* До гідратації astro-island показує слоти підряд — обрізаємо до першого кадру. */
-  .product-card__photo--gallery :global(astro-island:not([ssr])) {
+  /* Острів — квадрат з обрізанням завжди: без JS (атрибут ssr лишається) і до гідратації кадри не стирчать. */
+  .product-card__photo--gallery :global(astro-island) {
     display: block;
     aspect-ratio: 1;
     overflow: hidden;

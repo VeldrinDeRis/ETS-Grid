@@ -61,9 +61,12 @@ test.describe('SPEC-002/AC-43 гортання міні-галереї карт�
       expect(Math.abs(box.width - box.height)).toBeLessThan(3);
       const first = (await card.locator('.product-card__frame').first().boundingBox())!;
       expect(Math.abs(first.width - box.width)).toBeLessThan(3);
-      // Кадри після першого — нижче видимої області картки (overflow: hidden обрізає їх).
+      // Другий кадр — поза вікном картки (праворуч або нижче), острів обрізає його overflow: hidden.
       const second = (await card.locator('.product-card__frame').nth(1).boundingBox())!;
-      expect(second.y).toBeGreaterThanOrEqual(box.y + box.height - 1);
+      const outside = second.x >= box.x + box.width - 1 || second.y >= box.y + box.height - 1;
+      expect(outside, JSON.stringify({ box, second })).toBe(true);
+      const island = (await card.locator('astro-island').boundingBox())!;
+      expect(Math.abs(island.height - box.height)).toBeLessThan(3);
     });
   });
 });
